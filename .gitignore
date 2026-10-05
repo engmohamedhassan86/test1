@@ -1,0 +1,26 @@
+# Build output
+build/
+out/
+target/
+bin/
+obj/
+*.class
+*.iml
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local agent configuration (never commit machine-specific settings)
+.claude/
+
+# Tooling
+*.log
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,5 @@
+using AgentOrchestrator.Domain.Common;
+
+namespace AgentOrchestrator.Domain.Agents.Events;
+
+public sealed record AgentActivatedEvent(Guid AgentId, DateTimeOffset OccurredOnUtc) : IDomainEvent;

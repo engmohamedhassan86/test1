@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AgentOrchestrator.Api</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Application\AgentOrchestrator.Application\AgentOrchestrator.Application.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\AgentOrchestrator.Infrastructure\AgentOrchestrator.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

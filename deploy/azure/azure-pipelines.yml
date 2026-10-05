@@ -1,0 +1,53 @@
+# Azure DevOps pipeline: build, test, push the API image to Azure Container Registry,
+# and deploy it to Azure App Service (Linux container). Configurable via pipeline
+# variables:
+#   - ACR_ENDPOINT        e.g. myregistry.azurecr.io
+#   - AZURE_APP_SERVICE   name of the target App Service (Linux container)
+#   - azure-service-connection (Azure service connection with ACR + App Service access)
+#   - azure-acr-connection   (ACR Docker registry service connection)
+trigger:
+  branches:
+    include:
+      - main
+  tags:
+    include:
+      - "v*"
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  IMAGE_NAME: agent-orchestrator-api
+
+steps:
+  - checkout: self
+
+  - script: |
+      dotnet build AgentOrchestrator.sln --configuration Release
+    displayName: "Restore and build solution"
+
+  - script: |
+      dotnet test AgentOrchestrator.sln --configuration Release --test-output build/test-results
+    displayName: "Run test suite"
+
+  - task: Docker@2
+    displayName: "Login to Azure Container Registry"
+    inputs:
+      command: login
+      containerRegistry: azure-acr-connection
+
+  - script: |
+      docker build -f src/Api/AgentOrchestrator.Api/Dockerfile \
+        -t $(ACR_ENDPOINT)/$(IMAGE_NAME):$(Build.BuildNumber) \
+        -t $(ACR_ENDPOINT)/$(IMAGE_NAME):latest .
+      docker push $(ACR_ENDPOINT)/$(IMAGE_NAME):$(Build.BuildNumber)
+      docker push $(ACR_ENDPOINT)/$(IMAGE_NAME):latest
+    displayName: "Build and push API image to ACR"
+
+  - task: AzureWebAppContainer@1
+    displayName: "Deploy Linux container to Azure App Service"
+    inputs:
+      azureSubscription: azure-service-connection
+      appName: $(AZURE_APP_SERVICE)
+      imageName: $(ACR_ENDPOINT)/$(IMAGE_NAME):$(Build.BuildNumber)
+      registryTokenEndpoint: azure-acr-connection

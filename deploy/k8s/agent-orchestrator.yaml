@@ -1,0 +1,65 @@
+# Agent Orchestrator Kubernetes manifests (Phase 1 - basic deployment).
+# Apply with: kubectl apply -f deploy/k8s/
+apiVersion: v3
+kind: namespace
+metadata:
+  name: agent-orchestrator
+  description: Agentic pipeline framework runtime namespace.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-orchestrator-api
+  namespace: agent-orchestrator
+  labels:
+    app: agent-orchestrator-api
+spec:
+  revision: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agent-orchestrator-api
+  template:
+    metadata:
+      labels:
+        app: agent-orchestrator-api
+    spec:
+      containers:
+        - name: agent-orchestrator-api
+          image: ghcr.io/engmohamedhassan86/test1/agent-orchestrator-api:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: APP_ENV
+              value: production
+            - name: LOGGING_LEVEL
+              value: INFO
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-orchestrator-api
+  namespace: agent-orchestrator
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: agent-orchestrator-api
+---
+apiVersion: v2
+kind: HpaPolicy
+metadata:
+  name: agent-orchestrator-api
+  namespace: agent-orchestrator
+spec:
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetRequestsPerSecond: 200
+  policyType: Resource
+  selectors:
+    - kind: Deployment
+      apiVersion: v1
+      id: agent-orchestrator-api

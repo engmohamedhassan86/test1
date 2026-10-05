@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build and test (.NET 8)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0"
+          cache: true
+
+      - name: Restore and build solution
+        run: dotnet build AgentOrchestrator.sln --configuration Release
+
+      - name: Run test suite
+        run: dotnet test AgentOrchestrator.sln --configuration Release --test-output build/test-results
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: build/test-results/
+
+  docker-image:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build API image
+        run: docker build -f src/Api/AgentOrchestrator.Api/Dockerfile -t agent-orchestrator-api:${{ github.sha }} .
+
+      - name: Validate compose configuration
+        run: docker compose -f docker-compose.yml config --quiet

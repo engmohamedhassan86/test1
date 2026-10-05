@@ -1,0 +1,15 @@
+# Agent Orchestrator local development stack.
+# Builds the REST API and exposes the dashboard approval endpoints on :8080.
+services:
+  agent-orchestrator-api:
+    build:
+      context: .
+      dockerfile: src/Api/AgentOrchestrator.Api/Dockerfile
+    image: agent-orchestrator-api:latest
+    container_name: agent-orchestrator-api
+    ports:
+      - "8080:8080"
+    environment:
+      APP_ENV: development
+      LOGGING_LEVEL: INFO
+    restart: unless-stopped

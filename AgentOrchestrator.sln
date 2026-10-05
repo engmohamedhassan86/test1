@@ -1,0 +1,34 @@
+Microsoft Visual Studio Solution File Format Version 3.0
+# Visual Studio Version 17
+# Minimum Version: 11.0
+
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Domain", "src\Domain\AgentOrchestrator.Domain\AgentOrchestrator.Domain.csproj", "{FAKE-cf4b948d-05f8-99bc-a786-cabcd07fb2}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Application", "src\Application\AgentOrchestrator.Application\AgentOrchestrator.Application.csproj", "{FAKE-1ca0b741-f3d8-9158-df1d-0345e0a871}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Infrastructure", "src\Infrastructure\AgentOrchestrator.Infrastructure\AgentOrchestrator.Infrastructure.csproj", "{FAKE-89a4ff2c-4114-11ad-6a4d-bdcc96204b}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Api", "src\Api\AgentOrchestrator.Api\AgentOrchestrator.Api.csproj", "{FAKE-62937e74-b60b-1325-4395-7ff0288f19}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Agents.Abstractions", "src\Agents\AgentOrchestrator.Agents.Abstractions\AgentOrchestrator.Agents.Abstractions.csproj", "{FAKE-919b150e-939c-19b2-fec2-d3560a7558}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Agents.Developer", "src\Agents\AgentOrchestrator.Agents.Developer\AgentOrchestrator.Agents.Developer.csproj", "{FAKE-036f7829-8251-7993-5f12-7a8893ede4}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Agents.QA", "src\Agents\AgentOrchestrator.Agents.QA\AgentOrchestrator.Agents.QA.csproj", "{FAKE-405ea44c-aad6-2771-a926-7943c44f48}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Agents.DevOps", "src\Agents\AgentOrchestrator.Agents.DevOps\AgentOrchestrator.Agents.DevOps.csproj", "{FAKE-42ce9d10-063f-cb93-fbe6-2bc6521281}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Agents.Documentation", "src\Agents\AgentOrchestrator.Agents.Documentation\AgentOrchestrator.Agents.Documentation.csproj", "{FAKE-41327eb1-d8f7-ec8a-7492-91eeb94a46}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Domain.Tests", "tests\AgentOrchestrator.Domain.Tests\AgentOrchestrator.Domain.Tests.csproj", "{FAKE-ef59ab9f-763a-19ab-bbcf-1fbc215e63}"
+EndProject
+Project("{FAKE-249B-4A1F-48F6-AE2C-9C9A6A0E5D15}") = "AgentOrchestrator.Application.Tests", "tests\AgentOrchestrator.Application.Tests\AgentOrchestrator.Application.Tests.csproj", "{FAKE-118f47b6-21bc-703f-3d5d-f6b7feb588}"
+EndProject
+
+Global
+	# Define the solution-wide build order. Library projects come before the API and
+	# test projects so `dotnet build` and `dotnet test` resolve dependencies first.
+	# Applies to both CI (GitHub Actions) and local development.
+	VisualStudioVersion = 17.0
+	MinimumVersion = 11.0
+	EndGlobal

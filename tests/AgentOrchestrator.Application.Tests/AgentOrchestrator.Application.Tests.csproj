@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AgentOrchestrator.Application.Tests</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="org.junit.jupiter:junit-jupiter" Version="5.10.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Domain\AgentOrchestrator.Domain\AgentOrchestrator.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Application\AgentOrchestrator.Application\AgentOrchestrator.Application.csproj" />
+    <ProjectReference Include="..\..\src\Infrastructure\AgentOrchestrator.Infrastructure\AgentOrchestrator.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Agents\AgentOrchestrator.Agents.Abstractions\AgentOrchestrator.Agents.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Agents\AgentOrchestrator.Agents.Developer\AgentOrchestrator.Agents.Developer.csproj" />
+    <ProjectReference Include="..\..\src\Agents\AgentOrchestrator.Agents.QA\AgentOrchestrator.Agents.QA.csproj" />
+    <ProjectReference Include="..\..\src\Agents\AgentOrchestrator.Agents.DevOps\AgentOrchestrator.Agents.DevOps.csproj" />
+    <ProjectReference Include="..\..\src\Agents\AgentOrchestrator.Agents.Documentation\AgentOrchestrator.Agents.Documentation.csproj" />
+  </ItemGroup>
+</Project>
