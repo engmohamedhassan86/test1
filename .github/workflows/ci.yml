@@ -5,6 +5,10 @@ on:
   push:
   pull_request:
     branches: [main]
+  # A secret is only read when a run starts, so changing one does not re-test
+  # anything by itself. This makes "run the gates again on the same commit" a
+  # button in the Actions tab, instead of an empty commit.
+  workflow_dispatch:
 
 # A PR branch also gets a push event. Group both under the same key so the
 # duplicate run is cancelled instead of burning a second set of minutes.
