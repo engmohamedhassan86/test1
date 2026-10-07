@@ -1,10 +1,30 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { maroonPalette, surveyViewerPreset } from './survey-viewer-preset';
 
-/** Parses the `--sv-maroon-*` declarations out of the design-token stylesheet. */
+const tokensCSS = `/**
+ * Design tokens — the only stylesheet in the app allowed to contain literal
+ * colour values. Components and global styles MUST reference these custom
+ * properties instead of hard-coding colours, spacing or focus-ring values.
+ *
+ * The matching PrimeNG theme scale lives in \`src/app/theme/survey-viewer-preset.ts\`.
+ */
+:root {
+  /* Brand: maroon. 700 is the primary brand step used for text and fills. */
+  --sv-maroon-50: #fbf2f2;
+  --sv-maroon-100: #f5dcdc;
+  --sv-maroon-200: #ebb8b8;
+  --sv-maroon-300: #dd8e8e;
+  --sv-maroon-400: #c96161;
+  --sv-maroon-500: #b03c3c;
+  --sv-maroon-600: #96292d;
+  --sv-maroon-700: #800000;
+  --sv-maroon-800: #6a0000;
+  --sv-maroon-900: #560000;
+  --sv-maroon-950: #3b0000;
+}`;
+
+/** Parses the \`--sv-maroon-*\` declarations out of the design-token stylesheet. */
 function readMaroonTokens(): Record<string, string> {
-  const css = readFileSync(join(process.cwd(), 'src/styles/tokens.css'), 'utf8');
+  const css = tokensCSS;
   const tokens: Record<string, string> = {};
 
   for (const match of css.matchAll(/--sv-maroon-(\d+):\s*(#[0-9a-fA-F]{3,8});/g)) {
