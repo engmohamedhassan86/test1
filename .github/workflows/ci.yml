@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  # Every branch, so a feature branch is proven green before a PR exists.
+  push:
+  pull_request:
+    branches: [main]
+
+# A PR branch also gets a push event. Group both under the same key so the
+# duplicate run is cancelled instead of burning a second set of minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    # PrimeNG 22 needs a PrimeUI licence key or it paints an "Invalid PrimeUI
+    # License" banner over the app. Add the key as a repository secret of the same
+    # name; while it is missing the gates still pass and PrimeNG only warns.
+    env:
+      PRIMEUI_LICENSE_KEY: ${{ secrets.PRIMEUI_LICENSE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Version comes from the "packageManager" field in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm run format:check
+
+      - name: Type check
+        run: pnpm run typecheck
+
+      - name: Unit tests with coverage
+        run: pnpm run test:coverage
+
+      - name: Build
+        run: pnpm run build

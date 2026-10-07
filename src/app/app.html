@@ -1,0 +1,47 @@
+<a class="sv-skip-link" href="#main">Skip to content</a>
+
+<div class="sv-shell">
+  <header>
+    <h1 class="sv-title">{{ title() }}</h1>
+    <p class="sv-tagline">Application foundation — no survey is loaded yet.</p>
+  </header>
+
+  <main id="main">
+    <div class="grid">
+      <div class="col-12 lg:col-7">
+        <p-card header="Foundation checks">
+          <ul class="sv-checks">
+            @for (check of checks(); track check.id) {
+              <li>{{ check.label }}</li>
+            }
+          </ul>
+        </p-card>
+      </div>
+
+      <div class="col-12 lg:col-5">
+        <p-card header="Theme probe">
+          <p class="sv-probe-copy">
+            The button below is a PrimeNG component styled by the maroon preset. Tab to it to check
+            the focus ring.
+          </p>
+
+          <!-- No `icon` here: `primeicons` is not a dependency of the foundation,
+               so an icon class would render an empty box. -->
+          <p-button
+            label="Confirm theme is wired"
+            (onClick)="confirmTheme()"
+            [disabled]="themeConfirmed()"
+          />
+
+          <p class="sv-probe-status" aria-live="polite">
+            @if (themeConfirmed()) {
+              <span>Theme confirmed — maroon preset and design tokens are active.</span>
+            }
+          </p>
+        </p-card>
+      </div>
+    </div>
+
+    <router-outlet />
+  </main>
+</div>

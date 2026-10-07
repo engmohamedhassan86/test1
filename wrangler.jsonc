@@ -1,0 +1,15 @@
+{
+  // Cloudflare Workers static assets config for the survey-viewer SPA.
+  // Docs: https://developers.cloudflare.com/workers/static-assets/
+  //
+  // PRIMEUI_LICENSE_KEY is a build-time variable, not a runtime binding, so it is
+  // deliberately absent here. Set it on the build environment that runs
+  // `pnpm run build` — not in `vars`, which would publish it as a Worker variable.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "survey-viewer",
+  "compatibility_date": "2026-10-07",
+  "assets": {
+    "directory": "dist/survey-viewer/browser",
+    "not_found_handling": "single-page-application",
+  },
+}
