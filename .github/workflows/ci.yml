@@ -16,8 +16,9 @@ jobs:
   quality-gates:
     runs-on: ubuntu-latest
     # PrimeNG 22 needs a PrimeUI licence key or it paints an "Invalid PrimeUI
-    # License" banner over the app. Add the key as a repository secret of the same
-    # name; while it is missing the gates still pass and PrimeNG only warns.
+    # License" banner over the app. The key is the repository secret of the same
+    # name, and the two "licence key" steps below fail the job if it is missing,
+    # inactive, or absent from the built bundle.
     env:
       PRIMEUI_LICENSE_KEY: ${{ secrets.PRIMEUI_LICENSE_KEY }}
     steps:
@@ -34,6 +35,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Before the slow gates, so a missing secret is reported in seconds. Prints
+      # the key's id, tier and expiry, never the key.
+      - name: PrimeUI licence key is present and active
+        run: pnpm run check:license
+
       - name: Format check
         run: pnpm run format:check
 
@@ -45,3 +51,10 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+      # The build tolerates a missing key, so prove the key actually landed in the
+      # artefact rather than trusting that the environment variable was set.
+      # Called directly rather than through pnpm, so there is no question about
+      # how the extra argument is forwarded.
+      - name: PrimeUI licence key reached the bundle
+        run: node scripts/check-primeui-license.mjs --bundle dist/survey-viewer/browser

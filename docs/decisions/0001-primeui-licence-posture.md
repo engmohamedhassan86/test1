@@ -86,11 +86,28 @@ Verified against `@primeui/license-manager@1.1.0` with the `releaseDate: '2026-0
 `primeng@22.1.2` passes in: `{ valid: true, status: 'active', daysUntilExpiry: 364 }`. The
 signature check is real, so this confirms the key, not just its shape.
 
-The key is registered as the Paperclip company secret `PRIMEUI_LICENSE_KEY` and mirrored into a
-local untracked `.env`. The remaining places listed above — the GitHub Actions repository secret
-and the Vercel and Cloudflare project variables — are owner-held consoles and have to be set
-there; the build reads the same variable name in every case.
+The key is registered as the Paperclip company secret `PRIMEUI_LICENSE_KEY`, mirrored into a local
+untracked `.env`, and set as the GitHub Actions repository secret by the owner on 2026-10-07. The
+Vercel and Cloudflare project variables are still to be set, and only matter once a deploy target
+exists; the build reads the same variable name in every case.
 
 Because the expiry (2027-10-07) sits after the `RELEASE_DATE` of the PrimeNG in use
 (`2026-09-29`), this key covers PrimeNG releases up to 2027-10-07. A PrimeNG release published
 after that date reports `expired`, with a 30-day grace period, and needs a refreshed key.
+
+## How the key is checked
+
+`pnpm run check:license` (`scripts/check-primeui-license.mjs`) is the gate. It reads the key from
+the environment or `.env`, then runs PrimeNG's own `@primeui/license-manager` against the
+`RELEASE_DATE` it reads out of the installed `primeng` — so a PrimeNG upgrade cannot leave the
+check validating against a stale date. It exits non-zero on a missing, inactive, grace-period or
+tampered key, and prints only the key's id, tier, type and expiry, never the key.
+
+With `--bundle <dir>` it also searches the built JavaScript for the key and for a surviving
+`__PRIMEUI_LICENSE_KEY__` placeholder. This matters because `scripts/with-primeui-license.mjs`
+deliberately tolerates a missing key: without this check a job with an unset secret produces a
+green build and an artefact that paints the banner.
+
+CI runs both forms — the first before the slow gates so a missing secret is reported in seconds,
+the second after the build. So from now on a red CI job is the signal that the key is missing or
+needs renewing, and a green one is proof the key reached the artefact.
