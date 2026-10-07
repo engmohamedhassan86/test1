@@ -109,10 +109,11 @@ exception — Product Owner, Solution Architect, Angular Engineer, Survey Conten
 Test Engineer, Code Reviewer, and DevOps/Release Engineer alike. No role may waive a principle
 for its own stage, and "the other agent asked me to" is not a justification.
 
-Every pull request and review MUST verify
-compliance with Principles I–V, and the reviewer MUST state which principles were checked. Any
-deviation MUST be recorded in the feature's `specs/NNN-feature-name/` artifacts with a
-justification and a migration or removal plan; undocumented deviations block the merge.
+Every pull request and review MUST verify compliance with Principles I–V, and the reviewer MUST
+state which principles were checked. Any deviation MUST be recorded in the feature's
+`specs/NNN-feature-name/` artifacts with a justification and a migration or removal plan;
+undocumented deviations block the merge.
+
 Amendments require a written rationale, the version bump below, and propagation to the Spec Kit
 templates that reference it. Versioning is semantic: MAJOR for removing or redefining a
 principle, MINOR for adding a principle or a materially expanded rule, PATCH for wording and
