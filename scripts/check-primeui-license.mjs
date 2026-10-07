@@ -19,8 +19,14 @@
  *    what turns "the key was in the environment" into "the key is in the
  *    artefact we would ship".
  *
- * The key is a credential. This script prints its id, tier, type and expiry —
- * enough to recognise a renewal — and never the key itself.
+ * The key is a credential. This script prints its id, tier, type, expiry and
+ * character count — enough to recognise a renewal, and to tell an unset secret
+ * apart from a wrong one — and never the key itself.
+ *
+ * On GitHub Actions every failure is also emitted as an `::error::` workflow
+ * command. Downloading a job log needs admin rights on the repository, while
+ * check-run annotations are readable by anyone, so this is what keeps a red job
+ * diagnosable without repository admin.
  *
  * Usage:
  *   node scripts/check-primeui-license.mjs
@@ -32,16 +38,48 @@ import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const PLACEHOLDER = '__PRIMEUI_LICENSE_KEY__';
+const IN_ACTIONS = process.env.GITHUB_ACTIONS === 'true';
 
-/** Same precedence as the build wrapper: ambient environment, then local .env. */
+/**
+ * Reports a failure. On GitHub Actions the raw step log needs admin rights to
+ * read, but check-run annotations are public, so the same message is emitted as
+ * a workflow command — that is what makes a red job diagnosable from outside.
+ */
+function fail(message) {
+  console.error(
+    message
+      .split('\n')
+      .map((line, index) => (index === 0 ? `FAIL  ${line}` : `      ${line}`))
+      .join('\n'),
+  );
+
+  if (IN_ACTIONS) {
+    // Actions needs these three characters escaped or the message is truncated.
+    const escaped = message.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+    console.log(`::error title=PrimeUI licence::${escaped}`);
+  }
+
+  process.exit(1);
+}
+
+/**
+ * Same precedence as the build wrapper: ambient environment, then local `.env`.
+ * Which source won is reported, because "the secret is unset" and "the secret is
+ * set to the wrong thing" need different fixes.
+ */
 function readKey() {
+  const fromEnvironment = process.env.PRIMEUI_LICENSE_KEY;
+
   try {
     process.loadEnvFile('.env');
   } catch {
     // No local .env — the CI case.
   }
 
-  return process.env.PRIMEUI_LICENSE_KEY ?? '';
+  const key = process.env.PRIMEUI_LICENSE_KEY ?? '';
+  const source = fromEnvironment ? 'environment' : key === '' ? 'nowhere' : '.env file';
+
+  return { key, source };
 }
 
 /**
@@ -97,8 +135,7 @@ async function checkBundle(dir, key) {
   const files = await collectJsFiles(dir);
 
   if (files.length === 0) {
-    console.error(`FAIL  No .js files under ${dir}. Did the build run?`);
-    return false;
+    fail(`No .js files under ${dir}. Did the build run?`);
   }
 
   const withKey = [];
@@ -115,23 +152,20 @@ async function checkBundle(dir, key) {
   console.log(`      placeholder left over:  ${withPlaceholder.length}`);
 
   if (withKey.length === 0) {
-    console.error(
-      `FAIL  The key is not in the built output under ${dir}. The --define substitution in ` +
+    fail(
+      `The key is not in the built output under ${dir}. The --define substitution in ` +
         'scripts/with-primeui-license.mjs did not take effect.',
     );
-    return false;
   }
 
   if (withPlaceholder.length > 0) {
-    console.error(
-      `FAIL  ${PLACEHOLDER} survived into ${withPlaceholder.join(', ')}. It should have been ` +
+    fail(
+      `${PLACEHOLDER} survived into ${withPlaceholder.join(', ')}. It should have been ` +
         'substituted at build time.',
     );
-    return false;
   }
 
   console.log('PASS  The key is inlined in the built output and no placeholder remains.');
-  return true;
 }
 
 async function main() {
@@ -140,21 +174,26 @@ async function main() {
   const bundleDir = bundleFlag === -1 ? null : args[bundleFlag + 1];
 
   if (bundleFlag !== -1 && !bundleDir) {
-    console.error('FAIL  --bundle needs a directory, e.g. --bundle dist/survey-viewer/browser');
-    process.exit(1);
+    fail('--bundle needs a directory, e.g. --bundle dist/survey-viewer/browser');
   }
 
-  const key = readKey();
+  const { key, source } = readKey();
 
-  if (key === '') {
-    console.error(
-      'FAIL  PRIMEUI_LICENSE_KEY is empty or unset, so this build would show the red\n' +
-        '      "Invalid PrimeUI License" banner.\n' +
-        '      In CI: add the repository secret PRIMEUI_LICENSE_KEY.\n' +
-        '      Locally: copy .env.example to .env and fill it in.\n' +
-        '      See docs/decisions/0001-primeui-licence-posture.md.',
+  // Only the length, never the value. It is the one fact that separates "the
+  // secret is unset" from "the secret is set to something unexpected", and it is
+  // the difference between a readable red job and a guessing game.
+  console.log(`      key source:             ${source}`);
+  console.log(`      key length:             ${key.length} characters`);
+
+  if (key.trim() === '') {
+    fail(
+      `PRIMEUI_LICENSE_KEY is ${key === '' ? 'unset or empty' : 'blank'}, so this build would ` +
+        'show the red "Invalid PrimeUI License" banner.\n' +
+        'In CI: add the repository secret PRIMEUI_LICENSE_KEY. A secret scoped to an ' +
+        'environment, or stored as a variable rather than a secret, is not visible here.\n' +
+        'Locally: copy .env.example to .env and fill it in.\n' +
+        'See docs/decisions/0001-primeui-licence-posture.md.',
     );
-    process.exit(1);
   }
 
   const releaseDate = await readPrimeNgReleaseDate();
@@ -162,19 +201,18 @@ async function main() {
   const result = await registerLicense({ primeui: key }).verify('primeui', { releaseDate });
 
   // Safe to print: the payload is only trustworthy once `valid` is true, and a
-  // failure exits before these lines.
+  // failure exits before the payload lines below.
   console.log(`      primeng RELEASE_DATE:   ${releaseDate}`);
   console.log(`      status:                 ${result.status}`);
 
   if (!result.valid || result.status !== 'active') {
-    console.error(`FAIL  ${result.message}`);
-    if (result.status === 'grace') {
-      console.error(
-        '      The key is inside its 30-day grace period. Renew it now — when the grace\n' +
-          '      period ends the licence banner comes back.',
-      );
-    }
-    process.exit(1);
+    const hint =
+      result.status === 'grace'
+        ? '\nThe key is inside its 30-day grace period. Renew it now — when the grace period ' +
+          'ends the licence banner comes back.'
+        : '';
+
+    fail(`${result.message} (status: ${result.status})${hint}`);
   }
 
   const { id, tier, type, exp } = result.payload;
@@ -184,12 +222,9 @@ async function main() {
   console.log(`      days until expiry:      ${result.daysUntilExpiry}`);
   console.log('PASS  The PrimeUI licence key is present and active.');
 
-  if (bundleDir && !(await checkBundle(bundleDir, key))) {
-    process.exit(1);
+  if (bundleDir) {
+    await checkBundle(bundleDir, key);
   }
 }
 
-main().catch((error) => {
-  console.error(`FAIL  ${error.message}`);
-  process.exit(1);
-});
+main().catch((error) => fail(error.message));
