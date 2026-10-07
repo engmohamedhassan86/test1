@@ -1,0 +1,47 @@
+/**
+ * Design tokens — the only stylesheet in the app allowed to contain literal
+ * colour values. Components and global styles MUST reference these custom
+ * properties instead of hard-coding colours, spacing or focus-ring values.
+ *
+ * The matching PrimeNG theme scale lives in `src/app/theme/survey-viewer-preset.ts`.
+ */
+:root {
+  /* Brand: maroon. 700 is the primary brand step used for text and fills. */
+  --sv-maroon-50: #fbf2f2;
+  --sv-maroon-100: #f5dcdc;
+  --sv-maroon-200: #ebb8b8;
+  --sv-maroon-300: #dd8e8e;
+  --sv-maroon-400: #c96161;
+  --sv-maroon-500: #b03c3c;
+  --sv-maroon-600: #96292d;
+  --sv-maroon-700: #800000;
+  --sv-maroon-800: #6a0000;
+  --sv-maroon-900: #560000;
+  --sv-maroon-950: #3b0000;
+
+  /* Semantic brand aliases. 10.9:1 on white — comfortably WCAG AA. */
+  --sv-brand: var(--sv-maroon-700);
+  --sv-brand-hover: var(--sv-maroon-800);
+  --sv-brand-active: var(--sv-maroon-900);
+  --sv-brand-subtle: var(--sv-maroon-50);
+  --sv-on-brand: #ffffff;
+
+  /* Spacing scale. Every layout gap is one of these steps. */
+  --sv-space-0: 0;
+  --sv-space-1: 0.25rem;
+  --sv-space-2: 0.5rem;
+  --sv-space-3: 0.75rem;
+  --sv-space-4: 1rem;
+  --sv-space-5: 1.5rem;
+  --sv-space-6: 2rem;
+  --sv-space-7: 3rem;
+
+  /* Focus ring. Keyboard focus must stay visible at every viewport. */
+  --sv-focus-ring-width: 2px;
+  --sv-focus-ring-offset: 2px;
+  --sv-focus-ring-color: var(--sv-brand);
+
+  /* Layout */
+  --sv-content-max-width: 56rem;
+  --sv-radius: 6px;
+}
