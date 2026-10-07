@@ -10,7 +10,8 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     providePrimeNG({
-      // Empty until the key is dropped in; see src/app/primeui-license.ts.
+      // Injected at build time; empty when no key is configured. See
+      // src/app/primeui-license.ts.
       license: primeUiLicenseKey,
       theme: {
         preset: surveyViewerPreset,

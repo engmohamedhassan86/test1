@@ -68,3 +68,29 @@ value.
 | CI         | GitHub Actions repository secret `PRIMEUI_LICENSE_KEY`              |
 | Vercel     | project environment variable, for the Production and Preview scopes |
 | Cloudflare | build environment variable on whatever runs `pnpm run build`        |
+
+## The key in use
+
+The owner supplied a key on PRI-9 on 2026-10-07. Its metadata, so a renewal can be recognised
+without reading the key itself:
+
+| Field  | Value                                  |
+| ------ | -------------------------------------- |
+| id     | `d5cf41a7-92d1-4db6-916c-39e375748d7f` |
+| tier   | `community`                            |
+| type   | `dev` (per-seat, perpetual)            |
+| issued | 2026-10-07                             |
+| expiry | 2027-10-07                             |
+
+Verified against `@primeui/license-manager@1.1.0` with the `releaseDate: '2026-09-29'` that
+`primeng@22.1.2` passes in: `{ valid: true, status: 'active', daysUntilExpiry: 364 }`. The
+signature check is real, so this confirms the key, not just its shape.
+
+The key is registered as the Paperclip company secret `PRIMEUI_LICENSE_KEY` and mirrored into a
+local untracked `.env`. The remaining places listed above — the GitHub Actions repository secret
+and the Vercel and Cloudflare project variables — are owner-held consoles and have to be set
+there; the build reads the same variable name in every case.
+
+Because the expiry (2027-10-07) sits after the `RELEASE_DATE` of the PrimeNG in use
+(`2026-09-29`), this key covers PrimeNG releases up to 2027-10-07. A PrimeNG release published
+after that date reports `expired`, with a 30-day grace period, and needs a refreshed key.
