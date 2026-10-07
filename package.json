@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start": "node scripts/with-primeui-license.mjs serve",
+    "build": "node scripts/with-primeui-license.mjs build",
+    "watch": "node scripts/with-primeui-license.mjs build --watch --configuration development",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",

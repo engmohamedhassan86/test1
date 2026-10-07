@@ -11,8 +11,19 @@ import { defineConfig } from 'vitest/config';
  * Its equivalent thresholds live under the `test` target in `angular.json`; keep the
  * two in step when you change a threshold.
  */
+// The PrimeUI licence key is a credential, so it is injected rather than committed.
+// `scripts/with-primeui-license.mjs` does the same for `ng build` and `ng serve`.
+try {
+  process.loadEnvFile('.env');
+} catch {
+  // No local .env — fall back to the ambient environment.
+}
+
 export default defineConfig({
   plugins: [angular({ tsconfig: 'tsconfig.spec.json' })],
+  define: {
+    __PRIMEUI_LICENSE_KEY__: JSON.stringify(process.env['PRIMEUI_LICENSE_KEY'] ?? ''),
+  },
   test: {
     globals: true,
     environment: 'jsdom',

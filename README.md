@@ -25,6 +25,32 @@ All work follows [Spec Kit](https://github.com/github/spec-kit). The project rul
 | `pnpm run format`        | Write Prettier formatting                        |
 | `pnpm run format:check`  | Check Prettier formatting                        |
 
+## PrimeUI licence key
+
+PrimeNG 22 is commercially licensed. PrimeKidz uses the free **Community License** — see
+[`docs/decisions/0001-primeui-licence-posture.md`](docs/decisions/0001-primeui-licence-posture.md).
+
+Put the key in the `PRIMEUI_LICENSE_KEY` environment variable. Nothing else needs to change:
+
+| Context    | Where to set it                                                     |
+| ---------- | ------------------------------------------------------------------- |
+| Local      | copy [`.env.example`](.env.example) to `.env` — `.env` is untracked |
+| CI         | GitHub Actions repository secret of the same name                   |
+| Vercel     | project environment variable, Production and Preview scopes         |
+| Cloudflare | build environment variable on whatever runs `pnpm run build`        |
+
+Never commit the key. It is injected at build time by
+[`scripts/with-primeui-license.mjs`](scripts/with-primeui-license.mjs) for `pnpm start` and
+`pnpm run build`, and by [`vitest.config.ts`](vitest.config.ts) for the tests.
+
+With no key the build, dev server and tests all still pass, and PrimeNG prints
+`[PrimeUI] PrimeUI license is not configured.` **In a browser it also shows a red "Invalid PrimeUI
+License" banner, so the key is required before release.** The banner lives in a closed shadow root
+and the licence forbids removing it — supply a key rather than trying to hide it.
+
+Because `providePrimeNG` runs client-side, the key is readable in the deployed bundle. That is how
+PrimeTek's offline verification works and is not a leak.
+
 ## Quality gates
 
 CI runs, in order: install → `format:check` → `typecheck` → `test:coverage` → `build`. Coverage
@@ -40,6 +66,8 @@ src/app/theme/             maroon brand preset (design tokens only)
 src/styles.css             global tokens and accessibility styles
 .specify/                  Spec Kit templates, scripts, and the constitution
 specs/NNN-feature-name/    per-feature Spec Kit artifacts
+docs/decisions/            decision records
+scripts/                   build wrappers
 ```
 
 Business logic belongs in `src/app/core/**`, never in templates.
@@ -54,4 +82,5 @@ The app is a static SPA with an index fallback.
 - Cloudflare Workers static assets: [`wrangler.jsonc`](wrangler.jsonc) — committed as a fallback
   target. Nothing deploys it automatically.
 
-Both serve from `dist/survey-viewer/browser`. No secrets are stored in this repository.
+Both serve from `dist/survey-viewer/browser`. No secrets are stored in this repository —
+`PRIMEUI_LICENSE_KEY` is set on each deploy target, as described above.

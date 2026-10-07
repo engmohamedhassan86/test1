@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
+import { primeUiLicenseKey } from './primeui-license';
 import { surveyViewerPreset } from './theme/survey-viewer-preset';
 
 export const appConfig: ApplicationConfig = {
@@ -9,6 +10,8 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     providePrimeNG({
+      // Empty until the key is dropped in; see src/app/primeui-license.ts.
+      license: primeUiLicenseKey,
       theme: {
         preset: surveyViewerPreset,
         options: {

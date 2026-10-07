@@ -15,6 +15,11 @@ concurrency:
 jobs:
   quality-gates:
     runs-on: ubuntu-latest
+    # PrimeNG 22 needs a PrimeUI licence key or it paints an "Invalid PrimeUI
+    # License" banner over the app. Add the key as a repository secret of the same
+    # name; while it is missing the gates still pass and PrimeNG only warns.
+    env:
+      PRIMEUI_LICENSE_KEY: ${{ secrets.PRIMEUI_LICENSE_KEY }}
     steps:
       - uses: actions/checkout@v4
 
