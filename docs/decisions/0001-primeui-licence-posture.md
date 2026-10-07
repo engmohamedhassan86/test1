@@ -86,10 +86,13 @@ Verified against `@primeui/license-manager@1.1.0` with the `releaseDate: '2026-0
 `primeng@22.1.2` passes in: `{ valid: true, status: 'active', daysUntilExpiry: 364 }`. The
 signature check is real, so this confirms the key, not just its shape.
 
-The key is registered as the Paperclip company secret `PRIMEUI_LICENSE_KEY`, mirrored into a local
-untracked `.env`, and set as the GitHub Actions repository secret by the owner on 2026-10-07. The
-Vercel and Cloudflare project variables are still to be set, and only matter once a deploy target
-exists; the build reads the same variable name in every case.
+The key is registered as the Paperclip company secret `PRIMEUI_LICENSE_KEY` and mirrored into a
+local untracked `.env`. The GitHub Actions repository secret of the same name is set on
+`engmohamedhassan86/test1`; CI run 14 on `001-foundation` (commit `75c2c25`) is the first green
+run with it, and it reports `status: active` both before the gates and against the built bundle.
+Run 13 on the same commit, before the secret existed, failed on the licence step — so the gate is
+proven in both directions. The Vercel and Cloudflare project variables are still to be set, and
+only matter once a deploy target exists; the build reads the same variable name in every case.
 
 Because the expiry (2027-10-07) sits after the `RELEASE_DATE` of the PrimeNG in use
 (`2026-09-29`), this key covers PrimeNG releases up to 2027-10-07. A PrimeNG release published
