@@ -1,0 +1,11 @@
+{
+  // Cloudflare Workers static assets config for the survey-viewer SPA.
+  // Docs: https://developers.cloudflare.com/workers/static-assets/
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "survey-viewer",
+  "compatibility_date": "2026-10-07",
+  "assets": {
+    "directory": "dist/survey-viewer/browser",
+    "not_found_handling": "single-page-application",
+  },
+}

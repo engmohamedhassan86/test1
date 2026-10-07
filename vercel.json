@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "angular",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist/survey-viewer/browser",
+  "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }]
+}
