@@ -1,0 +1,7 @@
+# pnpm reads install-script approvals from here.
+# Only these dependencies may run build scripts; everything else is blocked.
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
