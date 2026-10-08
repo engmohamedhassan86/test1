@@ -6,16 +6,18 @@ Artifacts under analysis: `spec.md`, `plan.md`, `tasks.md`, `data-model.md`,
 
 ## Finding counts by severity
 
-| Severity | Open | Closed in this pass  |
+| Severity | Open | Closed               |
 | -------- | ---- | -------------------- |
 | CRITICAL | 0    | 0                    |
 | HIGH     | 0    | 1 (A-01)             |
-| MEDIUM   | 0    | 1 (A-02)             |
-| LOW      | 3    | 0 (A-03, A-04, A-05) |
+| MEDIUM   | 0    | 2 (A-02, A-06)       |
+| LOW      | 0    | 3 (A-03, A-04, A-05) |
 
-**Gate verdict: PASS.** No CRITICAL and no HIGH finding is open. The three LOW findings are
-annotation gaps, not coverage gaps; each is recorded below with the task that already covers the
-behaviour, so none blocks `/speckit-implement`.
+**Gate verdict: PASS.** No CRITICAL and no HIGH finding is open, and as of the follow-up pass
+recorded under "Annotation close-out" below, **no finding of any severity is open**. A-03, A-04 and
+A-05 were carried into S8 as annotation debt by the first two passes; the follow-up pass closed them
+in `tasks.md` instead, and in doing so found one real coverage gap (A-06, FR-005) that the
+behavioural argument for the uncited FRs had got wrong.
 
 ## Findings
 
@@ -43,32 +45,37 @@ six user stories), "154 tasks" (there are 148), and closed with "Recommendation:
 `/speckit-tasks`" — a stage that had already completed two commits earlier. Each claim is now
 replaced with a measured one, and every number below is reproducible by the command shown.
 
-### A-03 — LOW — US4 scenario 2 has no scenario annotation on the task that covers it (OPEN)
+### A-03 — LOW — US4 scenario 2 has no scenario annotation on the task that covers it (CLOSED)
 
 US4.2 ("activating _Customer Feedback_ changes the URL to `/surveys/customer-feedback` and page 1
 renders") is covered substantively: `T080` renders each manifest entry's title as a link to
 `/surveys/<key>`, and `T087` registers that route. Neither task carries the `US4 scenario 2`
 marker, so the mechanical matrix attributes it only to the blanket traceability task `T148`.
-Action: the implementer adds the URL assertion to `T083` and the marker to `T080`. Not a blocker —
-no behaviour is unspecified.
+Resolution: `T080` now carries `US4 scenarios 1 and 2` and states that activating an entry
+navigates to that survey's route, and `T083` now asserts that activating the `Customer Feedback`
+link puts the URL at `/surveys/customer-feedback` and renders page 1 of that survey. Regenerated
+mapping: `US4.2 -> T080, T083, T148`.
 
-### A-04 — LOW — US4 scenario 9 has no scenario annotation on the task that covers it (OPEN)
+### A-04 — LOW — US4 scenario 9 has no scenario annotation on the task that covers it (CLOSED)
 
 US4.9 (manifest unanswered after 10s renders the configuration-error screen) is covered by `T050`
 ("a request that never answers → `timeout` at exactly `fetchMs`") plus `T048`, which maps a failed
 `load` to `catalog-error`, and `SURVEY_TIMEOUTS.fetchMs` is `10_000` via `T046`/`T082`. The
-`US4 scenario 9` marker is absent from all three. Action: same as A-03 — add the marker when the
-tasks are executed. Not a blocker.
+`US4 scenario 9` marker was absent from all three. Resolution: `T050` now carries it on the
+deadline case, and `T083` asserts that a manifest request which never answers leaves `loading` for
+the configuration-error screen once the 10s deadline passes. Regenerated mapping:
+`US4.9 -> T050, T083, T148`.
 
-### A-05 — LOW — four success criteria are not annotated with their `SC-` id (OPEN)
+### A-05 — LOW — four success criteria are not annotated with their `SC-` id (CLOSED)
 
 `SC-003` (each of the six question types blocks Next on an invalid input), `SC-004` (every
 violating file rejected at selection), `SC-006` (confirmation unreachable without an
 acknowledgement) and `SC-008` (375px and 1280px, no horizontal scroll) carry no `SC-` id inside
 `tasks.md`, though each is covered: `SC-003` by `T114` plus the per-type specs `T103`–`T107`,
 `SC-004` by `T026`/`T036`/`T121`, `SC-006` by `T070`/`T074`, `SC-008` by `T146`. The other ten
-criteria are annotated. Action: the implementer adds the id when executing those tasks. The full
-mapping is in `test-map.md`. Not a blocker.
+criteria were already annotated. Resolution: the four ids are now in `tasks.md` — `SC-003` on
+`T114`, `SC-004` on `T026`/`T036`/`T121`, `SC-006` on `T070`/`T074`, `SC-008` on `T146` — so all
+fourteen are annotated and `test-map.md`'s criteria table is derivable rather than asserted.
 
 ## Verified evidence
 
@@ -81,7 +88,7 @@ Each row states what was measured and the command that measures it. Run from
 | 2   | Acceptance scenarios in `spec.md`                                           | 61 across 6 user stories (US1 8, US2 14, US3 11, US4 11, US5 8, US6 9)                                                                                                                                                                                                    |
 | 3   | Scenarios mapped to at least one real task                                  | 61 / 61                                                                                                                                                                                                                                                                   |
 | 4   | Functional requirements in `spec.md`                                        | 77 (`FR-001`–`FR-077`)                                                                                                                                                                                                                                                    |
-| 5   | FRs cited by id in `tasks.md`                                               | 60 of 77                                                                                                                                                                                                                                                                  |
+| 5   | FRs cited by id in `tasks.md`                                               | **77 of 77** after the close-out pass (60 of 77 before it)                                                                                                                                                                                                                |
 | 6   | The 17 FRs not cited by id, checked individually for behavioural coverage   | all 17 covered — see table below                                                                                                                                                                                                                                          |
 | 7   | Task FR references that do not exist in the spec                            | none                                                                                                                                                                                                                                                                      |
 | 8   | `Question` union agrees between `contracts/survey-json.md` §7 and `spec.md` | yes — exactly `radio`, `checkbox`, `textbox`, `textarea`, `rating`, `satisfaction`                                                                                                                                                                                        |
@@ -159,9 +166,9 @@ conflict.
 | ------ | ----------------------------------------------------------------- | ----------------------------------------------------------- |
 | FR-001 | survey is an ordered list of pages of questions                   | T006 (domain model), T023                                   |
 | FR-002 | page and question ids unique; duplicate is a config error         | T023 (rules R03–R52 one-to-one), T043 fixtures              |
-| FR-005 | question renders title, optional description, required indication | T091/T092 (question host and radio), T041                   |
+| FR-005 | question renders title, optional description, required indication | **was not covered — see A-06**; now `T091` + `T111`         |
 | FR-006 | `radio` single-choice, minimum 2 options                          | T006, T023, T092                                            |
-| FR-007 | `checkbox` multi-choice, minimum 2 options                        | T006, T023, T094                                            |
+| FR-007 | `checkbox` multi-choice, minimum 2 options                        | T006, T023, **T093** (the row first said T094 — wrong)      |
 | FR-008 | `textbox` one line, `textarea` multi-line                         | T006, T023, T094                                            |
 | FR-011 | every answer on the page validated before leaving it              | T027 `validatePage`, T068 (Next gate)                       |
 | FR-019 | error rendered with its question, in plain language               | T022 (message table), T092, T103 (`aria-describedby`)       |
@@ -195,8 +202,9 @@ anchored to the same contract, so no requirement is unimplemented.
 - Next stage: **S7 Content** (`PRI-20`, Survey Content Author) and **S8 Implement** (`PRI-21`,
   Angular Engineer). S7's fixture and manifest work (T040–T045) is a dependency of several S8
   tasks, so S7 starts first or in parallel.
-- Carried into S8: A-03 and A-04 are annotation fixes the implementer makes in place while
-  executing T080/T083/T050. `T148` must list every scenario against a named test before S9 closes.
+- Carried into S8: nothing from A-03, A-04 or A-05 — the close-out pass below made those fixes in
+  `tasks.md` rather than deferring them to the implementer. `T148` must still list every scenario
+  against a **named test** before S9 closes; a task id is not a test.
 
 ## QA counter-verification
 
@@ -260,3 +268,86 @@ risks that survive to S9 and that QA will test rather than read:
 Gate **PASS** for the purpose it serves: the artifacts are mutually consistent and `test-map.md` is
 now a usable S9 input — every id in it resolves to a real task. A-01 is confirmed fixed, not merely
 claimed fixed. The three open LOW findings are annotation debt carried into S8 and are accepted.
+
+## Annotation close-out (third pass, Solution Architect)
+
+QA passed the gate at `7492ef6` and accepted A-03, A-04 and A-05 as annotation debt, carrying three
+residual risks into S9. Two of those risks were defects in `tasks.md`, which this role owns, and S8
+had not started — so the debt was cheaper to pay here than to re-derive at S9. This pass closed all
+three in `tasks.md` and re-derived `test-map.md` from it.
+
+QA's risk 2 was the one worth taking seriously: the behavioural argument for the 17 uncited FRs was
+"argued by reading" and therefore not mechanically checkable. Converting that argument into
+annotations tested it, and it was **wrong in two places** — one a bookkeeping slip, one a real gap.
+
+### A-06 — MEDIUM — FR-005's required indication was named by no task (CLOSED)
+
+FR-005 requires each question to render its title, its optional description, **and a visible
+indication of whether an answer is required**. The check-6 table above attributed it to
+`T091`/`T092`, but `T091` only routed on `question.type` and `T092` only rendered the radio group;
+`grep -nE 'FR-005|required indication' tasks.md` matched **nothing**. The question title was covered
+by plan §6.4's labelled-group paragraph and the per-page description by `T097`/`T109` (FR-073), but
+no task named the per-question description or the required indication. An implementer following
+`tasks.md` literally would have shipped a survey in which a respondent cannot tell which questions
+are required — and no test would have failed.
+
+This is the first finding in this feature that was a missing requirement rather than a missing
+label, and it was found only because A-05's annotation work forced each uncited FR to name a task.
+
+Resolution: `T091` now renders the question title, the optional `description` when present with no
+empty element left behind when absent, and the visible required indication — once, for all six
+types, so no type can omit it. `T111` asserts all three, including that an optional question shows
+no required indication. Placing it in the host rather than in six components also keeps the branch
+in one place, per plan §6.2.
+
+Severity rationale: MEDIUM, not HIGH. The requirement is stated in `spec.md` and is reachable from
+`T091`'s file, so the gate's own artifacts still agreed with each other; nothing downstream was
+blocked and no contract was wrong. It would have become a HIGH at S9 as an unimplemented FR.
+
+Also corrected in the check-6 table: FR-007 (`checkbox`) was attributed to `T094`, which is the
+text-question component. The checkbox component is `T093`. A transcription slip, no behaviour
+affected.
+
+### Measured before and after
+
+Commands run from `specs/001-survey-management/`.
+
+| Measure                                                | Before (`7492ef6`) | After                      |
+| ------------------------------------------------------ | ------------------ | -------------------------- |
+| Task ids, unique and contiguous `T001`–`T148`          | 148, 0 gap         | **unchanged** — 148, 0 gap |
+| Scenarios mapped to at least one task                  | 61 / 61            | 61 / 61                    |
+| Scenarios whose **only** mapping is the blanket `T148` | 2 (US4.2, US4.9)   | **0**                      |
+| FRs cited by id in `tasks.md`, of 77 defined           | 60                 | **77**                     |
+| Task FR references that do not exist in `spec.md`      | 0                  | 0                          |
+| Success criteria carrying their `SC-` id in `tasks.md` | 10 / 14            | **14 / 14**                |
+| `test-map.md` rows that changed when regenerated       | —                  | exactly 2 (US4.2, US4.9)   |
+
+```sh
+# task-id invariant held
+comm -3 <(seq -f 'T%03g' 1 148 | sort) <(grep -oE '\bT[0-9]{3}\b' tasks.md | sort -u) | wc -l   # 0
+# FR coverage, both directions
+comm -23 <(grep -oE '\bFR-[0-9]{3}\b' spec.md | sort -u) <(grep -oE '\bFR-[0-9]{3}\b' tasks.md | sort -u)  # empty
+comm -13 <(grep -oE '\bFR-[0-9]{3}\b' spec.md | sort -u) <(grep -oE '\bFR-[0-9]{3}\b' tasks.md | sort -u)  # empty
+# SC coverage
+grep -oE '\bSC-[0-9]{3}\b' tasks.md | sort -u | wc -l   # 14
+```
+
+`test-map.md` was rewritten by the generator in "Regenerating the scenario → task matrix" above, not
+by hand, and the generator reported **exactly two changed rows** — `US4.2` and `US4.9`. That the
+other 59 rows were byte-identical is the evidence that these edits added annotations and changed no
+existing mapping.
+
+### What this does and does not do for QA's residual risks
+
+- **Risk 1 (blanket-only scenarios): closed.** US4.2 and US4.9 now name `T080`/`T083` and
+  `T050`/`T083`. `T148` is no longer the only task promising to assert them.
+- **Risk 2 (the 17 uncited FRs): converted from prose to annotation, and it found A-06.** All 77 FRs
+  are now citable with `grep`. This proves the _task list_ names every FR; it does not prove a test
+  exists. QA should still re-derive coverage from the test names at S9 — that check is what would
+  catch another A-06.
+- **Risk 3 (`SC-` gaps): closed.** All 14 criteria are annotated, so the S9 regeneration will not
+  show four false gaps.
+
+One risk is new and belongs to S9: `T091` is now the single place rendering the required indication
+for all six question types, so a regression there is a regression on every type at once. `T111`'s
+optional-vs-required assertion is the test that must not be dropped.

@@ -15,13 +15,14 @@ the script in `analysis.md` whenever `tasks.md` changes.
 
 ## Counts
 
-| Measure                                                 | Value                                           |
-| ------------------------------------------------------- | ----------------------------------------------- |
-| Acceptance scenarios in `spec.md`                       | 61 across 6 user stories                        |
-| Scenarios mapped to at least one task                   | 61 / 61                                         |
-| Scenarios whose only mapping is the blanket task `T148` | 2 (US4.2, US4.9 — see `analysis.md` A-03, A-04) |
-| Success criteria `SC-001`–`SC-014`                      | 14, all mapped                                  |
-| Tasks in `tasks.md`                                     | 148                                             |
+| Measure                                                 | Value                            |
+| ------------------------------------------------------- | -------------------------------- |
+| Acceptance scenarios in `spec.md`                       | 61 across 6 user stories         |
+| Scenarios mapped to at least one task                   | 61 / 61                          |
+| Scenarios whose only mapping is the blanket task `T148` | **0** (was 2 — A-03, A-04 fixed) |
+| Success criteria `SC-001`–`SC-014`                      | 14, all mapped and all annotated |
+| Functional requirements cited by id in `tasks.md`       | 77 / 77, 0 orphan                |
+| Tasks in `tasks.md`                                     | 148 (`T001`–`T148`)              |
 
 Scenario numbering is the position of the scenario in its user story's **Acceptance Scenarios**
 list in `spec.md`.
@@ -81,14 +82,14 @@ list in `spec.md`.
 | Scenario | Task(s) in tasks.md that assert it |
 | -------- | ---------------------------------- |
 | US4.1    | T040, T080, T148                   |
-| US4.2    | T148                               |
+| US4.2    | T080, T083, T148                   |
 | US4.3    | T080, T083, T148                   |
 | US4.4    | T080, T083, T148                   |
 | US4.5    | T084, T148                         |
 | US4.6    | T084, T148                         |
 | US4.7    | T048, T051, T148                   |
 | US4.8    | T048, T051, T148                   |
-| US4.9    | T148                               |
+| US4.9    | T050, T083, T148                   |
 | US4.10   | T080, T083, T148                   |
 | US4.11   | T050, T083, T148                   |
 
@@ -138,8 +139,9 @@ list in `spec.md`.
 | SC-013 (a second survey needs no change under `src/app`)                             | T042, T147                                      |
 | SC-014 (never left in `loading` beyond 10s, including a response that never arrives) | T050, T051, T148                                |
 
-SC-003, SC-004, SC-006 and SC-008 are covered by the tasks above but are not annotated with their
-`SC-` id inside `tasks.md`; the implementer adds the id when executing them (`analysis.md` A-05).
+All fourteen criteria now carry their `SC-` id inside `tasks.md`, so this table is derivable rather
+than asserted. `SC-003` is annotated on `T114`, `SC-004` on `T026`/`T036`/`T121`, `SC-006` on
+`T070`/`T074` and `SC-008` on `T146` (`analysis.md` A-05, closed).
 
 ## Contract tests → task
 
