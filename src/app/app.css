@@ -1,38 +1,10 @@
 /* Colours and spacing come from the token layer in src/styles/tokens.css. */
 
-.sv-title {
-  margin: 0 0 var(--sv-space-1);
-  color: var(--sv-brand);
-  font-size: 1.5rem;
-  line-height: 1.25;
-}
-
-/* Scale the heading up once there is room for it. */
-@media (min-width: 768px) {
-  .sv-title {
-    font-size: 2rem;
-  }
-}
-
-.sv-tagline {
-  margin: 0 0 var(--sv-space-5);
-  color: var(--p-text-muted-color);
-}
-
-.sv-checks {
-  margin: 0;
-  padding-left: var(--sv-space-5);
-  display: grid;
-  gap: var(--sv-space-2);
-}
-
-.sv-probe-copy {
-  margin: 0 0 var(--sv-space-4);
-}
-
-/* Reserve the live-region line so revealing the status does not shift layout. */
-.sv-probe-status {
-  margin: var(--sv-space-4) 0 0;
-  min-height: var(--sv-space-5);
-  color: var(--sv-brand);
+/*
+ * The main landmark is the skip link's target and is programmatically focusable, so
+ * `tabindex="-1"` is deliberate. It must not show a focus ring of its own — the ring
+ * belongs to the controls inside it.
+ */
+#main:focus {
+  outline: none;
 }

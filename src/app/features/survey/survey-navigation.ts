@@ -1,19 +1,44 @@
-import { Component, input, signal, inject } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
+/**
+ * The page position and the two navigation controls — T098.
+ *
+ * It reads four computed signals from `core` and decides none of them:
+ *
+ * - `positionLabel` — FR-032's "Page N of M", as text, not as a progress bar alone;
+ * - `isFirstPage` — FR-031's disabled Previous;
+ * - `primaryAction` — FR-033, so Submit appears **only** on the last page;
+ * - `inputsLocked` — FR-039's busy Submit while a submission is in flight.
+ *
+ * Deciding any of those here would put "which page is last" in a component, which is
+ * exactly what Principle II forbids.
+ */
+
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+
+import { SurveySessionService } from '../../core/services/survey-session.service';
 
 @Component({
   selector: 'app-survey-navigation',
-  standalone: true,
   templateUrl: './survey-navigation.html',
-  styleUrls: ['./survey-navigation.css'],
+  styleUrl: './survey-navigation.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SurveyNavigationComponent {
-  private readonly sessionService = inject(SurveySessionService);
+  private readonly session = inject(SurveySessionService);
 
-  protected readonly state = this.sessionService.state;
+  protected readonly positionLabel = this.session.positionLabel;
+  protected readonly isFirstPage = this.session.isFirstPage;
+  protected readonly primaryAction = this.session.primaryAction;
+  protected readonly inputsLocked = this.session.inputsLocked;
 
-  constructor() {
-    // Add any initialization logic if needed
+  protected previous(): void {
+    this.session.previous();
+  }
+
+  protected next(): void {
+    this.session.next();
+  }
+
+  protected submit(): void {
+    void this.session.submit();
   }
 }

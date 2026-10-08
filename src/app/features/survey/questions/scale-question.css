@@ -1,0 +1,90 @@
+/*
+ * Shared by the rating and satisfaction controls — the two types answered with an integer
+ * on a scale. Colours and spacing come from src/styles/tokens.css.
+ */
+
+.sv-scale {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sv-space-2);
+}
+
+/*
+ * 44 × 44px at 375px (FR-058, WCAG 2.5.8). The star and the single-digit number are both
+ * labels smaller than the target, which is exactly the case the rule is about.
+ */
+.sv-scale__point {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--sv-space-2);
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--sv-radius);
+  background: var(--p-content-background);
+  color: var(--p-text-color);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sv-scale__point:hover:not(:disabled) {
+  border-color: var(--sv-brand);
+  background: var(--sv-brand-subtle);
+}
+
+/*
+ * The selected point is marked by a filled background AND a thicker border, so the
+ * selection is not carried by colour alone (WCAG 1.4.1).
+ */
+.sv-scale__point[aria-checked='true'] {
+  border-color: var(--sv-brand);
+  border-width: 2px;
+  background: var(--sv-brand);
+  color: var(--sv-on-brand);
+}
+
+.sv-scale__point:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.sv-scale__star {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.sv-scale__number {
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+/* The satisfaction labels are long, so they stack at 375px and sit in a row from 768px. */
+.sv-scale--labelled {
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .sv-scale--labelled {
+    flex-direction: row;
+  }
+
+  .sv-scale--labelled .sv-scale__point {
+    flex: 1 1 0;
+  }
+}
+
+.sv-scale__clear {
+  margin-top: var(--sv-space-3);
+  min-height: 44px;
+  padding: 0 var(--sv-space-4);
+  border: 1px solid var(--sv-brand);
+  border-radius: var(--sv-radius);
+  background: transparent;
+  color: var(--sv-brand);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sv-scale__clear:disabled {
+  border-color: var(--p-content-border-color);
+  color: var(--p-text-muted-color);
+  cursor: not-allowed;
+}

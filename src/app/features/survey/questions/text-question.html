@@ -1,23 +1,31 @@
-<div class="text-question">
-  <div class="input-wrapper">
-    <label [attr.for]="questionId()" class="visually-hidden">
-      {{ question().title }}
-    </label>
-    <input
-      [id]="questionId()"
-      [type]="question().type === 'textbox' ? 'text' : 'textarea'"
-      [value]="currentValue()"
-      [maxlength]="maxLength()"
-      (input)="onValueChange($event.target.value)"
-      [class.invalid]="!!questionErrors() && questionErrors()!.has(questionId())"
-    />
-  </div>
+@let q = question();
 
-  @if (question().description) {
-    <div class="description">{{ question().description }}</div>
-  }
-
-  @if (question().required) {
-    <div class="required-indicator">Required</div>
-  }
-</div>
+@if (q.type === 'textarea') {
+  <textarea
+    class="sv-text sv-text--multiline"
+    rows="4"
+    [id]="'sv-q-' + q.id + '-control'"
+    [attr.aria-labelledby]="titleId()"
+    [attr.aria-required]="q.required"
+    [attr.aria-invalid]="invalid()"
+    [attr.aria-describedby]="describedBy()"
+    [attr.maxlength]="maxLength()"
+    [value]="value()"
+    [disabled]="locked()"
+    (input)="write($event)"
+  ></textarea>
+} @else {
+  <input
+    type="text"
+    class="sv-text"
+    [id]="'sv-q-' + q.id + '-control'"
+    [attr.aria-labelledby]="titleId()"
+    [attr.aria-required]="q.required"
+    [attr.aria-invalid]="invalid()"
+    [attr.aria-describedby]="describedBy()"
+    [attr.maxlength]="maxLength()"
+    [value]="value()"
+    [disabled]="locked()"
+    (input)="write($event)"
+  />
+}

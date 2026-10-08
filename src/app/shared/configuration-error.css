@@ -1,0 +1,57 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-config-error {
+  padding: var(--sv-space-5);
+  border: 1px solid var(--sv-maroon-300);
+  border-left: var(--sv-space-1) solid var(--sv-brand);
+  border-radius: var(--sv-radius);
+  background: var(--sv-brand-subtle);
+}
+
+.sv-config-error h1 {
+  margin: 0 0 var(--sv-space-3);
+  color: var(--sv-maroon-800);
+  font-size: 1.375rem;
+  line-height: 1.3;
+}
+
+@media (min-width: 768px) {
+  .sv-config-error h1 {
+    font-size: 1.75rem;
+  }
+}
+
+.sv-config-error__subject {
+  margin: 0 0 var(--sv-space-4);
+}
+
+.sv-config-error__issues {
+  margin: 0 0 var(--sv-space-4);
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--sv-space-3);
+}
+
+.sv-config-error__issues li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sv-space-2);
+  align-items: baseline;
+}
+
+/* The failure code is for an author, so it reads as a label rather than as prose. */
+.sv-config-error__code {
+  flex: 0 0 auto;
+  padding: 0 var(--sv-space-2);
+  border-radius: var(--sv-radius);
+  background: var(--sv-brand);
+  color: var(--sv-on-brand);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.sv-config-error__path {
+  flex: 0 0 auto;
+  word-break: break-all;
+}

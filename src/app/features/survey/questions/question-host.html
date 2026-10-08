@@ -1,29 +1,65 @@
-<div class="question-host">
-  @if (question().type === 'radio') {
-    <app-radio-question [question]="question()" [questionId]="questionId()" [answer]="answer()" />
+@let q = question();
+@let view_ = view();
+@let currentError = error();
+
+<!-- The id is FR-030's focus target: `survey-page.ts` focuses the first focusable control
+     inside this wrapper, which works for all six types without any of them needing a
+     `tabindex` on a group that is not itself focusable. -->
+<div
+  class="sv-question"
+  [id]="wrapperId()"
+  [class.sv-question--invalid]="currentError !== undefined"
+>
+  <p class="sv-question__title">
+    <span [id]="titleId()">{{ q.title }}</span>
+    @if (q.required) {
+      <!-- FR-005's visible indication. `aria-required` on the control carries it
+           programmatically, so this is hidden to keep the accessible name exactly the
+           title (FR-053). -->
+      <span class="sv-question__required" aria-hidden="true">Required</span>
+    } @else {
+      <span class="sv-question__optional" aria-hidden="true">Optional</span>
+    }
+  </p>
+
+  <!-- FR-073: nothing is rendered in place of an absent description. -->
+  @if (q.description !== null) {
+    <p class="sv-question__description" [id]="descriptionId()">{{ q.description }}</p>
   }
 
-  @if (question().type === 'checkbox') {
+  @if (view_.kind === 'radio') {
+    <app-radio-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
+  } @else if (view_.kind === 'checkbox') {
     <app-checkbox-question
-      [question]="question()"
-      [questionId]="questionId()"
-      [answer]="answer()"
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
     />
-  }
-
-  @if (question().type === 'textbox' || question().type === 'textarea') {
-    <app-text-question [question]="question()" [questionId]="questionId()" [answer]="answer()" />
-  }
-
-  @if (question().type === 'rating') {
-    <app-rating-question [question]="question()" [questionId]="questionId()" [answer]="answer()" />
-  }
-
-  @if (question().type === 'satisfaction') {
+  } @else if (view_.kind === 'text') {
+    <app-text-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
+  } @else if (view_.kind === 'rating') {
+    <app-rating-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
+  } @else {
     <app-satisfaction-question
-      [question]="question()"
-      [questionId]="questionId()"
-      [answer]="answer()"
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
     />
+  }
+
+  @if (currentError !== undefined) {
+    <p class="sv-question__error" [id]="errorId()">{{ currentError.message }}</p>
   }
 </div>

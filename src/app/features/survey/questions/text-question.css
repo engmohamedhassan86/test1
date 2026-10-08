@@ -1,49 +1,29 @@
-.text-question {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
 
-.input-wrapper {
+.sv-text {
   width: 100%;
+  min-height: 44px;
+  padding: var(--sv-space-2) var(--sv-space-3);
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--sv-radius);
+  background: var(--p-content-background);
+  color: var(--p-text-color);
+  font: inherit;
+  /* `box-sizing` keeps the 100% width inside the padding at 375px. */
+  box-sizing: border-box;
 }
 
-.input-wrapper input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--surface-border);
-  border-radius: 6px;
-  font-size: 1rem;
-  background-color: var(--surface-ground);
+.sv-text--multiline {
+  resize: vertical;
+  line-height: 1.5;
 }
 
-.input-wrapper input:focus {
-  outline: none;
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px var(--primary-50);
+.sv-text:disabled {
+  background: var(--p-content-border-color);
+  cursor: not-allowed;
 }
 
-.input-wrapper input.invalid {
-  border-color: var(--danger-500);
-}
-
-.input-wrapper input.invalid:focus {
-  box-shadow: 0 0 0 3px var(--danger-50);
-}
-
-.description {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-top: 0.25rem;
-}
-
-.required-indicator {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  background-color: var(--warning-100);
-  color: var(--warning-800);
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-top: 0.25rem;
+.sv-text[aria-invalid='true'] {
+  border-color: var(--sv-brand);
+  border-width: 2px;
 }

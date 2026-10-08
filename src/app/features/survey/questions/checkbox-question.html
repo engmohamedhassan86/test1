@@ -1,0 +1,24 @@
+@let q = question();
+
+<p class="sv-choices__hint">{{ hint() }}</p>
+
+<fieldset
+  class="sv-choices"
+  [attr.aria-labelledby]="titleId()"
+  [attr.aria-required]="q.required"
+  [attr.aria-invalid]="invalid()"
+  [attr.aria-describedby]="describedBy()"
+>
+  @for (view of options(); track view.option.id) {
+    <label class="sv-choice">
+      <input
+        type="checkbox"
+        [value]="view.option.value"
+        [checked]="view.selected()"
+        [disabled]="locked() || !view.selectable()"
+        (change)="toggle(view.option.value, $event)"
+      />
+      <span class="sv-choice__label">{{ view.option.label }}</span>
+    </label>
+  }
+</fieldset>

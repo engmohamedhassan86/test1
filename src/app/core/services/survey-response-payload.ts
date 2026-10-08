@@ -24,11 +24,7 @@
  */
 
 import { assertNever } from '../models/assert-never';
-import type {
-  AnswerMap,
-  AttachmentMap,
-  SessionAttachment,
-} from '../models/answer.model';
+import type { AnswerMap, AttachmentMap, SessionAttachment } from '../models/answer.model';
 import type { AttachmentId, ClientSubmissionId } from '../models/branded';
 import type {
   AnswerEntry,

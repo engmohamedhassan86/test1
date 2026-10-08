@@ -1,20 +1,38 @@
-import { Component, input, signal } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
+/**
+ * The confirmation screen — T099, US1 scenario 4.
+ *
+ * It renders the `submitted` state **alone**: the survey title, the statement that the
+ * response was received, the `submissionId` as the respondent's reference, and a link to
+ * `/`. **No question control** appears, which is SC-005's half of this screen.
+ *
+ * It is reachable only through a receipt that satisfied `isSubmissionReceipt`, because
+ * `submitted` has exactly one incoming edge, from `submitting`, and that edge is only taken
+ * on an `acknowledged` result (SC-006).
+ */
+
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+import type { SubmissionReceipt } from '../../core/models/survey-response.model';
+import { DocumentTitleService } from '../../core/services/document-title.service';
 
 @Component({
   selector: 'app-submission-confirmation',
-  standalone: true,
+  imports: [RouterLink],
   templateUrl: './submission-confirmation.html',
-  styleUrls: ['./submission-confirmation.css'],
+  styleUrl: './submission-confirmation.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SubmissionConfirmationComponent {
-  readonly surveyTitle = input<string>();
-  readonly submissionId = input<string>();
+  private readonly documentTitle = inject(DocumentTitleService);
 
-  protected readonly displayTitle = signal('');
+  readonly surveyTitle = input.required<string>();
+  readonly receipt = input.required<SubmissionReceipt>();
 
   constructor() {
-    this.displayTitle.set(this.surveyTitle() || '');
+    // FR-077: `<title> — Response received`, which is a different title from the survey's.
+    effect(() => {
+      this.documentTitle.apply({ screen: 'confirmation', surveyTitle: this.surveyTitle() });
+    });
   }
 }
