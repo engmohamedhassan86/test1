@@ -6,5 +6,10 @@
     "types": []
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/test-setup.ts"]
+  /* `src/app/core/services/testing/**` holds the failing submission gateway. Excluding it
+     here makes an import of it from application code a build failure, which is how FR-068's
+     "reachable only from a test, never from a running build" is enforced rather than merely
+     intended. It is NOT a gate relaxation: `tsconfig.spec.json` still compiles the directory
+     and coverage still counts it, because the tests import it (plan §5.4). */
+  "exclude": ["src/**/*.spec.ts", "src/test-setup.ts", "src/app/core/services/testing/**"]
 }

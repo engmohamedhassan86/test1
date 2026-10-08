@@ -4,11 +4,18 @@ import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import { primeUiLicenseKey } from './primeui-license';
 import { surveyViewerPreset } from './theme/survey-viewer-preset';
+import {
+  SurveyResponseGateway,
+  SimulatedSurveyResponseGateway,
+  provideSurveyTimeouts,
+} from './core/services';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
+    { provide: SurveyResponseGateway, useClass: SimulatedSurveyResponseGateway },
+    provideSurveyTimeouts(),
     providePrimeNG({
       // Empty until the key is dropped in; see src/app/primeui-license.ts.
       license: primeUiLicenseKey,

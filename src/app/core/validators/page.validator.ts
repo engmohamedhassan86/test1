@@ -13,7 +13,7 @@ import type { AttachmentMap, AnswerMap } from '../models/answer.model';
 import type { SurveyPage } from '../models/survey.model';
 import type { PageValidationReport, ValidationError } from '../models/validation.model';
 import { validateAnswer } from './answer.validator';
-import { attachmentErrorsFor } from './attachment-recheck';
+import { attachmentErrorsFor } from './attachment.validator';
 
 /**
  * Validates every question on one page, in page order.

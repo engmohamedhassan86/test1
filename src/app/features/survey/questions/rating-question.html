@@ -1,0 +1,22 @@
+<div class="rating-question">
+  <div class="rating-container">
+    @for (star of stars(); track $index) {
+      <button
+        class="star-btn"
+        [class.selected]="currentValue() >= $index + 1"
+        [attr.aria-label]="getLabel($index + 1)"
+        (click)="onValueChange($index + 1)"
+      >
+        ★
+      </button>
+    }
+  </div>
+
+  @if (question().description) {
+    <div class="description">{{ question().description }}</div>
+  }
+
+  @if (question().required) {
+    <div class="required-indicator">Required</div>
+  }
+</div>

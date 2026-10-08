@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
-import { JsonFetchService } from './json-fetch.service';
+import { SurveyLoaderService } from './survey-loader.service';
 import { provideSurveyTimeouts } from './survey-timeouts';
 
-describe('JsonFetchService', () => {
-  let service: JsonFetchService;
+describe('SurveyLoaderService', () => {
+  let service: SurveyLoaderService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [JsonFetchService, provideSurveyTimeouts()],
+      providers: [SurveyLoaderService, provideSurveyTimeouts()],
     });
 
-    service = TestBed.inject(JsonFetchService);
+    service = TestBed.inject(SurveyLoaderService);
   });
 
   it('should create', () => {

@@ -1,0 +1,101 @@
+<div class="survey-page">
+  @if (surveyPage.state() === 'loading') {
+    <div class="loading-state">
+      <p class="loading-text">Loading survey...</p>
+    </div>
+  }
+
+  @if (surveyPage.state() === 'not-found') {
+    <app-not-found-page [key]="surveyPage.surveyKey()"></app-not-found-page>
+  }
+
+  @if (surveyPage.state() === 'configuration-error') {
+    <app-configuration-error
+      [scope]="surveyPage.configurationError()!.scope"
+      [subject]="surveyPage.configurationError()!.subject"
+      [issues]="surveyPage.configurationError()!.issues"
+    ></app-configuration-error>
+  }
+
+  @if (surveyPage.state() === 'ready' || surveyPage.state() === 'editing') {
+    <div class="survey-content">
+      <h1 class="survey-title">{{ surveyPage.survey()?.title }}</h1>
+      @if (surveyPage.survey()?.description) {
+        <p class="survey-description">{{ surveyPage.survey()?.description }}</p>
+      }
+
+      <div class="page-container">
+        @for (page of surveyPage.survey()?.pages; track page.id) {
+          <div class="page">
+            <h2 class="page-title">{{ page.title }}</h2>
+            @if (page.description) {
+              <p class="page-description">{{ page.description }}</p>
+            }
+
+            @if (surveyPage.currentPageIndex() === $index) {
+              <div class="question-container">
+                @for (question of page.questions; track question.id) {
+                  <div class="question">
+                    <h3 class="question-title">{{ question.title }}</h3>
+                    @if (question.description) {
+                      <p class="question-description">{{ question.description }}</p>
+                    }
+                    @if (question.required) {
+                      <span class="required-indicator">Required</span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            @if (surveyPage.hasValidationErrors()) {
+              <div class="validation-summary-container">
+                <app-validation-summary></app-validation-summary>
+              </div>
+            }
+
+            <div class="navigation">
+              <button
+                class="btn btn-prev"
+                [disabled]="surveyPage.isFirstPage()"
+                (click)="surveyPage.previous()"
+              >
+                Previous
+              </button>
+
+              <button
+                class="btn btn-next"
+                [disabled]="
+                  surveyPage.currentPageIndex() !== surveyPage.pageCount() - 1 ||
+                  surveyPage.inputsLocked()
+                "
+                (click)="surveyPage.next()"
+              >
+                {{ surveyPage.primaryAction() }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (surveyPage.state() === 'submitting') {
+    <div class="submitting-overlay">
+      <div class="submitting-content">
+        <p class="submitting-text">Submitting your response...</p>
+        <div class="spinner"></div>
+      </div>
+    </div>
+    <div class="survey-content" style="opacity: 0.5; pointer-events: none">
+      <!-- Same content as ready state but non-interactive -->
+    </div>
+  }
+
+  @if (surveyPage.state() === 'submitted') {
+    <app-submission-confirmation
+      [surveyTitle]="surveyPage.survey()?.title || ''"
+      [submissionId]="surveyPage.survey()?.submissionId || ''"
+    ></app-submission-confirmation>
+  }
+</div>

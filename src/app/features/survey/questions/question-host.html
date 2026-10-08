@@ -1,0 +1,29 @@
+<div class="question-host">
+  @if (question().type === 'radio') {
+    <app-radio-question [question]="question()" [questionId]="questionId()" [answer]="answer()" />
+  }
+
+  @if (question().type === 'checkbox') {
+    <app-checkbox-question
+      [question]="question()"
+      [questionId]="questionId()"
+      [answer]="answer()"
+    />
+  }
+
+  @if (question().type === 'textbox' || question().type === 'textarea') {
+    <app-text-question [question]="question()" [questionId]="questionId()" [answer]="answer()" />
+  }
+
+  @if (question().type === 'rating') {
+    <app-rating-question [question]="question()" [questionId]="questionId()" [answer]="answer()" />
+  }
+
+  @if (question().type === 'satisfaction') {
+    <app-satisfaction-question
+      [question]="question()"
+      [questionId]="questionId()"
+      [answer]="answer()"
+    />
+  }
+</div>

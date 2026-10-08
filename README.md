@@ -21,10 +21,12 @@ All work follows [Spec Kit](https://github.com/github/spec-kit). The project rul
 | `pnpm run build`         | Production build to `dist/survey-viewer/browser` |
 | `pnpm test`              | Unit tests (Vitest)                              |
 | `pnpm run test:coverage` | Unit tests with coverage, fails under 80%        |
-|     `pnpm run typecheck:app` | `tsc --noEmit` for app config                          |
+| `pnpm run typecheck:app` | `tsc --noEmit` for app config                    |
+
     `pnpm run typecheck:spec`| `tsc --noEmit` for spec config                        |
-| `pnpm run format`        | Write Prettier formatting                        |
-| `pnpm run format:check`  | Check Prettier formatting                        |
+
+| `pnpm run format` | Write Prettier formatting |
+| `pnpm run format:check` | Check Prettier formatting |
 
 ## PrimeUI licence key
 

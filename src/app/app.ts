@@ -1,44 +1,39 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
+import { Component } from '@angular/core';
 
-/** One row in the foundation readiness list rendered on the placeholder page. */
-export interface FoundationCheck {
-  readonly id: string;
-  readonly label: string;
-}
+import { LiveRegionComponent } from './shared/live-region';
 
-/**
- * Placeholder shell for the Dynamic Survey Viewer.
- *
- * This component exists to prove the foundation is wired: the PrimeNG maroon
- * preset, the design-token layer, PrimeFlex responsive layout, and keyboard
- * accessibility. Survey rendering arrives in a later feature and will live
- * behind the router outlet.
- */
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ButtonModule, CardModule],
-  templateUrl: './app.html',
-  styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [LiveRegionComponent],
+  template: `
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <main id="main-content">
+      <app-live-region></app-live-region>
+      <router-outlet></router-outlet>
+    </main>
+  `,
+  styles: [
+    `
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: #000;
+        color: white;
+        padding: 8px;
+        text-decoration: none;
+        z-index: 1000;
+      }
+
+      .skip-link:focus {
+        top: 6px;
+      }
+
+      main {
+        padding: 20px;
+      }
+    `,
+  ],
 })
-export class App {
-  protected readonly title = signal('Dynamic Survey Viewer');
-
-  protected readonly checks = signal<readonly FoundationCheck[]>([
-    { id: 'standalone', label: 'Angular 22 standalone components with signals and OnPush' },
-    { id: 'theme', label: 'PrimeNG maroon preset from @primeuix/themes' },
-    { id: 'tokens', label: 'Design tokens in src/styles/tokens.css' },
-    { id: 'layout', label: 'PrimeFlex responsive layout from 375px to 1280px' },
-    { id: 'core', label: 'Business-logic boundary at src/app/core' },
-  ]);
-
-  /** Set once the user activates the theme probe button. */
-  protected readonly themeConfirmed = signal(false);
-
-  protected confirmTheme(): void {
-    this.themeConfirmed.set(true);
-  }
-}
+export class AppComponent {}

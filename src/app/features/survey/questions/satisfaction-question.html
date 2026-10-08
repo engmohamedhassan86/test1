@@ -1,0 +1,22 @@
+<div class="satisfaction-question">
+  <div class="satisfaction-container">
+    @for (point of satisfactionPoints(); track $index) {
+      <button
+        class="point-btn"
+        [class.selected]="currentValue() === point.value"
+        [attr.aria-label]="point.label"
+        (click)="onValueChange(point.value)"
+      >
+        {{ point.label }}
+      </button>
+    }
+  </div>
+
+  @if (question().description) {
+    <div class="description">{{ question().description }}</div>
+  }
+
+  @if (question().required) {
+    <div class="required-indicator">Required</div>
+  }
+</div>

@@ -135,18 +135,32 @@ export function validateAttachmentSelection(
  * The count half is the caller's, because it is a property of the set rather than of one
  * file; `validateSurvey` applies it.
  */
-export function recheckAttachment(
-  attachment: SessionAttachment,
-  policy: AttachmentPolicy,
-): AttachmentRejectionReason | null {
-  if (!isAcceptedType(attachment, policy.acceptedTypes)) {
-    return 'unaccepted-type';
-  }
-  if (attachment.sizeBytes > policy.maxSizeBytes) {
-    return 'too-large';
-  }
-  if (attachment.sizeBytes === 0) {
-    return 'empty';
+export function attachmentErrorsFor(
+  question: Pick<SurveyOption, 'id'>,
+  existing: readonly SessionAttachment[],
+): AttachmentRejection | null {
+  for (const attachment of existing) {
+    if (!isAcceptedType(attachment, question.acceptedTypes)) {
+      return {
+        questionId: question.id,
+        name: attachment.name,
+        reason: 'unaccepted-type' as const,
+      };
+    }
+    if (attachment.sizeBytes > question.maxSizeBytes) {
+      return {
+        questionId: question.id,
+        name: attachment.name,
+        reason: 'too-large' as const,
+      };
+    }
+    if (attachment.sizeBytes === 0) {
+      return {
+        questionId: question.id,
+        name: attachment.name,
+        reason: 'empty' as const,
+      };
+    }
   }
   return null;
 }

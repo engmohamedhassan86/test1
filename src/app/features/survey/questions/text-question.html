@@ -1,0 +1,23 @@
+<div class="text-question">
+  <div class="input-wrapper">
+    <label [attr.for]="questionId()" class="visually-hidden">
+      {{ question().title }}
+    </label>
+    <input
+      [id]="questionId()"
+      [type]="question().type === 'textbox' ? 'text' : 'textarea'"
+      [value]="currentValue()"
+      [maxlength]="maxLength()"
+      (input)="onValueChange($event.target.value)"
+      [class.invalid]="!!questionErrors() && questionErrors()!.has(questionId())"
+    />
+  </div>
+
+  @if (question().description) {
+    <div class="description">{{ question().description }}</div>
+  }
+
+  @if (question().required) {
+    <div class="required-indicator">Required</div>
+  }
+</div>
