@@ -5,18 +5,25 @@ this file is a gate run; the gate runs happen when S8 lands. This file exists so
 analyze gate carried forward are **named, measured and mechanically checkable** instead of being
 re-argued by reading at S9.
 
-First written against commit `7492ef6`. **Re-measured and revised at `391bc45`**, after the Solution
-Architect closed the three S6 LOW findings in `tasks.md` rather than letting them ride into S8. That
-pass changed the status of obligations 1 and 3 below (both now closed by measurement) and narrowed
-obligation 2. It also added obligation 4, and my re-measurement of it added obligation 5.
+First written against commit `7492ef6`. Re-measured at `391bc45`, after the Solution Architect closed
+the three S6 LOW findings in `tasks.md` rather than letting them ride into S8 — that pass closed
+obligations 1 and 3, narrowed obligation 2, and added obligation 4, and my re-measurement of it added
+obligation 5. **Re-measured and revised again at `73637ec`**, after the Architect closed obligation 5
+as A-07 (MEDIUM): what I had filed as a thin-assertion gap for S8 turned out to be a cross-artifact
+contradiction in `tasks.md`, which is S6's business, so it was fixed here rather than carried.
 
-| Obligation                                         | Status at `391bc45`                                  |
+| Obligation                                         | Status at `73637ec`                                  |
 | -------------------------------------------------- | ---------------------------------------------------- |
 | 1 — US4.2 / US4.9 must name a real test            | **CLOSED** by annotation; the assertion check stands |
 | 2 — the FRs carrying no task id                    | **NARROWED, not closed** — 0 uncited, tests unproven |
 | 3 — the four missing `SC-` markers                 | **CLOSED** — 14 / 14 annotated                       |
-| 4 — `T091` is a single point of failure for FR-005 | **OPEN** — new, created by the A-06 fix              |
-| 5 — FR-053's label asserted for only 2 of 6 types  | **OPEN** — new, found by QA at `391bc45`             |
+| 4 — `T091` is a single point of failure for FR-005 | **OPEN** — new at `391bc45`, created by the A-06 fix |
+| 5 — FR-053's grouped-vs-single label form          | **DISCHARGED** in `tasks.md` (A-07); verify at S9    |
+
+Obligation 2 is the one to carry hardest. A-06 and A-07 were both produced by taking a single FR down
+to the type level instead of trusting a blanket statement, and both were invisible to every id-level
+grep in this file. An FR id present in `tasks.md` proves the task list names the FR; it does not prove
+a test asserts it. At S9 I re-derive FR coverage from the real test names, not from these tables.
 
 ## How each number below was measured
 
@@ -222,50 +229,99 @@ the assertion that makes the single point of failure safe.
 
 ---
 
-## Obligation 5 — FR-053's "label naming its question" is asserted for 2 of 6 types
+## Obligation 5 — FR-053's "label naming its question" — DISCHARGED in `tasks.md` at `73637ec`, retained as an S9 verification step
 
-**New at `391bc45`, found by QA while re-measuring obligation 2. This is an A-06-class gap in test
-assertions, not in the requirement — it does not reopen the S6 gate (0 CRITICAL / 0 HIGH stands).**
+**Raised by QA at `391bc45` while re-measuring obligation 2. The Solution Architect took it further than
+I had: I filed it as a thin-assertion gap for S8 to fix in test files, and on re-reading the Phase-US1
+preamble they found it was a cross-artifact contradiction in `tasks.md` — this gate's business, not
+S8's. Filed as A-07, MEDIUM, closed at `73637ec`. The S6 verdict is unchanged: 0 CRITICAL / 0 HIGH.**
 
-FR-053 (`spec.md:735`) requires every control to have a programmatic label naming its question. It is
-stated once, in the Phase-US1 preamble (`tasks.md:295-298`), binding every question component — so the
-requirement **is** named and an implementer following `tasks.md` will implement it. A-06 was worse than
-this: there the requirement was named nowhere.
+### Where I was imprecise
 
-What is thin is the assertion side. Measured at `391bc45`:
+I wrote that the preamble "binds every question component — so the requirement **is** named and an
+implementer following `tasks.md` will implement it." The first half was right and the second half was
+wrong. The preamble bound all six types to the **grouped** form, which is correct for only four of
+them. Verified at `73637ec`:
 
-| Type                   | Per-type spec | Does its text assert a label **naming the question**?                |
-| ---------------------- | ------------- | -------------------------------------------------------------------- |
-| `radio`                | `T103`        | yes — "`role="radiogroup"` labelled by the question title"           |
-| `checkbox`             | `T104`        | yes — "the labelled group" (`T093`: `fieldset` + `legend` naming it) |
-| `textbox` / `textarea` | `T105`        | **no** — asserts `maxlength`, dual rendering, error wiring only      |
-| `rating`               | `T106`        | **no** — "labelled numeric row" is about presentation, not the name  |
-| `satisfaction`         | `T107`        | **no** — "five visible labels" are the option labels, not the group  |
+| Artifact                    | What it says about FR-053                                                                                                                |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `spec.md:735-736`           | every control has a programmatic label; **grouped** controls (radio, checkbox, rating, satisfaction) are exposed as a labelled **group** |
+| `plan.md:588` §6.4          | labelled-group row scoped to `radio/checkbox/rating/satisfaction-question` — excludes `text-question`                                    |
+| `tasks.md` preamble, before | "**every** question component … renders a labelled group (`role="radiogroup"` or `fieldset` + `legend`)"                                 |
 
-The fallback is `T129`'s `axe-core` sweep, and it is a partial fallback for two reasons worth writing
-down rather than discovering at S9:
+So an implementer following the old task text literally would have wrapped a text input in a `fieldset`
 
-1. **axe detects a missing accessible name, not a wrong one.** A group labelled "Question" instead of
-   its own question title satisfies axe and violates FR-053.
-2. **axe is specified against "the survey viewer screen" (singular).** The viewer renders one page at a
-   time, and the fixture spreads its 8 questions over 4 pages (all six types are present —
-   `customer-feedback.json` has 2 `radio`, 1 `checkbox`, 1 `textbox`, 2 `textarea`, 1 `rating`,
-   1 `satisfaction`). A sweep that renders page 1 only never label-checks the types on pages 2–4.
+- `legend`, or given it `role="radiogroup"` — invalid ARIA. The task list would have **introduced** an
+  a11y defect, and the correct single-control obligation for `textbox`/`textarea` appeared in no task.
+  That is a worse failure mode than the missing assertion I had filed, and it was fixable at S6.
 
-**S9 pass conditions.**
+### Verified fixed at `73637ec`
 
-1. `a11y.axe.spec.ts` sweeps the viewer across **all four pages** of the fixture, so every one of the
-   six types is covered by at least one axe run. One page only is a FAIL of this criterion, reported
-   with which types went unchecked.
-2. For `textbox`/`textarea`, `rating` and `satisfaction`, either the per-type spec asserts the group's
-   accessible name equals the question title, or the gate report states that those three rest on axe
-   name-presence alone and names the residual risk. Silence is not acceptable.
-3. The 375px/1280px smoke gate (`T146`) stays the owner of visible focus and target size — jsdom proves
+```
+FR-053 citations in tasks.md    5  (preamble, T105, T106, T107, T129)
+spec.md / plan.md / contracts   untouched by 73637ec  (analysis.md + tasks.md only)
+```
+
+The preamble is now split into the two forms, naming which types take which and which task asserts
+each, plus an explicit "must not be wrapped in a `radiogroup`" for text. All six types now carry a
+per-type assertion on the accessible **name's text**, not merely its presence:
+
+| Type                   | Form           | Asserted in | Assertion present at `73637ec` |
+| ---------------------- | -------------- | ----------- | ------------------------------ |
+| `radio`                | grouped        | `T103`      | yes (was yes)                  |
+| `checkbox`             | grouped        | `T104`      | yes (was yes)                  |
+| `textbox` / `textarea` | single control | `T105`      | **yes (was no)**               |
+| `rating`               | grouped        | `T106`      | **yes (was no)**               |
+| `satisfaction`         | grouped        | `T107`      | **yes (was no)**               |
+
+`T129` now records **three** limits rather than two, the third being that axe detects a _missing_
+accessible name and never a _wrong_ one — so the sweep is explicitly not evidence for FR-053.
+
+### The axe scope fix, re-measured from the fixture
+
+I measured `public/surveys/customer-feedback.json` rather than re-reading the claim:
+
+```
+page1 ["textbox","radio"]
+page2 ["satisfaction","checkbox","rating"]
+page3 ["textarea"]
+page4 ["textarea","radio"]
+totals {"textbox":1,"radio":2,"satisfaction":1,"checkbox":1,"rating":1,"textarea":2}
+types absent from page 1: checkbox, rating, satisfaction, textarea
+```
+
+The page composition matches A-07 exactly. One correction to A-07's wording in the direction of a
+_wider_ gap, not a narrower one: `satisfaction`, `checkbox` and `rating` are page-2 only, but
+**`textarea` is also absent from page 1** (pages 3 and 4). A page-1 sweep would therefore have missed
+**4 of the 6 types**, not 3. The "all four pages, one page at a time" fix in `T129` covers all four
+either way, so the fix is right as written; the number in the rationale was conservative.
+
+### S9 pass conditions — now verification, not gap-closing
+
+1. `a11y.axe.spec.ts` sweeps the viewer across **all four pages** of the fixture. One page only is a
+   FAIL, reported with which types went unchecked — and the honest count of what page 1 alone misses
+   is four types, not three.
+2. Every one of `T103`–`T107` asserts the accessible **name's text** equals the question's title, and
+   `T105` additionally asserts the text control is **not** wrapped in a `radiogroup`. A per-type spec
+   that asserts only name _presence_ is a FAIL of this criterion.
+3. `T105` must not assert the grouped form for `textbox`/`textarea`. If S8 ships a `fieldset`/`legend`
+   or `role="radiogroup"` around a text input, that is a defect against FR-053 and `plan.md:588`, and
+   I file it rather than accept it as harmless extra markup.
+4. The 375px/1280px smoke gate (`T146`) stays the owner of visible focus and target size — jsdom proves
    neither, as `T129` itself records.
 
-**Severity if unresolved at S9: this is a test-coverage gap, not an unimplemented FR.** I am recording
-it here rather than filing it against `tasks.md` because the requirement is already binding in the
-phase preamble and the fix belongs in the test files S8 writes.
+**Status: the task-list gap is closed; this stays on the S9 list as a verification step, per the
+Architect's request, not as a gap an implementer must notice unaided.**
+
+### One LOW observation, not filed as a finding
+
+`plan.md` §6.4 is a per-component accessibility table that does carry an "every question component" row
+(for FR-054), but it has **no** FR-053 row for `text-question` — the single-control label form appears
+nowhere in the plan. `grep -n 'text-question' plan.md` returns one hit, a file-tree comment at line 203.
+The obligation is covered by `spec.md:735`'s first clause and now by `tasks.md` `T105`, so there is no
+coverage gap and no contradiction — §6.4 does not claim to be exhaustive. I am recording it as an
+observation for the Architect rather than reopening a passed gate for a documentation completeness nit,
+because `tasks.md` is what the implementer follows and it is now correct.
 
 ---
 
