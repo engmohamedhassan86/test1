@@ -10,14 +10,16 @@ Artifacts under analysis: `spec.md`, `plan.md`, `tasks.md`, `data-model.md`,
 | -------- | ---- | -------------------- |
 | CRITICAL | 0    | 0                    |
 | HIGH     | 0    | 1 (A-01)             |
-| MEDIUM   | 0    | 2 (A-02, A-06)       |
+| MEDIUM   | 0    | 3 (A-02, A-06, A-07) |
 | LOW      | 0    | 3 (A-03, A-04, A-05) |
 
-**Gate verdict: PASS.** No CRITICAL and no HIGH finding is open, and as of the follow-up pass
-recorded under "Annotation close-out" below, **no finding of any severity is open**. A-03, A-04 and
-A-05 were carried into S8 as annotation debt by the first two passes; the follow-up pass closed them
-in `tasks.md` instead, and in doing so found one real coverage gap (A-06, FR-005) that the
-behavioural argument for the uncited FRs had got wrong.
+**Gate verdict: PASS.** No CRITICAL and no HIGH finding is open, and as of the third pass recorded
+under "FR-053 pass" below, **no finding of any severity is open**. A-03, A-04 and A-05 were carried
+into S8 as annotation debt by the first two passes; the follow-up pass closed them in `tasks.md`
+instead, and in doing so found one real coverage gap (A-06, FR-005) that the behavioural argument
+for the uncited FRs had got wrong. A third pass, prompted by QA's FR-053 observation, found A-07:
+`tasks.md` stated FR-053 in a form that **contradicted both `spec.md` and `plan.md`** for two of the
+six question types.
 
 ## Findings
 
@@ -351,3 +353,77 @@ existing mapping.
 One risk is new and belongs to S9: `T091` is now the single place rendering the required indication
 for all six question types, so a regression there is a regression on every type at once. `T111`'s
 optional-vs-required assertion is the test that must not be dropped.
+
+## FR-053 pass (third pass — prompted by QA's S9 exit criterion)
+
+QA reported, against their own `s9-exit-criteria.md` rather than against my `tasks.md`, that FR-053's
+"programmatic label naming its question" was asserted for 2 of the 6 question types — `T103` (radio)
+and `T104` (checkbox) — with `T105` (text), `T106` (rating) and `T107` (satisfaction) silent, and the
+`T129` axe sweep a doubly-partial fallback. They were explicit that this did **not** reopen the gate,
+because the Phase-US1 preamble binds every question component and so an implementer would build it.
+
+I checked the preamble rather than taking that reasoning. It does bind every component — but it binds
+them to the **wrong obligation**, and that makes the item mine, not a test-file matter for S8.
+
+### A-07 — MEDIUM — `tasks.md` stated FR-053's grouped form for all six types, contradicting spec and plan (CLOSED)
+
+The three artifacts did not agree:
+
+| Artifact                      | What it said about FR-053                                                                                                                |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `spec.md` FR-053              | Every control has a programmatic label; **grouped** controls (radio, checkbox, rating, satisfaction) are exposed as a labelled **group** |
+| `plan.md` §6.4                | Labelled-group row scoped to `radio/checkbox/rating/satisfaction-question` — correctly **excludes** `text-question`                      |
+| `tasks.md` Phase-US1 preamble | "**every** question component in this phase renders a labelled group naming the question (`role="radiogroup"` or `fieldset` + `legend`)" |
+
+`spec.md` and `plan.md` agree and are right: `textbox`/`textarea` are single controls, not grouped
+ones, and take a plain programmatic label. `tasks.md` over-generalised the grouped form to all six.
+An implementer following `tasks.md` literally would wrap a text input in a `fieldset` + `legend`, or
+worse give it `role="radiogroup"` — invalid ARIA, and an a11y defect introduced _by following the
+task list_. The preamble also left the single-control form unstated, so the correct obligation for
+two of six types appeared in no task at all.
+
+Graded MEDIUM, not HIGH, on the same basis as A-06: the preamble cites "plan §6.4" by name, so the
+authoritative and correct text is one hop away, and nothing downstream is blocked or unimplementable.
+It is recorded as a real cross-artifact contradiction rather than an annotation gap, because that is
+what it was — the class of defect this gate exists to catch, in the artifact I own.
+
+**Resolution.** Three edits to `tasks.md`:
+
+1. The Phase-US1 preamble now splits FR-053 into its two forms, names which types take which, and
+   states that a text control **must not** be wrapped in a `radiogroup`. It also names the asserting
+   task for each form, so the obligation and its test are stated together.
+2. `T105`, `T106` and `T107` now carry the assertion explicitly — and, per the axe limit below,
+   assert the accessible **name's text**, not merely its presence. All six types are now asserted:
+   `T103`, `T104`, `T106`, `T107` grouped; `T105` single-control, for both `textbox` and `textarea`.
+3. `T129`'s sweep scope is corrected. QA was right on both counts. "Survey viewer" is now **all four
+   pages of `customer-feedback.json`, swept one page at a time**, measured against the fixture:
+
+   ```
+   page1 ["textbox","radio"]
+   page2 ["satisfaction","checkbox","rating"]
+   page3 ["textarea"]
+   page4 ["textarea","radio"]
+   ```
+
+   `satisfaction`, `checkbox` and `rating` appear **only on page 2**, so the page-1-only reading of
+   that task would have swept none of them. `T129`'s header comment now records **three** limits
+   rather than two, the third being that axe detects a _missing_ accessible name and never a _wrong_
+   one — so the sweep is explicitly not evidence for FR-053, and `T103`–`T107` own it.
+
+### Effect on QA's S9 exit criteria
+
+QA's FR-053 item was filed as an S9 criterion on the assumption that the fix belonged in S8's test
+files. It is now discharged in `tasks.md` instead, at the same place A-06 was fixed: the task list
+names the obligation and names the assertion. QA should keep the item on the S9 list as a
+verification step — re-derive FR-053 coverage from the real test names, exactly as obligation 2
+requires — but it is no longer a gap an implementer has to notice unaided.
+
+Obligation 2 stays **open and correctly narrowed**. A-07 is the second consecutive finding produced
+by taking an FR down to the type level rather than trusting a blanket statement, which is the
+argument for keeping that check at S9 rather than retiring it here.
+
+**Gate verdict unchanged: PASS, 0 CRITICAL / 0 HIGH.** `spec.md`, `plan.md` and both contracts are
+untouched by this pass — the `Question` union, the `ResponseState` union and the attachment limits
+carry forward unchanged. The edits are confined to `tasks.md` (preamble, `T105`, `T106`, `T107`,
+`T129`) and this file. No task id was added or removed: the count stays `T001`–`T148`, so
+`test-map.md` needs no regeneration — it maps scenarios to task ids, and no mapping changed.
