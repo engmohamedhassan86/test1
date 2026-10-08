@@ -3,7 +3,7 @@
 **Feature Branch**: `001-survey-management`
 **Created**: 2026-10-07
 **Last updated**: 2026-10-08
-**Status**: Clarified — no open clarifications, ready for `/speckit-checklist`
+**Status**: Checklisted — no open clarifications, ready for `/speckit-plan`
 **Constitution**: `.specify/memory/constitution.md` v1.0.0
 
 **Input**: Dynamic survey app that renders multi-page surveys from JSON (survey -> pages -> questions)
@@ -48,8 +48,9 @@ remains anywhere in this spec or under `contracts/`.
 
 - **Q2: Must a retry after submission-error carry an idempotency key, or is the receiver responsible for
   de-duplicating?** → **A**: The client carries the key. The payload gains a required `clientSubmissionId`,
-  generated once when Submit is first activated in a session and re-sent unchanged by every retry of that
-  session; `submittedAt` is refreshed per attempt. The real adapter also sends the same value as an
+  generated once when the session's first submission starts and re-sent unchanged by every retry of that
+  session; `submittedAt` is refreshed per attempt. (The checklist stage tightened "when Submit is first
+  activated" to "when the first submission starts", because a Submit that validation blocks starts none.) The real adapter also sends the same value as an
   `Idempotency-Key` request header. We cannot assume an unwritten service de-duplicates, and after a timeout
   the client cannot know whether the first attempt landed, so making de-duplication possible is the
   fail-closed choice (Principle III).
@@ -118,6 +119,36 @@ remains anywhere in this spec or under `contracts/`.
   _Decided by: Product Owner. Encoded in: FR-036, FR-068, FR-045 `submission-error`,
   `contracts/response-submission.md` §5._
 
+### Checklist review — Session 2026-10-08
+
+`/speckit-checklist` (PRI-16) produced the five checklists under `checklists/` and ran them against this
+spec and both contracts. Fourteen items failed. Each failure and its resolution is below; all fourteen are
+fixed in this revision, so no checklist item is left failing against the text. The checkboxes in
+`checklists/` stay unticked — they are the reviewer's to tick, not the author's.
+
+| #   | Checklist item            | Defect found                                                                                                                                                                                                                                   | Resolution in this revision                                                                                                                                                      |
+| --- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `validation.md` CHK004    | User Story 2 scenario 2 asserted the required-error text "Enter your name", but no requirement and no field in `contracts/survey-json.md` could produce per-question error wording. The scenario was unimplementable.                          | FR-069 defines the whole error catalogue, derived from type and configured numbers only. The scenario now expects the derived text "Enter an answer". No config field was added. |
+| 2   | `validation.md` CHK007    | `maxSelections` was enforced only at the control (FR-017). Nothing made exceeding it a validation error at Next or Submit, unlike `maxLength` (FR-015), so a selection set arriving by any other route would not fail closed.                  | FR-070 enforces `maxSelections` at Next and Submit as well, with its own message. New Edge Case entry.                                                                           |
+| 3   | `validation.md` CHK005    | The error catalogue was three examples in FR-019, with no text at all for `maxLength`, `maxSelections` or an out-of-range `rating` on a non-default scale, while scenarios asserted exact strings.                                             | FR-069 lists every message and how its numbers are substituted.                                                                                                                  |
+| 4   | `completeness.md` CHK009  | FR-025 required a "human-readable size" and scenarios asserted "5 MB", with no rule turning 5242880 into that string.                                                                                                                          | FR-071 fixes the unit, base and rounding rule.                                                                                                                                   |
+| 5   | `completeness.md` CHK010  | User Story 3 scenario 2 asserted "(allowed: PNG, JPEG, PDF)" with no rule mapping `acceptedTypes` entries to those labels, and the contract also permits extension entries such as `.pdf`.                                                     | FR-072 defines the label mapping and join order.                                                                                                                                 |
+| 6   | `completeness.md` CHK006  | `contracts/survey-json.md` permits `description` on a survey and on a page, but no requirement rendered either. Two contract fields had no observable behaviour.                                                                               | FR-073 renders both.                                                                                                                                                             |
+| 7   | `fail-closed.md` CHK003   | FR-045 claimed the viewer occupies "exactly one of eight states", yet the catalog (FR-047), the empty catalog (FR-048) and the not-found screen (FR-050, FR-051) are none of the eight. The state machine contradicted the route requirements. | FR-045 is scoped to the survey viewer at `/surveys/:surveyKey`; FR-074 gives the catalog its own four states and places the not-found screen outside both.                       |
+| 8   | `fail-closed.md` CHK007   | A 15s deadline existed for submission (FR-038) but none for fetching the manifest or a config. A hanging fetch left the viewer in `loading` forever, which is failing open.                                                                    | FR-075 sets a 10s fetch deadline resolving to configuration-error.                                                                                                               |
+| 9   | `fail-closed.md` CHK008   | The constitution deploys this as a SPA with an index fallback, so a missing config file answers 200 with HTML rather than 404. Nothing said a non-JSON body is a configuration error irrespective of status.                                   | FR-076 makes any non-JSON or non-conforming body a configuration error whatever the HTTP status.                                                                                 |
+| 10  | `accessibility.md` CHK011 | WCAG 2.1 AA includes the Level A criteria. Neither 2.4.2 Page Titled nor 3.1.1 Language of Page had a requirement, so SC-009 could not hold.                                                                                                   | FR-077 specifies a document title per screen and a declared page language.                                                                                                       |
+| 11  | `responsive.md` CHK004    | FR-058 named 375px as the floor, but WCAG 1.4.10 Reflow — an AA criterion the constitution binds us to — is measured at 320 CSS px.                                                                                                            | FR-058 now sets the reflow floor at 320px and keeps 375px and 1280px as the two gate widths.                                                                                     |
+| 12  | `responsive.md` CHK007    | FR-058 constrained target height only, leaving the `rating` stars free to be 44px tall and 12px wide.                                                                                                                                          | FR-058 now requires 44px in both dimensions for any control whose label is an icon or a single character.                                                                        |
+| 13  | `accessibility.md` CHK013 | WCAG 1.3.5 Identify Input Purpose is AA and applies to the fixture's name question, but the JSON contract has no way to declare an input purpose, so the obligation was silently unmet.                                                        | Recorded as a documented limitation with a removal plan under Assumptions, as Governance requires, rather than left implied.                                                     |
+| 14  | `completeness.md` CHK014  | Principle I's central claim — a new survey costs one config file plus one manifest entry — had no measurable success criterion. FR-004 asserted it; nothing measured it.                                                                       | SC-013 measures it as a diff over `src/app/**`.                                                                                                                                  |
+
+Two further items were resolved as wording, not defects: User Story 1 scenario 3 said "within 15s" while
+the default adapter answers within 1s (FR-036), which made the scenario pass for a 14s regression — it now
+asserts 2s, and FR-038's 15s deadline is unchanged. And FR-061 said the `clientSubmissionId` is generated
+"when Submit is first activated", which is ambiguous for a Submit that validation blocks; it is now
+generated when the first submission actually starts.
+
 ## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Complete a survey end to end (Priority: P1)
@@ -140,7 +171,8 @@ input, submit, and assert the confirmation screen appears with a submission refe
    and focus moves to the page-2 heading.
 3. **Given** the respondent is on page 4 (the last page) with every required answer valid, **When** they
    activate Submit, **Then** the Submit control reports a busy state, all inputs become non-editable,
-   and within 15s the confirmation screen replaces the survey.
+   and within 2s the confirmation screen replaces the survey (the default simulated adapter answers
+   within 1s per FR-036; the 15s deadline in FR-038 bounds a real adapter, not this scenario).
 4. **Given** the submission boundary returned `{ submissionId: "sub_0001" }`, **When** the confirmation
    screen renders, **Then** it shows the survey title "Customer Feedback", the text that the response
    was received, the reference `sub_0001`, and a link to `/`, and it shows no question controls.
@@ -149,6 +181,14 @@ input, submit, and assert the confirmation screen appears with a submission refe
 6. **Given** optional `rating` `q_delivery` (`scale: { min: 1, max: 5 }`) renders as 5 stars and the
    respondent has selected 4, **When** they activate its Clear action, **Then** no star is selected,
    `q_delivery` is unanswered, Next is still accepted, and the submission payload omits `q_delivery`.
+7. **Given** the `customer-feedback` config carries `description: "Four short pages about your recent
+order."` and page 1 carries `description: "Who we are hearing from."`, **When** page 1 renders,
+   **Then** both strings are visible text, the survey description above the page title and the page
+   description below it, and **When** the respondent advances to page 2, which has no `description`,
+   **Then** no empty description element is present for that page.
+8. **Given** the respondent opens `/surveys/customer-feedback`, **When** the survey page renders, **Then**
+   the document title is "Customer Feedback — Survey" and the document declares `lang="en"`; and **When**
+   they open `/` instead, **Then** the document title is "Surveys".
 
 ---
 
@@ -170,8 +210,9 @@ does not change, the specific error text appears, and focus sits on the first of
    error is announced through an assertive live region, and focus moves to the first radio of
    `q_segment`.
 2. **Given** required textbox `q_name` has `minLength: 2` and the value is `"  "` (two spaces), **When**
-   the respondent activates Next, **Then** the page does not change and the error reads "Enter your
-   name" (the trimmed value is empty, so the required rule reports, not the length rule).
+   the respondent activates Next, **Then** the page does not change and the error reads "Enter an answer"
+   (the trimmed value is empty, so the required rule reports, not the length rule), and the error is
+   associated with `q_name`, whose title supplies the context rather than the message text (FR-069).
 3. **Given** required textbox `q_name` has `minLength: 2` and the value is `"D"`, **When** the respondent
    activates Next, **Then** the page does not change and the error reads "Use at least 2 characters".
 4. **Given** checkbox `q_liked` has `minSelections: 1, maxSelections: 3` and exactly 0 options are
@@ -201,6 +242,14 @@ does not change, the specific error text appears, and focus sits on the first of
     respondent activates Previous and then Next again, **Then** page 2 renders with its typed answers
     unchanged and with no error text and no `aria-invalid` on any control, and **When** they then activate
     Next with `q_satisfaction` still empty, **Then** the error text returns.
+13. **Given** `q_liked` has `maxSelections: 3` and its answer has been set to 4 option values by a route
+    that bypasses the control — a restored session, a programmatic change, or a config whose
+    `maxSelections` was lowered — **When** the respondent activates Next or Submit, **Then** the page does
+    not change, no submission starts, and the error reads "Select no more than 3 options". Exceeding
+    `maxSelections` is a validation error, not only a control constraint (FR-070).
+14. **Given** required textbox `q_name` has `maxLength: 80` and a value of 81 trimmed characters,
+    **When** the respondent activates Next, **Then** the error reads "Use at most 80 characters"
+    (FR-069), confirming the rule is checked and not only refused at the control.
 
 ---
 
@@ -282,6 +331,16 @@ request an absent key and assert the not-found screen.
    loaded, and the not-found screen does **not** render — an unresolvable key is never reported as unknown.
 8. **Given** a visitor has already loaded `/` in this visit, **When** they open two surveys in turn,
    **Then** the manifest is fetched once for the visit and reused, and a page reload fetches it again.
+9. **Given** the manifest request has not answered after 10s, **When** the deadline passes, **Then** the
+   catalog leaves `loading` for the configuration-error screen stating that the survey catalog could not
+   be loaded, and it never stays in `loading` indefinitely (FR-075).
+10. **Given** the manifest request is still in flight, **When** `/` renders, **Then** the catalog is in
+    `loading` with a busy indication announced politely, and no survey list, no "no surveys available"
+    text and no error text are present.
+11. **Given** a deployment whose index fallback answers a request for `survey-manifest.json` with HTTP 200
+    and an HTML body, **When** a visitor opens `/`, **Then** the configuration-error screen renders,
+    because a body that is not the contracted JSON is a configuration error whatever the status code
+    (FR-076).
 
 ---
 
@@ -313,6 +372,13 @@ offending path.
    opened, **Then** validation fails naming the question and the unsatisfiable rule.
 6. **Given** any configuration-error screen, **When** it renders, **Then** it offers a link to `/` and
    the respondent can reach the catalog without reloading.
+7. **Given** a manifest entry whose `config` path is answered by the deployment's index fallback with HTTP
+   200 and an HTML body, **When** that survey is opened, **Then** the configuration-error screen renders
+   with the F17 reason and no question control, rather than the viewer treating a 200 as a usable config
+   (FR-076).
+8. **Given** a config request that has not answered after 10s, **When** the deadline passes, **Then** the
+   viewer leaves `loading` for the configuration-error screen, and no question control has rendered at any
+   point (FR-075, FR-042).
 
 ---
 
@@ -398,6 +464,16 @@ Each case below is a decision, not an open question.
 - **Text longer than `maxLength` pasted in**: the input accepts no more than `maxLength` characters, and
   the rule is also checked at Next and at Submit, so a value arriving by any other route still fails
   closed.
+- **More selections held than `maxSelections` allows**: the control cannot produce this, but validation
+  still rejects it at Next and at Submit, for the same reason `maxLength` is checked twice. Treating a
+  control constraint as the only enforcement would fail open (FR-070).
+- **A manifest or config fetch that never answers**: abandoned after 10s and treated as a configuration
+  error. Waiting in `loading` forever is failing open, so the deadline is part of failing closed (FR-075).
+- **A config or manifest answered with HTTP 200 and a non-JSON body**: a configuration error. The
+  deployment's SPA index fallback answers a missing `.json` file with the index page rather than a 404, so
+  the status code is not evidence that a config exists (FR-076).
+- **A survey or page with no `description`**: the field is optional; nothing is rendered in its place and
+  no empty element remains (FR-073).
 
 ## Requirements _(mandatory)_
 
@@ -456,9 +532,46 @@ Each case below is a decision, not an open question.
   validation error, and the control MUST offer no out-of-range value.
 - **FR-019**: Each validation error MUST be rendered with the question it belongs to, in plain language
   that names the rule and its number — "Use at least 2 characters", "Select at least 1 option", "Choose
-  a value between 1 and 5".
+  a value between 1 and 5". The complete catalogue and its substitution rules are FR-069; no message
+  outside that catalogue MUST be shown for a validation failure.
 - **FR-020**: Changing an answer MUST clear that question's error immediately, without re-running
   navigation.
+- **FR-069**: Validation error text MUST be derived from the question's type and its configured numbers
+  alone. A survey config MUST NOT be able to supply error wording, so that every message is predictable
+  from the contract and no config can leave a rule unexplained. The catalogue is exactly:
+
+  | Rule broken                          | Message                              | Substitution                     |
+  | ------------------------------------ | ------------------------------------ | -------------------------------- |
+  | Required `radio` unanswered          | `Choose one option`                  | —                                |
+  | Required `checkbox` unanswered       | `Select at least N option(s)`        | `N` = effective minimum (FR-016) |
+  | Required `textbox`/`textarea` empty  | `Enter an answer`                    | —                                |
+  | Required `rating`/`satisfaction`     | `Choose a value between MIN and MAX` | the question's inclusive range   |
+  | `minLength` on a non-empty answer    | `Use at least N characters`          | `N` = `minLength`                |
+  | `maxLength` exceeded                 | `Use at most N characters`           | `N` = `maxLength`                |
+  | Below `minSelections`                | `Select at least N option(s)`        | `N` = effective minimum          |
+  | Above `maxSelections`                | `Select no more than N options`      | `N` = `maxSelections`            |
+  | `rating`/`satisfaction` out of range | `Choose a value between MIN and MAX` | the question's inclusive range   |
+  | Attachment invalid at submit         | `FILENAME: REASON`                   | the FR-023 reason for that file  |
+
+  `option(s)` MUST be singular when `N` is 1 and plural otherwise. The question each message belongs to is
+  conveyed by its association with that question (FR-054), never by naming the question inside the
+  message, so one wording serves every survey.
+
+- **FR-070**: Exceeding `maxSelections` MUST be a validation error at Next and at Submit, not only a
+  constraint at the control. FR-017 prevents the respondent from reaching that state; FR-070 is what makes
+  an answer arriving by any other route fail closed, exactly as FR-015 does for `maxLength`.
+- **FR-071**: A file size MUST be shown to the respondent in binary units with at most one decimal place:
+  below 1024 bytes as `N bytes`, below 1048576 bytes as kilobytes, otherwise as megabytes, with a trailing
+  `.0` omitted. So 5242880 renders `5 MB`, 1048576 renders `1 MB`, 240000 renders `234.4 KB`, and 800
+  renders `800 bytes`. The same rule MUST produce the size named in a size-rejection message.
+- **FR-072**: An accepted-type list MUST be shown to the respondent as display labels, not as raw contract
+  values: a MIME type as its uppercased subtype (`image/png` → `PNG`, `application/pdf` → `PDF`), an
+  extension entry as its uppercased extension without the dot (`.pdf` → `PDF`), joined with `, ` in the
+  order the config lists them, with duplicate labels collapsed. So
+  `["image/png", "image/jpeg", "application/pdf"]` renders `PNG, JPEG, PDF`.
+- **FR-073**: A survey's optional `description` MUST render as visible text above the current page title,
+  and a page's optional `description` MUST render as visible text below its page title. When either is
+  absent, nothing MUST be rendered in its place.
 
 #### Attachments
 
@@ -517,8 +630,10 @@ Each case below is a decision, not an open question.
 - **FR-038**: A submission MUST be abandoned as failed after 15s without acknowledgement.
 - **FR-039**: While a submission is in flight, further Submit activations MUST be ignored, and no answer
   or attachment MUST be editable.
-- **FR-061**: Every submission MUST carry a `clientSubmissionId` generated once when Submit is first
-  activated in a session. Every retry within that session MUST re-send the same value with a refreshed
+- **FR-061**: Every submission MUST carry a `clientSubmissionId` generated once when the session's first
+  submission starts — that is, on the first entry to `submitting`, not on a Submit that validation blocks,
+  so a respondent who is bounced by FR-034 and then succeeds still produces exactly one value. Every retry
+  within that session MUST re-send the same value with a refreshed
   `submittedAt`, and the real adapter MUST also send that value as an `Idempotency-Key` request header, so
   that a receiver can recognise a retry of a submission that may already have landed. Opening a survey
   afresh MUST produce a new value.
@@ -544,12 +659,23 @@ Each case below is a decision, not an open question.
 - **FR-043**: The configuration-error screen MUST offer a link to the catalog at `/`.
 - **FR-044**: A manifest that cannot be fetched or does not satisfy its contract MUST render the
   configuration-error screen at `/` and MUST NOT render a partial survey list.
+- **FR-075**: A manifest or survey-config request that has not answered within 10s MUST be abandoned and
+  MUST render the configuration-error screen. Neither the catalog nor the viewer MUST remain in `loading`
+  without a deadline, because an indefinite wait is failing open: the respondent is shown neither the
+  survey nor the reason they cannot have it.
+- **FR-076**: A manifest or config response MUST be accepted only on the strength of its body. A body that
+  is not parseable JSON, or that is parseable but does not satisfy its contract, MUST render the
+  configuration-error screen whatever the HTTP status, including HTTP 200. The deployment serves a SPA with
+  an index fallback, so a request for a missing `.json` file is answered with HTTP 200 and an HTML
+  document; a 200 is therefore not evidence that the configuration exists.
 
 #### Response states
 
-- **FR-045**: The viewer MUST occupy exactly one of eight states — `loading`, `ready`, `editing`,
-  `validation-error`, `submitting`, `submitted`, `submission-error`, `configuration-error` — and what the
-  respondent sees in each MUST be:
+- **FR-045**: The **survey viewer** at `/surveys/:surveyKey` MUST occupy exactly one of eight states —
+  `loading`, `ready`, `editing`, `validation-error`, `submitting`, `submitted`, `submission-error`,
+  `configuration-error`. These eight describe the viewer only. The catalog at `/` has its own states
+  (FR-074), and the not-found screen (FR-050, FR-051) belongs to neither machine: it is what renders when
+  no survey viewer is entered at all. What the respondent sees in each of the eight MUST be:
   - `loading`: a busy indication and the text that the survey is loading, announced politely. No
     question, no navigation control, no error.
   - `ready`: survey title, current page title, "Page N of M", every question of that page with empty or
@@ -571,6 +697,16 @@ Each case below is a decision, not an open question.
   `validation-error -> editing`, `submitting -> submitted | submission-error`,
   `submission-error -> editing | submitting` MUST be possible. In particular nothing MUST leave
   `submitted`, and nothing MUST reach `submitted` except from `submitting`.
+- **FR-074**: The catalog at `/` MUST occupy exactly one of four states — `loading`, `ready`, `empty`,
+  `configuration-error` — and what the visitor sees in each MUST be:
+  - `loading`: a busy indication announced politely, with no survey list, no empty-catalog text and no
+    error text.
+  - `ready`: the list required by FR-047, and no error text.
+  - `empty`: the plain statement required by FR-048, and no error text.
+  - `configuration-error`: the error screen alone, per FR-044.
+
+  Only the transitions `loading -> ready | empty | configuration-error` MUST be possible; the catalog MUST
+  NOT return to `loading` without a fresh visit (FR-067).
 
 #### Routes and catalog
 
@@ -606,10 +742,22 @@ Each case below is a decision, not an open question.
   against its background at every step, and no keyboard trap.
 - **FR-057**: Text and meaningful non-text contrast MUST meet WCAG 2.1 AA (4.5:1 text, 3:1 UI), and no
   state MUST be conveyed by colour alone — an invalid field carries text as well as colour.
-- **FR-058**: At viewport widths of 375px and 1280px every flow MUST work with no horizontal scrolling,
-  no clipped or truncated control label, and interactive targets at least 44px high at 375px.
+- **FR-058**: At viewport widths of 375px and 1280px — the two widths the smoke-test gate uses — every
+  flow MUST work with no horizontal scrolling and no clipped or truncated control label. Content MUST
+  reflow without horizontal scrolling down to a viewport width of 320px, because WCAG 2.1 AA criterion
+  1.4.10 Reflow is measured at 320 CSS pixels and the constitution binds this feature to AA; 375px is the
+  narrowest width we gate on, not the narrowest width that must work. At 375px an interactive target MUST
+  be at least 44px high, and at least 44px wide as well whenever its visible label is an icon or a single
+  character — a `rating` star or a bare checkbox is otherwise free to satisfy the height rule while
+  remaining too narrow to hit.
 - **FR-059**: Brand colour MUST reach the UI only through design tokens; no screen in this feature MUST
   hard-code a colour value.
+- **FR-077**: Every screen MUST carry a document title that names it, so a respondent with several tabs
+  open can tell them apart (WCAG 2.1 criterion 2.4.2, Level A, which AA conformance includes): `Surveys`
+  for the catalog, `<survey title> — Survey` for a survey viewer in any of its editing states,
+  `<survey title> — Response received` for `submitted`, `Survey not available` for a configuration error
+  and `Survey not found` for the not-found screen. The document MUST also declare its language as
+  `en` (criterion 3.1.1), since the content is English only.
 
 ### Key Entities
 
@@ -650,9 +798,15 @@ Each case below is a decision, not an open question.
 - **SC-007**: After an induced submission failure, 100% of previously entered answers and attachment
   entries are still present and editable.
 - **SC-008**: Every flow passes at 375px and 1280px with no horizontal scrolling and no truncated
-  control label.
-- **SC-009**: An automated accessibility check of the catalog, a survey page, the validation-error state,
-  the confirmation screen and the configuration-error screen reports no WCAG 2.1 AA violation.
+  control label, and the catalog, a survey page and the validation-error state reflow without horizontal
+  scrolling at 320px as well (FR-058).
+- **SC-009**: An automated accessibility check reports no WCAG 2.1 AA violation on each of seven screens:
+  the catalog, a survey page, the validation-error state, the submission-error state, the confirmation
+  screen, the configuration-error screen and the not-found screen. The check is run at 375px and at
+  1280px, and every screen carries the document title and language required by FR-077. The one AA
+  criterion this feature does not meet, 1.3.5 Identify Input Purpose, is recorded under Assumptions with a
+  removal plan; it is not detectable by an automated check and MUST NOT be treated as met by SC-009
+  passing.
 - **SC-010**: Spec scenarios map to automated tests with at least 80% line coverage of
   `src/app/core/**`, per Principle IV.
 - **SC-011**: Every retry after a submission failure carries the same `clientSubmissionId` as the attempt it
@@ -660,6 +814,12 @@ Each case below is a decision, not an open question.
 - **SC-012**: A respondent can move backwards and forwards through all four pages of the default fixture any
   number of times without losing a single answer or attachment, and without being shown an error for a page
   they have not tried to leave forward.
+- **SC-013**: A second survey can be added, changed and removed with a diff touching only one config file
+  under `public/` and one entry in `public/survey-manifest.json`, and `git diff --stat -- src/app` reports
+  no change. This is the measurement of FR-004 and of Principle I's central claim; without it that claim
+  is asserted but never checked.
+- **SC-014**: Neither the catalog nor the survey viewer can be left in `loading` for longer than 10s by any
+  manifest or config response, including one that never arrives (FR-075).
 
 ## Assumptions
 
@@ -680,7 +840,21 @@ Product Owner, not an open question.
 - The real endpoint is anonymous and takes attachment bytes inline as base64; both are our stated
   expectation of a service that does not exist yet, and either can change behind the boundary without
   touching survey logic (Clarifications Q1 and Q3).
-- Content is English only; error text is authored in the spec's wording and is not translated.
+- Content is English only; error text is authored in the spec's wording (FR-069) and is not translated.
+  The document declares `lang="en"` on that basis (FR-077).
+- **Documented limitation — WCAG 2.1 criterion 1.3.5 Identify Input Purpose (AA)**: this criterion asks
+  that a field collecting one of 53 listed pieces of information about the user declare its purpose
+  programmatically, and the fixture's `q_name` collects the respondent's name. The survey JSON contract has
+  no field in which an author could declare an input purpose, so the viewer sets no `autocomplete` value
+  and this feature does not meet 1.3.5 for such a question. Recorded here rather than left implied, as
+  Governance requires. _Why not fixed here_: inferring a purpose from a question's title or id would be the
+  viewer guessing at the author's meaning, which Principle I forbids, and the only honest fix is a new
+  optional `inputPurpose` field on `textbox`, which is a contract change and therefore a change to every
+  validator and fixture. _Removal plan_: add optional `inputPurpose` to `textbox` in
+  `contracts/survey-json.md`, constrained to the WCAG 1.3.5 token list, in the feature that next touches
+  that contract; until then no survey in this repository may collect a 1.3.5-listed field other than a
+  name. _Scope of the gap_: `q_name` only. No other fixture question collects information about the
+  respondent.
 - One survey is answered at a time; opening a second survey discards the first session's answers.
 - "Submitted" is final within a visit: the confirmation screen offers a route back to the catalog, not
   back into the answered survey.
@@ -689,4 +863,11 @@ Product Owner, not an open question.
 
 None. The three questions `/speckit-specify` left open were decided in `/speckit-clarify` (PRI-15) and are
 recorded as Q1, Q2 and Q3 under [Clarifications](#clarifications), together with the six further details
-that stage was asked to settle. This spec and its contracts carry no unresolved clarification marker.
+that stage was asked to settle. `/speckit-checklist` (PRI-16) then found fourteen requirements-quality
+defects and fixed all fourteen in this revision; they are recorded under
+[Checklist review](#checklist-review--session-2026-10-08). This spec and its contracts carry no unresolved
+clarification marker.
+
+The one thing this spec records as unmet rather than resolved is WCAG 2.1 AA criterion 1.3.5, under
+Assumptions, with a justification and a removal plan as Governance requires. It is a documented limitation,
+not an open question: no decision is pending on it in this feature.

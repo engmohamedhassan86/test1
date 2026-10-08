@@ -1,6 +1,6 @@
 # Contract: survey JSON and manifest
 
-**Feature**: `001-survey-management` · **Status**: Clarified, no open questions · **Owner of this document**:
+**Feature**: `001-survey-management` · **Status**: Checklisted, no open questions · **Owner of this document**:
 Product Owner (behaviour). The TypeScript types and validators that realise it are the Solution Architect's
 to design in `/speckit-plan` and live in `src/app/core/{models,validators}`.
 
@@ -38,6 +38,16 @@ A manifest that cannot be fetched, is not parseable, or breaks any rule above re
 configuration-error screen at `/` with no partial list (spec FR-044), and renders the same screen at
 `/surveys/:surveyKey` — never the not-found screen, because without the manifest no key can be resolved
 either way (spec FR-066). The manifest is fetched at most once per visit and reused (spec FR-067).
+
+Two rules govern how a response is judged, and both exist because this application is deployed as a SPA
+behind an index fallback:
+
+- **The body decides, not the status.** A manifest or config response is accepted only if its body is
+  parseable JSON that satisfies this contract. A body that is not — including the HTML index document that
+  the fallback returns for a missing `.json` file under HTTP 200 — is a configuration error whatever the
+  status code (spec FR-076).
+- **A request that never answers is a failure.** Either fetch is abandoned after 10s and becomes a
+  configuration error, so neither screen can wait in `loading` indefinitely (spec FR-075).
 
 ## 2. A survey config
 
@@ -163,32 +173,44 @@ unanswered (spec FR-060).
 A file is of an accepted type when its reported MIME type is listed, or its lowercased file extension is
 listed. Attachments are never required: zero files always satisfies the policy (spec FR-022).
 
+`acceptedTypes` holds contract values, which are not what the respondent reads. Each entry is shown as a
+display label — a MIME type as its uppercased subtype, an extension as its uppercased extension without
+the dot — joined in config order, so the policy above renders `PNG, JPEG, PDF` (spec FR-072). File sizes
+are likewise shown by the rule in spec FR-071, which is what turns `5242880` into `5 MB`.
+
 ## 4. Failure classes
 
 Every row renders the configuration-error screen and nothing of the survey. The message MUST name the
 location and the offending value. These rows are the contract test list.
 
-| #   | Failure                                      | Example message                                                                       |
-| --- | -------------------------------------------- | ------------------------------------------------------------------------------------- |
-| F01 | Body is not parseable JSON                   | `customer-feedback: the survey configuration could not be read`                       |
-| F02 | Required field missing                       | `pages[0].questions[1].title: required field is missing`                              |
-| F03 | Unknown field present                        | `pages[0].questions[0].placeholder: unknown field`                                    |
-| F04 | Unknown question type                        | `pages[1].questions[0].type: unknown question type "slider"`                          |
-| F05 | Field not valid for its question type        | `pages[0].questions[0].minLength: not valid for a radio question`                     |
-| F06 | Wrong JSON type for a field                  | `pages[0].questions[0].required: expected a boolean, got "yes"`                       |
-| F07 | Duplicate page id                            | `pages[2].id: duplicate page id "p1"`                                                 |
-| F08 | Duplicate question id                        | `pages[1].questions[0].id: duplicate question id "q_name"`                            |
-| F09 | Duplicate option id or value                 | `pages[1].questions[1].options[2].value: duplicate option value "a"`                  |
-| F10 | Fewer than 2 options on radio/checkbox       | `pages[0].questions[0].options: a radio question needs at least 2 options`            |
-| F11 | `pages` empty                                | `pages: a survey needs at least one page`                                             |
-| F12 | Unsatisfiable selection rule                 | `pages[1].questions[1].minSelections: 3 selections required but only 2 options exist` |
-| F13 | Inverted or out-of-bound numeric rule        | `pages[3].questions[0].maxLength: must be at least minLength (10)`                    |
-| F14 | Rating scale out of bounds                   | `pages[1].questions[2].scale.max: must be at most 10`                                 |
-| F15 | Attachment policy incomplete or out of range | `pages[2].questions[0].attachments.maxFiles: must be between 0 and 3`                 |
-| F16 | Config key does not match the key served     | `key: config declares "feedback" but is served as "customer-feedback"`                |
-| F17 | Manifest config path missing or unreadable   | `customer-feedback: the survey configuration could not be loaded`                     |
+| #   | Failure                                       | Example message                                                                       |
+| --- | --------------------------------------------- | ------------------------------------------------------------------------------------- |
+| F01 | Body is not parseable JSON                    | `customer-feedback: the survey configuration could not be read`                       |
+| F02 | Required field missing                        | `pages[0].questions[1].title: required field is missing`                              |
+| F03 | Unknown field present                         | `pages[0].questions[0].placeholder: unknown field`                                    |
+| F04 | Unknown question type                         | `pages[1].questions[0].type: unknown question type "slider"`                          |
+| F05 | Field not valid for its question type         | `pages[0].questions[0].minLength: not valid for a radio question`                     |
+| F06 | Wrong JSON type for a field                   | `pages[0].questions[0].required: expected a boolean, got "yes"`                       |
+| F07 | Duplicate page id                             | `pages[2].id: duplicate page id "p1"`                                                 |
+| F08 | Duplicate question id                         | `pages[1].questions[0].id: duplicate question id "q_name"`                            |
+| F09 | Duplicate option id or value                  | `pages[1].questions[1].options[2].value: duplicate option value "a"`                  |
+| F10 | Fewer than 2 options on radio/checkbox        | `pages[0].questions[0].options: a radio question needs at least 2 options`            |
+| F11 | `pages` empty                                 | `pages: a survey needs at least one page`                                             |
+| F12 | Unsatisfiable selection rule                  | `pages[1].questions[1].minSelections: 3 selections required but only 2 options exist` |
+| F13 | Inverted or out-of-bound numeric rule         | `pages[3].questions[0].maxLength: must be at least minLength (10)`                    |
+| F14 | Rating scale out of bounds                    | `pages[1].questions[2].scale.max: must be at most 10`                                 |
+| F15 | Attachment policy incomplete or out of range  | `pages[2].questions[0].attachments.maxFiles: must be between 0 and 3`                 |
+| F16 | Config key does not match the key served      | `key: config declares "feedback" but is served as "customer-feedback"`                |
+| F17 | Manifest config path missing or unreadable    | `customer-feedback: the survey configuration could not be loaded`                     |
+| F18 | Non-JSON body under any status, including 200 | `customer-feedback: the survey configuration could not be read`                       |
+| F19 | Manifest or config fetch unanswered after 10s | `customer-feedback: the survey configuration could not be loaded`                     |
 
 A key absent from the manifest is **not** in this table. It renders the not-found screen (spec FR-050).
+
+F18 and F19 carry the same respondent-facing wording as F01 and F17 respectively, because the respondent
+can act on neither distinction. They are separate rows because they are separate contract tests: F18 is the
+index-fallback case that a status-code check would wave through, and F19 is the hang that no status code
+ever arrives for.
 
 ## 5. Default fixture
 

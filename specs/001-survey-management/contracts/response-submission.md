@@ -1,6 +1,6 @@
 # Contract: response submission
 
-**Feature**: `001-survey-management` · **Status**: Clarified, no open questions · **Owner of this document**:
+**Feature**: `001-survey-management` · **Status**: Checklisted, no open questions · **Owner of this document**:
 Product Owner (behaviour). The TypeScript interface and the adapters that realise it are the Solution
 Architect's to design in `/speckit-plan` and live in `src/app/core/services`.
 
@@ -47,12 +47,12 @@ One operation: take a submission payload, return an acknowledgement or a failure
 }
 ```
 
-| Field                | Required | Rule                                                                                                                                                                                    |
-| -------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `surveyKey`          | yes      | The manifest key of the survey answered.                                                                                                                                                |
-| `clientSubmissionId` | yes      | Non-empty opaque string, at most 64 characters. Generated once per survey session at the first Submit; identical on every retry of that session; different for a freshly opened survey. |
-| `submittedAt`        | yes      | ISO 8601 UTC timestamp taken on the client when this attempt's Submit was activated. Refreshed per attempt, including a retry.                                                          |
-| `answers`            | yes      | One entry per **answered** question, in survey page then question order. Unanswered optional questions are omitted, not sent as `null`.                                                 |
+| Field                | Required | Rule                                                                                                                                                                                                                                                                                        |
+| -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `surveyKey`          | yes      | The manifest key of the survey answered.                                                                                                                                                                                                                                                    |
+| `clientSubmissionId` | yes      | Non-empty opaque string, at most 64 characters. Generated once per survey session when the first submission starts — on first entry to `submitting`, not on a Submit that validation blocks; identical on every retry of that session; different for a freshly opened survey (spec FR-061). |
+| `submittedAt`        | yes      | ISO 8601 UTC timestamp taken on the client when this attempt's Submit was activated. Refreshed per attempt, including a retry.                                                                                                                                                              |
+| `answers`            | yes      | One entry per **answered** question, in survey page then question order. Unanswered optional questions are omitted, not sent as `null`.                                                                                                                                                     |
 
 `clientSubmissionId` exists because after a `timeout` the client cannot know whether the first attempt
 landed. The receiver is expected to treat a repeat of a `clientSubmissionId` it has already accepted as the
@@ -188,3 +188,6 @@ The Survey Content Author and QA Engineer own these; they are the acceptance lis
 11. The real adapter sends `Idempotency-Key` equal to the payload's `clientSubmissionId`, and sends no
     `Authorization` header.
 12. An HTTP 401 produces `submission-error` with the `unauthorized` message and no credential prompt.
+13. A Submit blocked by FR-034 generates no `clientSubmissionId`; the value first sent is the one generated
+    at the first entry to `submitting`, so a respondent bounced once and then successful produces exactly
+    one value.
