@@ -35,13 +35,16 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Format check
-        run: pnpm run format:check
+        run: pnpm prettier --check .
 
-      - name: Type check
-        run: pnpm run typecheck
+      - name: Type check (app)
+        run: pnpm tsc -p tsconfig.app.json --noEmit
+
+      - name: Type check (spec)
+        run: pnpm tsc -p tsconfig.spec.json --noEmit
 
       - name: Unit tests with coverage
-        run: pnpm run test:coverage
+        run: pnpm vitest run --coverage
 
       - name: Build
-        run: pnpm run build
+        run: pnpm ng build
