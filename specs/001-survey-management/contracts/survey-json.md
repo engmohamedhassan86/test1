@@ -1,8 +1,8 @@
 # Contract: survey JSON and manifest
 
-**Feature**: `001-survey-management` · **Status**: Draft · **Owner of this document**: Product Owner
-(behaviour). The TypeScript types and validators that realise it are the Solution Architect's to design
-in `/speckit-plan` and live in `src/app/core/{models,validators}`.
+**Feature**: `001-survey-management` · **Status**: Clarified, no open questions · **Owner of this document**:
+Product Owner (behaviour). The TypeScript types and validators that realise it are the Solution Architect's
+to design in `/speckit-plan` and live in `src/app/core/{models,validators}`.
 
 This contract is the whole agreement between a survey author and the viewer. It is strict and it fails
 closed: anything not described here is a validation failure, never a warning and never a repair
@@ -35,7 +35,9 @@ closed: anything not described here is a validation failure, never a warning and
 | `config`      | yes      | Relative path under `public/`, ending `.json`. No absolute URL, no `..` segments. |
 
 A manifest that cannot be fetched, is not parseable, or breaks any rule above renders the
-configuration-error screen at `/` with no partial list (spec FR-044).
+configuration-error screen at `/` with no partial list (spec FR-044), and renders the same screen at
+`/surveys/:surveyKey` — never the not-found screen, because without the manifest no key can be resolved
+either way (spec FR-066). The manifest is fetched at most once per visit and reused (spec FR-067).
 
 ## 2. A survey config
 
@@ -119,13 +121,16 @@ Lengths are measured on the trimmed value in Unicode code points.
 | ------- | -------- | ------------------------------------------------------------------------------------------------------------- |
 | `scale` | no       | `{ "min": integer, "max": integer }`. Absent means `{ "min": 1, "max": 5 }`. Requires `0 <= min < max <= 10`. |
 
-Holds one integer in `[min, max]`.
+Holds one integer in `[min, max]`. Presented as one selectable star per integer when `min >= 1`, and as a
+labelled row of numeric choices when `min` is 0, since zero stars cannot be told apart from no answer (spec
+FR-009). A Clear action returns the question to unanswered (spec FR-060).
 
 ### `satisfaction`
 
-Takes no type-specific field. The scale is fixed at the five points 1 to 5 (very dissatisfied,
-dissatisfied, neutral, satisfied, very satisfied). A `scale` field on a `satisfaction` question is a
-validation failure.
+Takes no type-specific field. The scale is fixed at the five points 1 to 5, labelled "Very dissatisfied",
+"Dissatisfied", "Neutral", "Satisfied" and "Very satisfied", each shown as visible text (spec FR-010). A
+`scale` field on a `satisfaction` question is a validation failure. A Clear action returns the question to
+unanswered (spec FR-060).
 
 ### 2.1 Option
 
