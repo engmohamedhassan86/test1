@@ -1,97 +1,80 @@
+/**
+ * The manifest-driven catalog — T048, `plan.md` §4.1.
+ *
+ * Three things here are easy to get wrong and are therefore stated:
+ *
+ * - **The promise is memoised, not the value** (research D11, FR-067). Memoising the value
+ *   would let `/` and a deep link both start a fetch before either answered; memoising the
+ *   promise collapses that race into one request. Root provision makes the lifetime the
+ *   visit, so a reload refetches — US4 scenario 8.
+ * - **`ready` cannot be empty.** An empty manifest is `empty`, which is not an error state
+ *   (FR-048, FR-074). `CatalogState.ready` carries `NonEmpty`, so the compiler agrees.
+ * - **`resolve` never reports `not-found` for a manifest it could not read** (FR-066, US4
+ *   scenario 7). Without the manifest the key cannot be resolved either way, so the
+ *   outcome is `catalog-error`.
+ *
+ * Nothing is written to `localStorage` or `sessionStorage`.
+ */
+
 import { inject, Injectable, signal } from '@angular/core';
 
-import {
-  SurveyManifestEntry,
-  SurveyManifest,
-  CatalogState,
-  SurveyKeyResolution,
-} from '../models/survey-manifest.model';
-import { SurveyValidation } from '../models/survey-config-error.model';
-
-import { JsonFetchService } from './json-fetch.service';
+import { isNonEmpty } from '../models/branded';
+import { MANIFEST_SUBJECT } from '../models/survey-config-error.model';
+import type { ManifestValidation } from '../models/survey-config-error.model';
+import type { CatalogState, SurveyKeyResolution } from '../models/survey-manifest.model';
+import { fetchFailureError } from '../validators/fetch-outcome.validator';
 import { validateSurveyManifest } from '../validators/survey-manifest.validator';
+import { JsonFetchService } from './json-fetch.service';
+import { SURVEY_TIMEOUTS } from './survey-timeouts';
+
+/** Relative to `<base href="/">`, which is how the `public/` directory is served. */
+export const MANIFEST_URL = 'survey-manifest.json';
 
 @Injectable({ providedIn: 'root' })
 export class SurveyCatalogService {
   private readonly jsonFetch = inject(JsonFetchService);
+  private readonly timeouts = inject(SURVEY_TIMEOUTS);
 
-  private catalogPromise: Promise<SurveyManifest> | null = null;
+  /** The memoised request. One per visit, shared by every caller. */
+  private inFlight: Promise<ManifestValidation> | null = null;
 
-  readonly state = signal<CatalogState>('loading');
+  private readonly catalogState = signal<CatalogState>({ kind: 'loading' });
 
-  async load(): Promise<SurveyManifest> {
-    if (this.catalogPromise) {
-      return this.catalogPromise;
-    }
+  readonly state = this.catalogState.asReadonly();
 
-    this.catalogPromise = this.performLoad();
-    try {
-      const result = await this.catalogPromise;
-      this.state.set(
-        result.surveys.length > 0
-          ? { kind: 'ready', entries: result.surveys as SurveyManifestEntry[] }
-          : { kind: 'empty' },
-      );
-      return result;
-    } catch (error) {
-      this.state.set({
-        kind: 'configuration-error',
-        error: {
-          scope: 'manifest',
-          subject: 'surveys',
-          issues: [
-            {
-              code: 'F17',
-              path: 'surveys',
-              message: 'The survey manifest could not be read',
-            },
-          ],
-        },
-      });
-      throw error;
-    }
+  load(): Promise<ManifestValidation> {
+    this.inFlight ??= this.fetchManifest();
+    return this.inFlight;
   }
 
   async resolve(surveyKey: string): Promise<SurveyKeyResolution> {
-    try {
-      const manifest = await this.load();
+    const validation = await this.load();
 
-      const entry = manifest.surveys.find((e) => e.key === surveyKey);
-
-      if (!entry) {
-        return { outcome: 'not-found', surveyKey };
-      }
-
-      return { outcome: 'found', entry };
-    } catch {
-      return {
-        outcome: 'catalog-error',
-        error: {
-          scope: 'manifest',
-          subject: 'surveys',
-          issues: [
-            {
-              code: 'F17',
-              path: 'surveys',
-              message: 'The survey manifest could not be read',
-            },
-          ],
-        },
-      };
+    if (validation.outcome === 'invalid') {
+      return { outcome: 'catalog-error', error: validation.error };
     }
+
+    const entry = validation.manifest.surveys.find((candidate) => candidate.key === surveyKey);
+    return entry === undefined ? { outcome: 'not-found', surveyKey } : { outcome: 'found', entry };
   }
 
-  private async performLoad(): Promise<SurveyManifest> {
-    try {
-      const fetchResult = await this.jsonFetch.fetchJson('public/survey-manifest.json', 10_000);
+  private async fetchManifest(): Promise<ManifestValidation> {
+    const fetched = await this.jsonFetch.fetchJson(MANIFEST_URL, this.timeouts.fetchMs);
+    const validation: ManifestValidation =
+      fetched.outcome === 'json'
+        ? validateSurveyManifest(fetched.value)
+        : { outcome: 'invalid', error: fetchFailureError(fetched, 'manifest', MANIFEST_SUBJECT) };
 
-      if (fetchResult.outcome !== 'json') {
-        throw new Error('Manifest fetch failed');
-      }
-
-      return validateSurveyManifest(fetchResult.value) as SurveyManifest;
-    } catch (error) {
-      return { surveys: [] };
-    }
+    this.catalogState.set(catalogStateFor(validation));
+    return validation;
   }
+}
+
+/** FR-074's four states, derived from the one validation result. */
+function catalogStateFor(validation: ManifestValidation): CatalogState {
+  if (validation.outcome === 'invalid') {
+    return { kind: 'configuration-error', error: validation.error };
+  }
+  const entries = validation.manifest.surveys;
+  return isNonEmpty(entries) ? { kind: 'ready', entries } : { kind: 'empty' };
 }

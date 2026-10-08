@@ -33,7 +33,8 @@ import type {
   SessionAttachment,
 } from '../models/answer.model';
 import type { QuestionId } from '../models/branded';
-import type { AcceptedFileType, AttachmentPolicy } from '../models/survey.model';
+import type { AcceptedFileType, AttachmentPolicy, Question } from '../models/survey.model';
+import type { ValidationError } from '../models/validation.model';
 import { attachmentRejectionMessage } from './messages';
 
 /**
@@ -129,38 +130,51 @@ export function validateAttachmentSelection(
 }
 
 /**
- * The FR-027 re-check: one already-held attachment against its question's **current**
- * policy. Returns the reason it no longer satisfies the policy, or `null`.
+ * The FR-027 re-check: everything one question already holds, against that question's
+ * **current** policy. Returns the first `attachment-invalid` error, or `null`.
  *
- * The count half is the caller's, because it is a property of the set rather than of one
- * file; `validateSurvey` applies it.
+ * This runs at Next and at Submit through `validatePage`, so a file that was accepted
+ * under an earlier policy — or that is held by a question whose `attachments` block has
+ * since gone away — blocks navigation rather than reaching the payload. That is the
+ * fail-closed half of FR-027: the selection-time checks alone would fail open.
+ *
+ * The count half is included here, unlike in `firstFailure`, because at re-check time the
+ * set is already complete: there is no "accept until the slots run out" ordering to apply.
  */
 export function attachmentErrorsFor(
-  question: Pick<SurveyOption, 'id'>,
+  question: Question,
   existing: readonly SessionAttachment[],
-): AttachmentRejection | null {
+): ValidationError | null {
+  if (existing.length === 0) {
+    // FR-022: attachments are never required, so holding none always passes.
+    return null;
+  }
+
+  const policy = question.attachments;
+  if (policy === null) {
+    // The question no longer accepts files at all. Every held file is over the limit of
+    // zero, so the count message is the honest one; `maxFiles: 0` is not representable on
+    // `AttachmentPolicy`, hence the literal rather than a policy lookup.
+    return attachmentError(question.id, 'You can attach up to 0 files to this question');
+  }
+
   for (const attachment of existing) {
-    if (!isAcceptedType(attachment, question.acceptedTypes)) {
-      return {
-        questionId: question.id,
-        name: attachment.name,
-        reason: 'unaccepted-type' as const,
-      };
-    }
-    if (attachment.sizeBytes > question.maxSizeBytes) {
-      return {
-        questionId: question.id,
-        name: attachment.name,
-        reason: 'too-large' as const,
-      };
-    }
-    if (attachment.sizeBytes === 0) {
-      return {
-        questionId: question.id,
-        name: attachment.name,
-        reason: 'empty' as const,
-      };
+    const reason = firstFailure(attachment, policy, []);
+    if (reason !== null) {
+      return attachmentError(
+        question.id,
+        attachmentRejectionMessage(reason, attachment.name, policy),
+      );
     }
   }
+
+  if (existing.length > policy.maxFiles) {
+    return attachmentError(question.id, attachmentRejectionMessage('no-free-slot', '', policy));
+  }
+
   return null;
+}
+
+function attachmentError(questionId: QuestionId, message: string): ValidationError {
+  return { questionId, rule: 'attachment-invalid', message };
 }

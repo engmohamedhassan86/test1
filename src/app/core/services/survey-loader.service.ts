@@ -1,66 +1,35 @@
+/**
+ * Fetching and validating one survey config — T049, `plan.md` §4.2.
+ *
+ * It composes and nothing more: `fetchJson(entry.config, fetchMs)` then
+ * `validateSurveyConfig(value, entry.key)`. The key the config is validated **against** is
+ * the key the manifest served it under, which is what makes F16 reachable (a config whose
+ * own `key` disagrees with the manifest is invalid, not silently renamed).
+ *
+ * It fails closed: there is no path from an unreadable config to a rendered survey.
+ */
+
 import { inject, Injectable } from '@angular/core';
 
-import { SurveyManifestEntry } from '../models/survey-manifest.model';
-import { SurveyValidation } from '../models/survey-config-error.model';
-import { SurveyKeyResolution, SurveyCatalogService } from './survey-catalog.service';
-import { SurveyTimeouts } from './survey-timeouts';
-
+import type { SurveyValidation } from '../models/survey-config-error.model';
+import type { SurveyManifestEntry } from '../models/survey-manifest.model';
+import { fetchFailureError } from '../validators/fetch-outcome.validator';
+import { validateSurveyConfig } from '../validators/survey-config.validator';
 import { JsonFetchService } from './json-fetch.service';
-import { validateSurveyManifest } from '../validators/survey-manifest.validator';
+import { SURVEY_TIMEOUTS } from './survey-timeouts';
 
 @Injectable({ providedIn: 'root' })
 export class SurveyLoaderService {
   private readonly jsonFetch = inject(JsonFetchService);
-  private readonly catalogService = inject(SurveyCatalogService);
-  private readonly timeouts = inject(SurveyTimeouts);
+  private readonly timeouts = inject(SURVEY_TIMEOUTS);
 
   async load(entry: SurveyManifestEntry): Promise<SurveyValidation> {
-    const fetchResult = await this.jsonFetch.fetchJson(entry.config, this.timeouts.fetchMs);
+    const fetched = await this.jsonFetch.fetchJson(entry.config, this.timeouts.fetchMs);
 
-    if (fetchResult.outcome === 'json') {
-      return validateSurveyManifest(fetchResult.value, entry.key);
+    if (fetched.outcome === 'json') {
+      return validateSurveyConfig(fetched.value, entry.key);
     }
 
-    return this.mapFetchOutcomeToFailure(fetchResult, entry.key);
-  }
-
-  private mapFetchOutcomeToFailure(
-    fetchResult: { outcome: 'unreadable'; status: number | null } | { outcome: 'timeout' },
-    key: string,
-  ): SurveyValidation {
-    switch (fetchResult.outcome) {
-      case 'unreadable':
-        return {
-          outcome: 'configuration-error',
-          scope: 'survey',
-          subject: key,
-          issues: [
-            {
-              code: fetchResult.status === 404 ? 'F18' : 'F17',
-              path:
-                fetchResult.status === 404 ? 'surveys.{index}.config' : 'surveys.{index}.config',
-              message:
-                fetchResult.status === 404
-                  ? 'This survey could not be found'
-                  : 'This survey could not be read',
-            },
-          ],
-        };
-      case 'timeout':
-        return {
-          outcome: 'configuration-error',
-          scope: 'survey',
-          subject: key,
-          issues: [
-            {
-              code: 'F19',
-              path: 'surveys.{index}.config',
-              message: 'This survey request timed out',
-            },
-          ],
-        };
-      default:
-        throw new Error('Never');
-    }
+    return { outcome: 'invalid', error: fetchFailureError(fetched, 'survey', entry.key) };
   }
 }

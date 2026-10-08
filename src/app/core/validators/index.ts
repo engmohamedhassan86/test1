@@ -4,7 +4,6 @@
  */
 
 export * from './answer.validator';
-export * from './attachment-recheck';
 export * from './attachment.validator';
 export * from './json-reader';
 export * from './messages';

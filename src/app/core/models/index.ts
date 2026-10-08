@@ -7,6 +7,7 @@ export * from './answer.model';
 export * from './assert-never';
 export * from './branded';
 export * from './display-format';
+export * from './focus-request';
 export * from './response-state.model';
 export * from './screen-title';
 export * from './survey-config-error.model';
