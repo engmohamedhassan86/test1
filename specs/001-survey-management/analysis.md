@@ -197,3 +197,66 @@ anchored to the same contract, so no requirement is unimplemented.
   tasks, so S7 starts first or in parallel.
 - Carried into S8: A-03 and A-04 are annotation fixes the implementer makes in place while
   executing T080/T083/T050. `T148` must list every scenario against a named test before S9 closes.
+
+## QA counter-verification
+
+Re-measured independently by the QA Engineer at commit `2cfa3e0`, because `test-map.md` is QA's
+traceability input to the S9 Verify gate and A-01 was a defect in the version QA produced. Every
+number below was measured in this pass, not copied from the section above. Commands run from
+`specs/001-survey-management/`.
+
+| #   | Check                                                              | Command                                                                                   | Measured                       | Agrees                  |
+| --- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | ------------------------------ | ----------------------- |
+| Q1  | Task ids unique and contiguous `T001`–`T148`                       | `comm -3 <(seq -f 'T%03g' 1 148 \| sort) <(grep -oE '\bT[0-9]{3}\b' tasks.md \| sort -u)` | 148, no gap/extra              | yes                     |
+| Q2  | **A-01 regression check** — every id cited by `test-map.md` exists | `comm -23 <(grep -oE '\bT[0-9]{3}\b' test-map.md \| sort -u) <(… tasks.md \| sort -u)`    | 0 dangling of 62               | yes                     |
+| Q3  | Acceptance scenarios in `spec.md`, per user story                  | `awk` over `**Acceptance Scenarios**` numbered items                                      | 61 (8/14/11/11/8/9)            | yes                     |
+| Q4  | Scenario rows in `test-map.md`, none unmapped                      | `awk` over `\| USn.m` rows                                                                | 61 rows, 0 unmapped            | yes                     |
+| Q5  | Scenarios whose only mapping is the blanket `T148`                 | same                                                                                      | exactly US4.2, US4.9           | yes — matches A-03/A-04 |
+| Q6  | FRs defined vs cited; no task cites a non-existent FR              | `comm` over `FR-[0-9]{3}` in `spec.md` and `tasks.md`                                     | 77 defined, 60 cited, 0 orphan | yes                     |
+| Q7  | The 17 uncited FRs each have an explanatory row in this file       | per-FR `grep` against the check-6 table                                                   | 17 / 17 explained              | yes                     |
+| Q8  | `Question` union, contract vs spec FR-003                          | `survey-json.md:91`, `:262–269` vs `spec.md:488`                                          | identical six                  | yes                     |
+| Q9  | `ResponseState` union, plan §3 vs spec FR-045                      | `plan.md:278–296` vs `spec.md:674–676`                                                    | identical eight                | yes                     |
+| Q10 | Attachment limits across spec, plan, contract                      | `grep -rn 'maxFiles\|5242880\|10485760'`                                                  | consistent                     | yes                     |
+| Q11 | Business logic kept out of components                              | `grep -nE '\[ \] (T130\|T133\|T134)' tasks.md`                                            | all three present              | yes                     |
+
+On Q10, QA confirms the two size numbers are distinct concepts and not a contradiction: `5242880`
+is the value the default fixture sets (`spec.md:265`, `:726`, `:834`), `10485760` is the ceiling a
+config may not exceed (`spec.md:835`, `survey-json.md` R52 and `:171`, `data-model.md` F15,
+`response-submission.md:91`). `maxFiles` is 0–3 in all three.
+
+### Quality gates at this stage
+
+Only one of the five gates has a subject at S6. Reported honestly rather than dropped:
+
+```
+prettier --check    PASS  All matched files use Prettier code style!
+tsc --noEmit        NOT RUN at S6 — no feature source exists yet
+vitest --coverage   NOT RUN at S6 — 3 spec files, all foundation; no core/** to cover
+ng build            NOT RUN at S6 — nothing added to build
+smoke 375/1280px    NOT RUN at S6 — no app to drive
+```
+
+`src/app/app.routes.ts` is still `export const routes: Routes = [];` and `src/app/core/{models,
+services,validators}` hold only README placeholders, so there is no behaviour to typecheck, cover,
+build or drive in a browser. These four gates are **S9's**, against the implemented app, and QA owns
+the browser smoke gate there.
+
+**Residual risk accepted at this gate**: an analyze gate proves the _documents_ agree with each
+other, not that the described behaviour is achievable. A consistent spec can still be wrong. The
+risks that survive to S9 and that QA will test rather than read:
+
+1. **The two blanket-only scenarios.** US4.2 and US4.9 map only to `T148`, so nothing but the
+   traceability task currently promises to assert them. QA will fail S9 if `T148`'s table names no
+   real test for either.
+2. **The 17 FRs with no id in `tasks.md`.** Coverage was argued behaviourally, one FR at a time, by
+   reading. That reasoning is not mechanically checkable and could be wrong for an individual FR.
+   QA will re-derive coverage for these 17 from the test names that exist at S9, not from this table.
+3. **The `SC-` annotation gaps (A-05).** `SC-003`, `SC-004`, `SC-006` and `SC-008` are covered by
+   named tasks but carry no `SC-` id, so the generator cannot see them. If the implementer does not
+   add the markers, the S9 regeneration will show four false gaps.
+
+### QA verdict
+
+Gate **PASS** for the purpose it serves: the artifacts are mutually consistent and `test-map.md` is
+now a usable S9 input — every id in it resolves to a real task. A-01 is confirmed fixed, not merely
+claimed fixed. The three open LOW findings are annotation debt carried into S8 and are accepted.
