@@ -294,7 +294,46 @@ The page composition matches A-07 exactly. One correction to A-07's wording in t
 _wider_ gap, not a narrower one: `satisfaction`, `checkbox` and `rating` are page-2 only, but
 **`textarea` is also absent from page 1** (pages 3 and 4). A page-1 sweep would therefore have missed
 **4 of the 6 types**, not 3. The "all four pages, one page at a time" fix in `T129` covers all four
-either way, so the fix is right as written; the number in the rationale was conservative.
+either way, so the fix is right as written; the number in the rationale was conservative. A-07's
+rationale was widened to 4 of 6 at `27d6eff`, and the task text now also states that pages 1+2 are not
+sufficient.
+
+#### Why page 4 must still be swept, measured — type coverage is not the reason
+
+`T129` as written at `27d6eff` justifies the four-page sweep **solely** on type coverage and concludes
+"only all four pages reach all six types." Measured cumulatively, that is not true:
+
+```
+page1  [textbox, radio]                    cumulative distinct: 2
+page2  [satisfaction, checkbox, rating]    cumulative distinct: 5
+page3  [textarea]                          cumulative distinct: 6   <- all six reached here
+page4  [textarea, radio]                   cumulative distinct: 6   <- adds no new type
+```
+
+All six types are reached by the **end of page 3**; page 4 contributes no type the sweep has not
+already seen. So an implementer who accepts the stated rationale at face value can reason "I have all
+six types after page 3, page 4 is a duplicate `textarea` + `radio`" and sweep three pages — following
+the justification while breaking the instruction. That is the same failure shape as A-07 and as the
+3-of-6 undercount, in the opposite direction: a justification that no longer matches the instruction it
+is attached to, this time by over-claiming.
+
+The honest reason to sweep page 4 is that `SC-009` names the **survey viewer screen**, and page-unique
+a11y surface is not distributed like question types:
+
+```
+page1  the only page with Previous disabled (first page)
+page2  the only page with no `description`
+page3  the only page carrying the attachment uploader (q_evidence: maxFiles 3, 3 accepted types, 5242880)
+page4  the only page carrying the Submit control instead of Next (last page)
+```
+
+Page 4 is the only place the final-page submit affordance is rendered in page context, and page 3 the
+only place the uploader is. Both are a11y surface, both are inside the screen `SC-009` names, and
+neither is implied by type coverage.
+
+**This changes no instruction and reopens nothing** — `T129` already says all four pages, which is
+correct. It is a note for whoever reads the rationale, and it becomes pass condition 5 below so S9
+verifies the sweep against the screen rather than against the type list.
 
 ### S9 pass conditions — now verification, not gap-closing
 
@@ -309,6 +348,12 @@ either way, so the fix is right as written; the number in the rationale was cons
    I file it rather than accept it as harmless extra markup.
 4. The 375px/1280px smoke gate (`T146`) stays the owner of visible focus and target size — jsdom proves
    neither, as `T129` itself records.
+5. Page 4 is swept **even though it adds no new question type**. A sweep of pages 1–3 reaches all six
+   types and is still a FAIL of this criterion: the four-page requirement is about the screen `SC-009`
+   names, not about the type list. I check specifically that the last page is swept with its **Submit**
+   control rendered and page 3 with its **uploader** rendered, since those two affordances exist on no
+   other page. If the spec file sweeps three pages and cites "all six types covered" as its reason, I
+   report it as a gap, not as an acceptable shortcut.
 
 **Status: the task-list gap is closed; this stays on the S9 list as a verification step, per the
 Architect's request, not as a gap an implementer must notice unaided.**
