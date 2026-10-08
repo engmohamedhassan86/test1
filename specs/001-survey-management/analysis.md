@@ -405,8 +405,13 @@ what it was — the class of defect this gate exists to catch, in the artifact I
    page4 ["textarea","radio"]
    ```
 
-   `satisfaction`, `checkbox` and `rating` appear **only on page 2**, so the page-1-only reading of
-   that task would have swept none of them. `T129`'s header comment now records **three** limits
+   Four of the six types — `checkbox`, `rating`, `satisfaction` **and `textarea`** — are absent from
+   page 1, so the page-1-only reading of that task would have swept none of them. Note that stopping
+   at pages 1 and 2 is not sufficient either: `textarea` lives only on pages 3 and 4, so any sweep
+   short of all four pages leaves a type unseen. This is a correction to the first version of this
+   entry, which named only the three page-2 types and so understated the gap as 3 of 6; the fix
+   itself — all four pages, one page at a time — was already wide enough and is unchanged.
+   `T129`'s header comment now records **three** limits
    rather than two, the third being that axe detects a _missing_ accessible name and never a _wrong_
    one — so the sweep is explicitly not evidence for FR-053, and `T103`–`T107` own it.
 
