@@ -13,6 +13,10 @@
  * announcement in this feature crosses a navigation at some point (`plan.md` §2).
  */
 
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { TestBed } from '@angular/core/testing';
 import type { ComponentFixture } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -68,5 +72,17 @@ describe('App', () => {
 
     // T077 reduced the shell; the foundation's placeholder card must not come back.
     expect(host().querySelector('main')?.querySelector('h1')).toBeNull();
+  });
+});
+
+describe('index.html (T141)', () => {
+  it('declares lang="en" on the document element (FR-077)', () => {
+    // Read off disk rather than asserted against jsdom's document, because the TestBed
+    // never loads `index.html` — jsdom's own `<html>` would answer for it and this would
+    // pass whatever the shipped file said. This half of FR-077 needs no code, only
+    // something that fails when the attribute is dropped.
+    const indexFile = resolve(dirname(fileURLToPath(import.meta.url)), '../index.html');
+
+    expect(readFileSync(indexFile, 'utf8')).toMatch(/<html\s[^>]*lang="en"/);
   });
 });
