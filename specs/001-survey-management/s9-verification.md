@@ -1,31 +1,47 @@
 # S9 Verify — gate report and scenario-to-test map (001-survey-management)
 
-Owner: QA Engineer. Run date 2026-10-09, against `4e65632` on `001-survey-management`.
+Owner: QA Engineer. First run 2026-10-09 against `4e65632`; **re-verified the same day against
+`2cff99b`** after [PRI-30] closed defects D1 and D2. Every number below is from the `2cff99b` run.
 This file is the T148 deliverable plus the T142–T147 gate record. It names a **real, existing
 test** for every acceptance scenario, success criterion and contract test, or says plainly that
 none exists.
 
 ## Verdict
 
-**The five gates pass. The end-to-end acceptance flow passes. The stage fails on T148's own
-done-condition**: contract test 11 is mapped to no test, and contract tests 5 and 12 are only
-half-mapped, because `T057` (the real HTTP adapter) and `T063` (its spec) were never written.
-Detail in "Defects" below.
+**PASS.** The five gates pass, the end-to-end acceptance flow passes at both widths, and T148's
+done-condition is now met: all 61 acceptance scenarios, all 14 success criteria and **all 13
+contract tests** map to a real, existing, passing test.
+
+The first run blocked the stage on one defect pair — contract test 11 mapped to no test, and 5 and
+12 only half-mapped, because `T057` (the real HTTP adapter) and `T063` (its spec) were never
+written. Both are now built and both defects are closed; the evidence is recorded under "Defects"
+rather than deleted, so the gate history stays auditable.
 
 ## 1. Gate set
 
 ```
 prettier --check   PASS
 tsc --noEmit       PASS  (tsconfig.app.json and tsconfig.spec.json, 0 diagnostics)
-vitest --coverage  PASS  statements 97.18%  branches 92.63%  functions 99.36%  lines 97.11%
-                         52 files, 849 tests, 0 failures; thresholds 80/80/80/80 unchanged
+vitest --coverage  PASS  statements 97.33%  branches 93.05%  functions 99.38%  lines 97.26%
+                         53 files, 881 tests, 0 failures; thresholds 80/80/80/80 unchanged
 ng build           PASS  dist/survey-viewer/browser, initial 787.17 kB raw / 119.92 kB transfer
-smoke 375px        PASS  41/41 checks
-smoke 1280px       PASS  41/41 checks
+smoke 375px        PASS  36/36 checks
+smoke 1280px       PASS  36/36 checks
 ```
 
 Nothing was relaxed. `vitest.config.ts` still sets all four thresholds to 80 and still excludes
 only `src/app/**/*.spec.ts`. No Prettier ignore entry, no `tsconfig` flag loosened, no skipped test.
+The one `describe.skipIf` in the tree (`survey-fixtures.contract.spec.ts:549`) is live, not skipped:
+the run reports `881 passed (881)` with no skipped count.
+
+The new adapter's coverage was confirmed from `coverage/lcov.info` rather than taken on report:
+`http-survey-response.gateway.ts` is instrumented at `LF:41 LH:41`, `BRF:32 BRH:32`, `FNF:5 FNH:5`
+— 100% of lines, branches and functions.
+
+The adapter is genuinely unwired, which is what keeps gate 3 deterministic (FR-068): it is absent
+from the `core/services` barrel, and `grep -rl "survey-responses" dist/survey-viewer/browser/`
+returns nothing, so it is tree-shaken out of the shipped bundle. The initial bundle is also the same
+size to the byte as the pre-`2cff99b` run, which is the same fact measured a second way.
 
 ### Gate task detail
 
@@ -33,36 +49,71 @@ only `src/app/**/*.spec.ts`. No Prettier ignore entry, no `tsconfig` flag loosen
 | ---- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | T142 | `prettier --check .` exits 0, no ignore entry added                                                  | PASS — "All matched files use Prettier code style!"                                                     |
 | T143 | both tsconfigs, 0 diagnostics                                                                        | PASS — `typecheck:app` 0, `typecheck:spec` 0                                                            |
-| T144 | all four metrics >= 80%, nothing excluded                                                            | PASS — 97.18 / 92.63 / 99.36 / 97.11                                                                    |
+| T144 | all four metrics >= 80%, nothing excluded                                                            | PASS — 97.33 / 93.05 / 99.38 / 97.26                                                                    |
 | T145 | output in `dist/survey-viewer/browser`, no `failing-survey-response.gateway` in the bundle           | PASS — output confirmed; 0 matches for `failing-survey-response` and `FailingSurveyResponse` in `dist/` |
 | T146 | 375px + 1280px, no horizontal scroll, no truncated control, contrast >= 4.5:1, icon targets >= 44x44 | PASS — see §2                                                                                           |
 | T147 | SC-013: a third survey works with no `src/app` change                                                | PASS — see §2                                                                                           |
-| T148 | every scenario and contract test maps to a named test                                                | **FAIL** — contract test 11 unmapped                                                                    |
+| T148 | every scenario and contract test maps to a named test                                                | PASS — 61/61 scenarios, 14/14 SC, 13/13 contract tests (was FAIL at `4e65632`)                          |
 
 ## 2. Browser smoke — real Chromium, both widths
 
-Driven with Playwright + Chromium 156 against `ng serve` on `127.0.0.1:4269`. Playwright was
-installed into the run scratch directory, so `package.json` and `pnpm-lock.yaml` are untouched.
-Every row below passed at **both** 375px and 1280px.
+I had no browser in this environment, so I installed one rather than substituting an automated
+equivalent: Playwright's Chromium headless shell (build 1248), driving `ng serve` on
+`127.0.0.1:4300`. It went into the run scratch directory, not the repo — `git status` is clean
+after the run and `package.json` / `pnpm-lock.yaml` are untouched, so gates 1 and 3 are unaffected.
+**36/36 checks passed at 375px and 36/36 at 1280px**, and every row below passed at both widths.
+The machine-readable result is `smoke-375.json` / `smoke-1280.json`; the 36 checks are a genuine
+re-run on `2cff99b`, not the `4e65632` numbers carried forward.
+
+**What is not a re-run, and why.** Two `4e65632` measurements are carried forward rather than
+repeated: the contrast sweep (9 screens, 125 text nodes, 0 failures, worst 4.76:1 against a 4.5
+floor) and the target-size check (smallest icon/single-char target exactly 44x44px) under T146, and
+the SC-013 add-and-remove cycle under T147. The reason is that `2cff99b` adds one unwired service
+plus its spec and changes no template, no stylesheet and no theme token — and the initial bundle is
+the same size to the byte (787.17 kB raw / 119.92 kB transfer, unchanged from the `4e65632` run),
+which is the mechanical check that nothing presentational moved. Those three
+measurements cannot have changed. I am naming them as carried forward rather than implying I ran
+them twice.
 
 | #   | Acceptance check                                                      | Evidence                                                                                                                                                                            |
 | --- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | `/` lists the manifest surveys; survey opens at `/surveys/:surveyKey` | links `["Customer Feedback","Product Pulse"]` in manifest order; URL `=/surveys/customer-feedback`                                                                                  |
 | 2   | Required empty blocks Next, error shown, focus on first offender      | held on "Page 1 of 4"; `role=alert` = "What should we call you? \| Enter an answer \| Which one sounds most like you? \| Choose one option"; `activeElement.id=sv-q-q_name-control` |
 | 3   | min/max text length blocks                                            | min: held, alert "Use at least 2 characters"; max: 200 chars typed, field holds 80                                                                                                  |
-| 3   | min/max selections blocks                                             | min: alert "Select at least 1 option"; max: 4th of 5 refused at selection (1280px) / alert "Select no more than 3 options" then Next held (375px)                                   |
-| 4   | Answers survive Back                                                  | page 2 `{liked:2, satisfaction:"Satisfied", rating:1}` identical after Previous; page 1 `q_name="Mina"`, `q_segment="new"`                                                          |
-| 5   | Attachment limit 0-3                                                  | counter "3 of 3 files"; 4th refused, rejection "You can attach up to 3 files to this question"                                                                                      |
-| 5   | Rejected file type                                                    | `notes.txt` never enters the list; counter stays "1 of 3 files"; `role=alert` "notes.txt: this file type is not accepted (allowed: PNG, JPEG, PDF)"                                 |
-| 5   | Oversized file                                                        | 6 MB vs 5 MB cap; not attached; `role=alert` "huge.png: this file is larger than the 5 MB limit"                                                                                    |
-| 5   | Attachments survive Back                                              | `receipt.png,a.png,b.png` identical after Previous/Next                                                                                                                             |
+| 3   | min/max selections blocks                                             | min: held on page 2, alert "What went well? Select at least 1 option"; max: the 4th of 5 is refused at selection time at **both** widths — 4 attempted, 3 checked                   |
+| 4   | Answers survive Back                                                  | page 1 `q_name="Mina"` and 1 radio checked, unchanged after Previous; page 2 `{checked:["choice","value","packaging"], scale:1}` byte-identical before and after a Previous/Next    |
+| 5   | Attachment limit 0-3                                                  | counter "3 of 3 files"; a 4th refused with "You can attach up to 3 files to this question", counter still "3 of 3 files"                                                            |
+| 5   | Rejected file type                                                    | `notes.txt` never enters the list; counter stays "3 of 3 files"; `role=alert` "txt: this file type is not accepted (allowed: PNG, JPEG, PDF)"                                       |
+| 5   | Oversized file                                                        | 6 MB vs the 5 MB cap; not attached, counter stays "3 of 3 files"; `role=alert` "png: this file is larger than the 5 MB limit"                                                       |
+| 5   | Attachments survive Back                                              | counter still "3 of 3 files" after Previous then Next                                                                                                                               |
 | 6   | Submit blocked while invalid, no call made                            | held on page 4; alert "Would you recommend us to another family? \| Choose one option"; 0 network requests observed                                                                 |
-| 7   | Completion only after acknowledgement                                 | poll sequence `pending,pending,COMPLETE`; "Your response has been received. Thank you."; `app-question-host` count 0                                                                |
-| 8   | Configuration error fails closed                                      | "This survey is not available / ... does not satisfy its contract / F04 / pages[1]..."; `app-question-host` count 0, no page indicator                                              |
-| 9   | Keyboard-only full page                                               | tab stops `["sv-skip-link","sv-q-q_name-control","q_segment","Next"]`; radio set with Space, Next with Enter advanced to page 2                                                     |
-| 9   | Focus always visible                                                  | all 4 tab stops render an outline (`solid 2px`) or box-shadow                                                                                                                       |
-| 9   | Nothing mouse-only                                                    | no interactive element carries a negative tabindex; the only `tabindex=-1` targets are `MAIN#main` and the page `H2`, both programmatic-focus targets                               |
-| 9   | No horizontal scroll                                                  | `scrollWidth <= clientWidth` on catalog, survey, validation, attachments, completion, config-error at both widths                                                                   |
+| 7   | Completion only after acknowledgement                                 | an in-flight "Submitting your response" state observed **before** the confirmation, then "Your response has been received"; `app-question-host` count 0 on the completion screen    |
+| 8   | Configuration error fails closed                                      | "This survey is not available / ... does not satisfy its contract / F02 / pages[1].questions[0].options: required field is missing"; `app-question-host` count 0, no page indicator |
+| 9   | Keyboard-only full page                                               | tab stops `Skip to content -> sv-q-q_name-control -> radio -> Next`; radio set with Space, Next activated with Enter, advanced to "Page 2 of 4" with no mouse input at all          |
+| 9   | Focus always visible                                                  | every one of those 4 tab stops computes `outline: solid 2px`; 0 stops had neither an outline nor a box-shadow                                                                       |
+| 9   | Nothing mouse-only                                                    | across `a[href]`, `button`, `input`, `textarea`, `select`, `[role=radio]`, `[role=button]`, 0 enabled elements carry `tabindex="-1"`                                                |
+| 9   | No horizontal scroll                                                  | `scrollWidth <= clientWidth` on catalog, survey, validation, attachments, completion, config-error at both widths — at 375px, `375 <= 375` on every screen                          |
+
+### Two corrections to the first run's smoke record
+
+Both are mine, found by re-running rather than by re-reading. Neither changes a verdict.
+
+1. **The min/max-selections path does not differ by viewport.** The `4e65632` record said the 4th
+   of 5 selections was refused at selection time at 1280px but accepted-then-blocked-on-Next at
+   375px, and I flagged that divergence as worth a look. The re-run shows **refusal at selection
+   time at both widths** — 4 attempted, 3 checked, identically. The first reading was an artefact of
+   my own harness: it clicked the boxes without settling between clicks, so a click landed before
+   the signal that disables the remaining options had propagated. There is nothing for the Angular
+   Engineer to investigate here, and I have withdrawn that suggestion.
+
+2. **An empty `questions` array is a valid config, so my first config-error fixture was wrong.**
+   My re-run's first attempt used `pages[1].questions: []` as the invalid input; the app rendered it
+   as a normal two-page survey, which I briefly recorded as a fail-closed defect. The app is right:
+   validator rule R18 says `questions` "is an array, which **may** be empty", and `plan.md:615`
+   specifies "an empty page always valid". I replaced the fixture with a radio question carrying no
+   `options`, which the contract really does reject, and the error screen rendered with `F02`. The
+   lesson for whoever tests this next: pick the invalid fixture from the validator's rules, not from
+   intuition about what looks malformed.
 
 FR-057 contrast and SC-008 target size, measured over **nine** screens (catalog, survey pages 1/2/4,
 validation state, attachments with a rejection visible, completion, configuration error, not found):
@@ -202,27 +253,44 @@ behaviour, which is recorded per row.
 
 ### Contract tests 1 to 13 (`contracts/response-submission.md` §7)
 
-| #   | Contract test                                                 | Named test                                                                                                                                                                                                                                                               | Status      |
-| --- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| 1   | valid payload matches §2 exactly                              | `survey-response-payload.spec.ts` "carries the survey key and the identity it was handed", "orders answers by survey page order then question order"                                                                                                                     | PASS        |
-| 2   | each `value` shape per question type                          | `survey-response-payload.spec.ts` "carries each type with the value shape contract §2 fixes for it"                                                                                                                                                                      | PASS        |
-| 3   | decoded `content` length equals `sizeBytes`                   | `attachment-codec.service.spec.ts` "round trips bytes through base64 with the decoded length equal to sizeBytes"                                                                                                                                                         | PASS        |
-| 4   | acknowledgement produces `submitted`, surfaces `submissionId` | `simulated-survey-response.gateway.spec.ts` "acknowledges with a non-empty submissionId" + `submission-confirmation.spec.ts` "renders the submission id as the respondent's reference (US1 scenario 4)"                                                                  | PASS        |
-| 5   | acknowledgement missing `submissionId` → `submission-error`   | only the **kind → message** half exists (`messages.spec.ts` "malformed-response reads …", `submission-error-banner.spec.ts`). Nothing asserts a 2xx body missing `submissionId` **maps to** `malformed-response`, because that mapping lives in the absent T057 adapter. | **PARTIAL** |
-| 6   | each failure `kind` → own message, answers intact             | `messages.spec.ts` "the seven submission failure texts, verbatim from contract §4" (all seven) + `survey-session.service.spec.ts` SC-007                                                                                                                                 | PASS        |
-| 7   | a boundary that never answers → `timeout` at 15s              | `survey-session.service.spec.ts` "submit reports timeout at exactly submitMs (contract test 7, US6 scenario 2)"                                                                                                                                                          | PASS        |
-| 8   | a second Submit during `submitting` starts no second call     | `survey-session.service.spec.ts` "starts no second call for a Submit pressed during submitting (contract test 8)"                                                                                                                                                        | PASS        |
-| 9   | Submit with an invalid page makes no call                     | `survey-page.blocked-submit.spec.ts` "Submit blocked by an earlier page (US6 scenario 6) starts no submission" + `survey-session.service.spec.ts` "validates every page, moves to the earliest invalid one, and makes no call"                                           | PASS        |
-| 10  | retry reuses `clientSubmissionId`, reopen mints a new one     | `survey-session.service.spec.ts` "retry re-uses the clientSubmissionId with a fresh submittedAt (contract test 10)" + "mints a different clientSubmissionId after the survey is reopened (SC-011)"                                                                       | PASS        |
-| 11  | `Idempotency-Key` set, no `Authorization` header              | **NO TEST.** The assertion requires the real adapter, which does not exist.                                                                                                                                                                                              | **FAIL**    |
-| 12  | HTTP 401 → `unauthorized` message, no credential prompt       | only the **kind → message/no-prompt** half exists (`survey-page.submission-failure.spec.ts` "renders the 401 sentence with no credential prompt at all (scenario 8, FR-062)"). Nothing maps an actual **HTTP 401** to the `unauthorized` kind.                           | **PARTIAL** |
-| 13  | a Submit blocked by FR-034 mints no `clientSubmissionId`      | `survey-session.service.spec.ts` "mints no clientSubmissionId for a submission validation blocked (contract test 13)" + `survey-page.idempotency.spec.ts`                                                                                                                | PASS        |
+| #   | Contract test                                                 | Named test                                                                                                                                                                                                                                                                                              | Status |
+| --- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1   | valid payload matches §2 exactly                              | `survey-response-payload.spec.ts` "carries the survey key and the identity it was handed", "orders answers by survey page order then question order"                                                                                                                                                    | PASS   |
+| 2   | each `value` shape per question type                          | `survey-response-payload.spec.ts` "carries each type with the value shape contract §2 fixes for it"                                                                                                                                                                                                     | PASS   |
+| 3   | decoded `content` length equals `sizeBytes`                   | `attachment-codec.service.spec.ts` "round trips bytes through base64 with the decoded length equal to sizeBytes"                                                                                                                                                                                        | PASS   |
+| 4   | acknowledgement produces `submitted`, surfaces `submissionId` | `simulated-survey-response.gateway.spec.ts` "acknowledges with a non-empty submissionId" + `submission-confirmation.spec.ts` "renders the submission id as the respondent's reference (US1 scenario 4)"                                                                                                 | PASS   |
+| 5   | acknowledgement missing `submissionId` → `submission-error`   | `http-survey-response.gateway.spec.ts` "maps a 200 body missing submissionId to malformed-response (contract test 5)", plus the sibling rows for a missing `receivedAt`, an empty `submissionId`, an empty body and an HTML body under a 201; the kind → message half stays in `messages.spec.ts`       | PASS   |
+| 6   | each failure `kind` → own message, answers intact             | `messages.spec.ts` "the seven submission failure texts, verbatim from contract §4" (all seven) + `survey-session.service.spec.ts` SC-007                                                                                                                                                                | PASS   |
+| 7   | a boundary that never answers → `timeout` at 15s              | `survey-session.service.spec.ts` "submit reports timeout at exactly submitMs (contract test 7, US6 scenario 2)"                                                                                                                                                                                         | PASS   |
+| 8   | a second Submit during `submitting` starts no second call     | `survey-session.service.spec.ts` "starts no second call for a Submit pressed during submitting (contract test 8)"                                                                                                                                                                                       | PASS   |
+| 9   | Submit with an invalid page makes no call                     | `survey-page.blocked-submit.spec.ts` "Submit blocked by an earlier page (US6 scenario 6) starts no submission" + `survey-session.service.spec.ts` "validates every page, moves to the earliest invalid one, and makes no call"                                                                          | PASS   |
+| 10  | retry reuses `clientSubmissionId`, reopen mints a new one     | `survey-session.service.spec.ts` "retry re-uses the clientSubmissionId with a fresh submittedAt (contract test 10)" + "mints a different clientSubmissionId after the survey is reopened (SC-011)"                                                                                                      | PASS   |
+| 11  | `Idempotency-Key` set, no `Authorization` header              | `http-survey-response.gateway.spec.ts` "sends Idempotency-Key equal to clientSubmissionId and no Authorization header (contract test 11)" — asserts the **whole** header set with `toEqual`, so a credential header added later fails it; plus "sends no cookie either" (`credentials: 'omit'`, FR-062) | PASS   |
+| 12  | HTTP 401 → `unauthorized` message, no credential prompt       | `http-survey-response.gateway.spec.ts` "maps 401 to unauthorized with §4s exact text and no credential prompt (contract test 12)" and "maps 403 to unauthorized"; the kind → UI half stays in `survey-page.submission-failure.spec.ts`                                                                  | PASS   |
+| 13  | a Submit blocked by FR-034 mints no `clientSubmissionId`      | `survey-session.service.spec.ts` "mints no clientSubmissionId for a submission validation blocked (contract test 13)" + `survey-page.idempotency.spec.ts`                                                                                                                                               | PASS   |
 
-10 of 13 fully mapped, 2 half-mapped, 1 unmapped.
+**13 of 13 fully mapped**, none half-mapped, none unmapped — T148's done-condition. At `4e65632`
+this read "10 of 13 fully mapped, 2 half-mapped, 1 unmapped"; `2cff99b` closed the gap.
+
+The whole §11.3 status→kind table is now asserted directly rather than through the
+`FailingSurveyResponseGateway(kind)` double, and it **fails closed**: 301, 418 and 429 each map to
+`server-error`, never to an acknowledgement.
 
 ## 4. Defects
 
-### D1 (HIGH) — T057 never written: the real HTTP adapter does not exist
+**Status at `2cff99b`: D1 RESOLVED, D2 RESOLVED, D3 open (decision, not a fix), D4 narrowed.**
+The two HIGH findings are kept in full below as the gate's audit trail; each carries a close-out
+note naming what I re-measured to accept it.
+
+### D1 (HIGH, RESOLVED at `2cff99b`) — T057 never written: the real HTTP adapter does not exist
+
+> **Close-out.** `src/app/core/services/http-survey-response.gateway.ts` now exists (7,266 bytes).
+> I verified the three properties that made this a defect rather than taking the commit message's
+> word: the file is instrumented at 100% lines/branches/functions in `coverage/lcov.info`; it is
+> **not** exported from the `core/services` barrel and `grep -rn "HttpSurveyResponseGateway" src/`
+> finds no reference outside the adapter and its spec, so the simulated gateway remains the wired
+> default; and `grep -rl "survey-responses" dist/survey-viewer/browser/` returns nothing, so it is
+> tree-shaken out of the shipped bundle. T057 is ticked.
 
 - **What I did**: `ls src/app/core/services/ | grep -i gateway`, then
   `grep -rln "HttpSurveyResponseGateway" src/`.
@@ -241,7 +309,15 @@ behaviour, which is recorded per row.
   default (FR-068), so the shipped app submits correctly — I drove it to the confirmation screen at
   both widths. What is missing is the adapter the contract specifies and the status mapping it owns.
 
-### D2 (HIGH) — T063 never written: contract test 11 is unmapped, 5 and 12 are half-mapped
+### D2 (HIGH, RESOLVED at `2cff99b`) — T063 never written: contract test 11 is unmapped, 5 and 12 are half-mapped
+
+> **Close-out.** `http-survey-response.gateway.spec.ts` now exists with 32 tests, and I read the
+> two assertions I said I would fail the gate without rather than trusting the count. Contract
+> test 11 asserts the complete header set with `toEqual` — which is what makes "no `Authorization`"
+> a real assertion instead of a `not.toContain` that a renamed header would slip past — and
+> separately asserts `credentials: 'omit'`, so no same-origin session cookie rides along. Contract
+> test 12 maps a real HTTP 401 to `unauthorized`. The suite went 849 → 881 tests with coverage up
+> on all four metrics, so the new file raised the floor rather than diluting it. T063 is ticked.
 
 - **What I did**: extracted all 849 test names from a real `vitest run --reporter=json`, then
   grepped for `Idempotency-Key`, `Authorization`, `401`, and the §11.3 status rows.
@@ -282,15 +358,24 @@ pure; tests live beside the source"). Worth a decision, not a release block.
 ### D4 (LOW, bookkeeping) — tasks.md checkboxes do not reflect the work
 
 19 of 148 tasks are ticked, yet the feature is substantially implemented and passing 849 tests. The
-checkbox state is therefore not a usable progress signal for the next stage. Two of the unticked
-boxes (T057, T063) are genuinely unbuilt; most of the rest are done but unticked. I ticked
-T142–T147 (my own gate runs, all passing) and left T148 unticked because its done-condition fails.
+checkbox state is therefore not a usable progress signal for the next stage. At `4e65632` two of
+the unticked boxes (T057, T063) were genuinely unbuilt; most of the rest are done but unticked.
+
+At `2cff99b` T057 and T063 are ticked by the Angular Engineer and I have ticked T148, so all seven
+Phase-11 gate tasks (T142–T148) are now ticked and real. The broader bookkeeping gap — done work
+sitting behind unticked boxes elsewhere in `tasks.md` — is unchanged and still not something the
+next stage should read as "not built". It is a tidying job for the implement stage's owner, not a
+release block.
 
 ## 5. Residual risks, stated plainly
 
-1. **The real adapter is unverified in every respect.** With T057/T063 absent, nothing exercises
-   `Idempotency-Key`, the absence of `Authorization`, `credentials: 'omit'`, or any HTTP status
-   mapping. If the real endpoint is switched on later, none of that behaviour has ever run.
+1. **The real adapter is unit-verified but never integration-verified.** `2cff99b` closed the big
+   half of this risk: `Idempotency-Key`, the absence of `Authorization`, `credentials: 'omit'` and
+   every §11.3 status row are now asserted, at 100% coverage of the file. What remains is narrower
+   and worth stating: all 32 of those tests run against a **stubbed `fetch`**, and the adapter is
+   not wired into the app, so it has never issued a real request to a real endpoint, and nothing
+   proves the DI swap from the simulated gateway to the real one works. Switching it on is a code
+   change that needs its own verification; it is not covered by this gate.
 2. **Cross-page revalidation at submit is not browser-reachable.** Forward navigation validates each
    page and `app.routes.ts` has no per-page deep link, so "standing on page 4 with page 1 invalid"
    cannot be produced through the UI. FR-034 is therefore proven only by
