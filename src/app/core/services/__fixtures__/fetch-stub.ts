@@ -66,6 +66,35 @@ export function stubFetchNeverAnswers(): void {
   );
 }
 
+/**
+ * Installs a `fetch` that answers by **URL** rather than by call order, which is what the
+ * routed catalog test needs: following a catalog link fetches the manifest and then the
+ * survey config, and an order-based stub would silently pass if the two were swapped.
+ *
+ * An unlisted URL answers 404 with a JSON body, so a missing entry surfaces as the
+ * `unreadable` outcome the application would really see rather than as a stub crash.
+ */
+export function stubFetchByUrl(bodies: Readonly<Record<string, unknown>>): {
+  readonly calls: string[];
+} {
+  const calls: string[] = [];
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((url: string) => {
+      calls.push(url);
+      const body = bodies[url];
+      return Promise.resolve(
+        responseLike(
+          body === undefined
+            ? { status: 404, body: '{"error":"not found"}' }
+            : { status: 200, body: JSON.stringify(body) },
+        ),
+      );
+    }),
+  );
+  return { calls };
+}
+
 /** Installs a `fetch` that answers a different body per URL, in call order. */
 export function stubFetchSequence(stubs: readonly StubbedResponse[]): { readonly calls: string[] } {
   const calls: string[] = [];

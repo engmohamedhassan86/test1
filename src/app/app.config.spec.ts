@@ -59,7 +59,45 @@ describe('primeUiLicenseKey', () => {
 });
 
 describe('routes', () => {
-  it('starts empty — survey routes arrive with the viewer feature', () => {
-    expect(routes).toEqual([]);
+  it('declares the catalog, the viewer and the catch-all, in that order (T081, T087)', () => {
+    // Order matters: `'**'` matches anything, so a route declared after it is dead.
+    expect(routes.map((route) => route.path)).toEqual(['', 'surveys/:surveyKey', '**']);
+  });
+
+  it('lazy-loads every route, so the catalog does not pay for the survey bundle (SC-002)', () => {
+    expect(routes.every((route) => typeof route.loadComponent === 'function')).toBe(true);
+    // An eagerly referenced component would pull the viewer into the initial chunk.
+    expect(routes.some((route) => route.component !== undefined)).toBe(false);
+  });
+
+  it('gives the two single-title screens a static title (FR-077)', () => {
+    expect(routes.find((route) => route.path === '')?.title).toBe('Surveys');
+    expect(routes.find((route) => route.path === '**')?.title).toBe('Survey not found');
+  });
+
+  it('leaves the viewer route without a static title, because it has three (FR-077)', () => {
+    // `<title> — Survey`, `<title> — Response received` and `Survey not available` all
+    // belong to this one route, so `DocumentTitleService` owns it; a static title here
+    // would race it on every state change.
+    expect(routes.find((route) => route.path === 'surveys/:surveyKey')?.title).toBeUndefined();
+  });
+
+  it('uses no resolver and no guard on the viewer route', () => {
+    const viewer = routes.find((route) => route.path === 'surveys/:surveyKey');
+
+    // The choice between not-found and configuration-error is FR-066's, and cannot be made
+    // before either screen exists — so the viewer drives resolve-then-load itself.
+    expect(viewer?.resolve).toBeUndefined();
+    expect(viewer?.canActivate).toBeUndefined();
+  });
+});
+
+describe('component input binding', () => {
+  it('binds route params to component inputs, which is how surveyKey arrives', () => {
+    // Without `withComponentInputBinding()` the viewer's `input.required<string>()` would
+    // never be set and the component would throw on first read.
+    TestBed.configureTestingModule({ providers: [...appConfig.providers] });
+
+    expect(TestBed.inject(Router).componentInputBindingEnabled).toBe(true);
   });
 });

@@ -159,7 +159,7 @@ export async function mountViewer<T>(
   const session = TestBed.inject(SurveySessionService);
   const fixture = TestBed.createComponent(component);
   fixture.componentRef.setInput('surveyKey', key);
-  await fixture.whenStable();
+  await flush(fixture);
 
   const base = harnessOf(fixture, session);
 
@@ -169,9 +169,23 @@ export async function mountViewer<T>(
     resolvedKeys: () => [...resolvedKeys],
     navigateTo: async (next: string) => {
       fixture.componentRef.setInput('surveyKey', next);
-      await fixture.whenStable();
+      await flush(fixture);
     },
   };
+}
+
+/**
+ * `whenStable` resolves once Angular has nothing left to render, but the viewer's load is a
+ * chain of plain promises the scheduler does not track: `catalog.resolve` then
+ * `loader.load`, each awaited inside an effect. Yielding the macrotask queue first lets
+ * that chain finish, so a render assertion sees the state the load produced rather than
+ * `loading`.
+ */
+async function flush<T>(fixture: ComponentFixture<T>): Promise<void> {
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, 0);
+  });
+  await fixture.whenStable();
 }
 
 function harnessOf<T>(
@@ -184,7 +198,7 @@ function harnessOf<T>(
     session,
     host,
     settle: async () => {
-      await fixture.whenStable();
+      await flush(fixture);
     },
     text: () => host.textContent?.replace(/\s+/g, ' ').trim() ?? '',
   };
