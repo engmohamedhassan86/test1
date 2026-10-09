@@ -53,6 +53,11 @@ export function attachmentId(value: string): AttachmentId {
   return brand<AttachmentId>(value);
 }
 
+/** Needed by the specs that build a `SurveyManifestEntry`, whose `key` is branded. */
+export function surveyKey(value: string): SurveyKey {
+  return brand<SurveyKey>(value);
+}
+
 export function optionValue(value: string): OptionValue {
   return brand<OptionValue>(value);
 }
