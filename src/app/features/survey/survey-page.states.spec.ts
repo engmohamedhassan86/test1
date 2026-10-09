@@ -165,7 +165,7 @@ describe('SurveyPageComponent — states', () => {
     harness.session.next();
     await harness.settle();
 
-    const summary = harness.host.querySelector('.sv-survey__summary');
+    const summary = harness.host.querySelector('.sv-summary');
     expect(summary?.getAttribute('role')).toBe('alert');
     expect(summary?.querySelectorAll('li').length).toBeGreaterThan(0);
 
@@ -193,7 +193,7 @@ describe('SurveyPageComponent — states', () => {
     await harness.settle();
 
     // Driven off the session's own error list, so a summary rendering only the first fails.
-    expect(harness.host.querySelectorAll('.sv-survey__summary li')).toHaveLength(
+    expect(harness.host.querySelectorAll('.sv-summary li')).toHaveLength(
       harness.session.currentPageErrors().length,
     );
     expect(harness.session.currentPageErrors()).toHaveLength(2);

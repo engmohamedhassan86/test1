@@ -32,8 +32,9 @@ export class RatingQuestionComponent {
   readonly titleId = input.required<string>();
   readonly describedBy = input.required<string | null>();
 
-  protected readonly invalid = computed(
-    () => this.session.errorFor(this.question().id) !== undefined,
+  /** FR-054's marker, absent rather than `false` on a valid control — see FR-064. */
+  protected readonly invalid = computed<true | null>(() =>
+    this.session.errorFor(this.question().id) !== undefined ? true : null,
   );
 
   protected readonly locked = this.session.inputsLocked;

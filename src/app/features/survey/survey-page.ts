@@ -19,11 +19,10 @@
  * either cannot read survey data — FR-040 and FR-042 are enforced by the compiler rather
  * than by review.
  *
- * The one piece of behaviour here is FR-030's focus move: a `focusRequest` naming a
- * question focuses the first focusable control inside that question's wrapper. It is an
- * `effect` because the control does not exist until the error state has rendered, and the
- * `token` on `FocusRequest` is what lets a second Next on the same question move focus
- * again.
+ * FR-030's focus move is **not** here: it lives in `survey-page-body.ts`, which is the
+ * component whose host actually contains the page heading and the question wrappers, so
+ * both halves of the rule — the heading after a successful Next, the offending control
+ * after a blocked one — are one effect in one file.
  */
 
 import {
@@ -31,7 +30,6 @@ import {
   Component,
   computed,
   effect,
-  ElementRef,
   inject,
   input,
   signal,
@@ -45,10 +43,10 @@ import { SurveySessionService } from '../../core/services/survey-session.service
 import { loadingAnnouncement } from '../../core/validators/messages';
 import { ConfigurationErrorComponent } from '../../shared/configuration-error';
 import { NotFoundPageComponent } from '../../shared/not-found-page';
-import { questionWrapperId } from './questions/question-host';
 import { SubmissionConfirmationComponent } from './submission-confirmation';
 import { SurveyNavigationComponent } from './survey-navigation';
 import { SurveyPageBodyComponent } from './survey-page-body';
+import { ValidationSummaryComponent } from './validation-summary';
 
 @Component({
   selector: 'app-survey-page',
@@ -58,6 +56,7 @@ import { SurveyPageBodyComponent } from './survey-page-body';
     SubmissionConfirmationComponent,
     SurveyNavigationComponent,
     SurveyPageBodyComponent,
+    ValidationSummaryComponent,
   ],
   templateUrl: './survey-page.html',
   styleUrl: './survey-page.css',
@@ -69,7 +68,6 @@ export class SurveyPageComponent {
   private readonly session = inject(SurveySessionService);
   private readonly announcer = inject(AnnouncerService);
   private readonly documentTitle = inject(DocumentTitleService);
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** Bound from the route by `withComponentInputBinding()`. */
   readonly surveyKey = input.required<string>();
@@ -82,8 +80,12 @@ export class SurveyPageComponent {
 
   protected readonly notFound = this.notFoundKey.asReadonly();
   protected readonly state = this.session.state;
+
+  /** Handed to the summary for the question titles its links carry (FR-054). */
+  protected readonly currentPage = this.session.currentPage;
+
+  /** The errors still standing, in page order. Live, so FR-020 reaches the summary. */
   protected readonly currentPageErrors = this.session.currentPageErrors;
-  protected readonly multiplePagesInvalid = this.session.multiplePagesInvalid;
 
   protected readonly surveyTitle = computed(() => this.session.survey()?.title ?? '');
 
@@ -92,14 +94,6 @@ export class SurveyPageComponent {
       // Re-runs when the route key changes, which is what makes reopening a survey start
       // a fresh session at page 1 rather than resuming the previous one.
       void this.openSurvey(this.surveyKey());
-    });
-
-    effect(() => {
-      const request = this.session.focusRequest();
-      if (request === null || request.questionId === null) {
-        return;
-      }
-      focusFirstControlIn(this.host.nativeElement, questionWrapperId(request.questionId));
     });
 
     effect(() => {
@@ -149,18 +143,4 @@ export class SurveyPageComponent {
 
     this.session.open(validation.survey);
   }
-}
-
-/**
- * FR-030's focus move. Focusing the first focusable descendant rather than the wrapper
- * itself is what lets one rule serve all six types: a `role="radiogroup"` div is not
- * focusable, and giving every group a `tabindex` to make it so would put a non-control in
- * the tab order.
- */
-function focusFirstControlIn(host: HTMLElement, wrapperId: string): void {
-  const wrapper = host.querySelector(`#${wrapperId}`);
-  const control = wrapper?.querySelector<HTMLElement>(
-    'input:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]',
-  );
-  control?.focus();
 }

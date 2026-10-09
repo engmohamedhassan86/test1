@@ -1,0 +1,53 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-summary {
+  margin: 0 0 var(--sv-space-5);
+  padding: var(--sv-space-4);
+  border: 1px solid var(--sv-maroon-300);
+  border-left: var(--sv-space-1) solid var(--sv-brand);
+  border-radius: var(--sv-radius);
+  background: var(--sv-brand-subtle);
+}
+
+.sv-summary__scope {
+  margin: 0 0 var(--sv-space-2);
+  font-weight: 600;
+}
+
+.sv-summary__list {
+  margin: 0;
+  padding-left: var(--sv-space-5);
+  display: grid;
+  gap: var(--sv-space-2);
+}
+
+.sv-summary__item {
+  /* A row wraps to two lines at 375px rather than overflowing the viewport. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sv-space-1) var(--sv-space-2);
+}
+
+.sv-summary__link {
+  /* 44px of vertical target even though the text itself is one line high (FR-057). */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--sv-brand);
+  font-weight: 600;
+}
+
+.sv-summary__link:hover {
+  color: var(--sv-brand-hover);
+}
+
+.sv-summary__link:focus-visible {
+  outline: var(--sv-focus-ring-width) solid var(--sv-focus-ring-color);
+  outline-offset: var(--sv-focus-ring-offset);
+}
+
+.sv-summary__message {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}

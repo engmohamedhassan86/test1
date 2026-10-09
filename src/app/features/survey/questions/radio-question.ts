@@ -32,8 +32,14 @@ export class RadioQuestionComponent {
   readonly titleId = input.required<string>();
   readonly describedBy = input.required<string | null>();
 
-  protected readonly invalid = computed(
-    () => this.session.errorFor(this.question().id) !== undefined,
+  /**
+   * FR-054's marker, present **only** while an error stands. `null` rather than `false`,
+   * because FR-064 and US2 scenario 12 both require a page the respondent returns to to
+   * carry no `aria-invalid` on any control — and `aria-invalid="false"` is an
+   * `aria-invalid` on a control.
+   */
+  protected readonly invalid = computed<true | null>(() =>
+    this.session.errorFor(this.question().id) !== undefined ? true : null,
   );
 
   protected readonly locked = this.session.inputsLocked;

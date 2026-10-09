@@ -130,10 +130,23 @@ export class SurveySessionService {
   /** FR-039: inputs are non-editable only while a submission is in flight. */
   readonly inputsLocked = computed(() => this.responseState().kind === 'submitting');
 
-  /** The errors for the page being shown, in page order. */
+  /**
+   * The errors **still standing** on the page being shown, in page order.
+   *
+   * Two sources, each supplying the half it owns: the report in the state gives page order
+   * (it was built by walking `page.questions`), and `errorMap` gives liveness, because
+   * FR-020 clears one question's error the moment its answer changes without re-running
+   * the validator. Reading the report alone would leave the page summary listing a
+   * question whose error text has already gone from under its control — US2 scenario 8
+   * says "removed immediately", and the summary is error text too.
+   */
   readonly currentPageErrors = computed<readonly ValidationError[]>(() => {
     const state = this.responseState();
-    return state.kind === 'validation-error' ? state.page.errors : [];
+    if (state.kind !== 'validation-error') {
+      return [];
+    }
+    const standing = this.errorMap();
+    return state.page.errors.filter((error) => standing.has(error.questionId));
   });
 
   /** FR-034: the summary names more than one page only when more than one is invalid. */
@@ -372,6 +385,16 @@ export class SurveySessionService {
    */
   submit(): Promise<void> {
     return this.runSubmission();
+  }
+
+  /**
+   * FR-030: raises the same `FocusRequest` a blocked Next raises, so the summary's links
+   * and the automatic focus move share one rule rather than two implementations. Public
+   * because the summary is the only caller; the token makes a repeat request a new value,
+   * so activating the same link twice moves focus twice.
+   */
+  focusQuestion(questionId: QuestionId): void {
+    this.requestFocus(questionId);
   }
 
   /**

@@ -32,13 +32,6 @@
   font-weight: 600;
 }
 
-.sv-survey__summary ul {
-  margin: 0;
-  padding-left: var(--sv-space-5);
-  display: grid;
-  gap: var(--sv-space-1);
-}
-
 .sv-survey__retry {
   margin-top: var(--sv-space-3);
   min-height: 44px;

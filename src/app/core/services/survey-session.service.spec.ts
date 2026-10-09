@@ -902,5 +902,30 @@ describe('SurveySessionService', () => {
       expect(session.currentPageErrors()).toEqual([]);
       expect(session.multiplePagesInvalid()).toBe(false);
     });
+
+    it('drops a corrected answer from the current-page errors immediately (FR-020)', () => {
+      const session = configure(new AcknowledgingSurveyResponseGateway());
+      const subject = survey([
+        page('p1', 'First', [
+          textboxQuestion({ id: 'q_name', required: true, minLength: 2 }),
+          radioQuestion({ id: 'q_pick', required: true }),
+        ]),
+        page('p2', 'Second', []),
+      ]);
+      session.open(subject);
+
+      session.next();
+      expect(session.currentPageErrors().map((error) => error.questionId)).toEqual([
+        'q_name',
+        'q_pick',
+      ]);
+
+      // The report frozen in the state still holds both. The live list must not: the
+      // summary reads this, and US2 scenario 8 says one answer fixed removes one message.
+      session.setAnswer(questionOn(subject, 0, 0), { kind: 'text', value: 'Dana' });
+
+      expect(session.currentPageErrors().map((error) => error.questionId)).toEqual(['q_pick']);
+      expect(session.state().kind).toBe('validation-error');
+    });
   });
 });

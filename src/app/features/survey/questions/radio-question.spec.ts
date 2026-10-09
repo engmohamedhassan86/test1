@@ -110,11 +110,13 @@ describe('RadioQuestionComponent', () => {
     expect(group?.getAttribute('aria-describedby')).toBe('sv-q-q_pick-error');
   });
 
-  it('reports aria-invalid false while no error stands', async () => {
+  it('carries no aria-invalid at all while no error stands (FR-064)', async () => {
     const harness = await mountQuestion(radioQuestion({ required: true }));
 
-    expect(harness.host.querySelector('[role="radiogroup"]')?.getAttribute('aria-invalid')).toBe(
-      'false',
+    // Absent, not `"false"`: FR-064 and US2 scenario 12 both require a page the
+    // respondent returns to to carry no `aria-invalid` on any control.
+    expect(harness.host.querySelector('[role="radiogroup"]')?.hasAttribute('aria-invalid')).toBe(
+      false,
     );
   });
 

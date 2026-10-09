@@ -173,7 +173,7 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     await clickNth(harness, '.sv-nav__button--primary', 0);
 
     expect(position(harness.host)).toBe('Page 1 of 4');
-    const summary = harness.host.querySelector('.sv-survey__summary');
+    const summary = harness.host.querySelector('.sv-summary');
     expect(summary?.getAttribute('role')).toBe('alert');
     expect(summary?.querySelectorAll('li').length).toBeGreaterThan(0);
   });

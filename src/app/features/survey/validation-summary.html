@@ -1,0 +1,26 @@
+@let rows = entries();
+@let pagesMessage = multiplePagesMessage();
+
+<!-- FR-030: assertive, so the respondent hears the blocked Next without moving focus
+     first. `role="alert"` is the assertive mapping; `aria-live` is spelled out beside it
+     so the requirement is readable in the DOM rather than implied by the role. -->
+<div class="sv-summary" role="alert" aria-live="assertive">
+  @if (pagesMessage !== null) {
+    <!-- FR-034: only when more than one page is invalid, and only after Submit. -->
+    <p class="sv-summary__scope">{{ pagesMessage }}</p>
+  }
+
+  <ul class="sv-summary__list">
+    @for (row of rows; track row.questionId) {
+      <li class="sv-summary__item">
+        <a
+          class="sv-summary__link"
+          [href]="row.target"
+          (click)="activate($event, row.questionId)"
+          >{{ row.questionTitle }}</a
+        >
+        <span class="sv-summary__message">{{ row.message }}</span>
+      </li>
+    }
+  </ul>
+</div>

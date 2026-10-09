@@ -179,7 +179,8 @@ describe('SatisfactionQuestionComponent', () => {
     const harness = await mountQuestion(satisfactionQuestion({ id: 'q_support', required: true }));
 
     const group = harness.host.querySelector('[role="radiogroup"]');
-    expect(group?.getAttribute('aria-invalid')).toBe('false');
+    // Absent, not `"false"` — FR-064 and US2 scenario 12.
+    expect(group?.hasAttribute('aria-invalid')).toBe(false);
     expect(group?.getAttribute('aria-describedby')).toBeNull();
   });
 
