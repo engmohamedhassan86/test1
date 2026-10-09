@@ -38,6 +38,32 @@ export function stubFetchResponse(stub: StubbedResponse): void {
   );
 }
 
+/** What a stubbed `fetch` was asked for, so a spec can assert the request and not only the answer. */
+export interface RecordedRequest {
+  readonly url: string;
+  readonly init: RequestInit | undefined;
+}
+
+/**
+ * Installs a `fetch` that answers one stubbed response and records every request it was
+ * handed. `HttpSurveyResponseGateway` is the one service whose *request* is part of the
+ * contract — `Idempotency-Key`, no `Authorization`, `credentials: 'omit'` — so its spec has
+ * to read the `init` back, which the fire-and-forget stubs above throw away.
+ */
+export function stubFetchRecording(stub: StubbedResponse): {
+  readonly requests: readonly RecordedRequest[];
+} {
+  const requests: RecordedRequest[] = [];
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((url: string, init?: RequestInit) => {
+      requests.push({ url, init });
+      return Promise.resolve(responseLike(stub));
+    }),
+  );
+  return { requests };
+}
+
 /** Installs a `fetch` that rejects, as a DNS failure or an offline browser would. */
 export function stubFetchTransportFailure(): void {
   vi.stubGlobal(
@@ -56,6 +82,13 @@ export function stubFetchNeverAnswers(): void {
     vi.fn(
       (_url: string, init?: RequestInit) =>
         new Promise<Response>((_resolve, reject) => {
+          // A signal that aborted before the call rejects at once, as the real `fetch`
+          // does — an `abort` listener would never fire for it, and the caller would wait
+          // for an answer that cannot arrive.
+          if (init?.signal?.aborted === true) {
+            reject(new DOMException('Aborted', 'AbortError'));
+            return;
+          }
           init?.signal?.addEventListener(
             'abort',
             () => reject(new DOMException('Aborted', 'AbortError')),
