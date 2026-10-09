@@ -33,14 +33,12 @@
   }
 
   @if (current.kind === 'submission-error') {
-    <!-- FR-045: the last page as left, answers intact, with a Try again action. -->
-    <div class="sv-survey__summary" role="alert">
-      <p>{{ current.failure.message }}</p>
-      @for (detail of current.failure.details; track detail.questionId) {
-        <p>{{ detail.reason }}</p>
-      }
-      <button type="button" class="sv-survey__retry" (click)="retry()">Try again</button>
-    </div>
+    <!-- FR-045, US6 scenario 4: the banner above the page the respondent left, which is
+         still rendered below with every answer and attachment intact and editable. The
+         body and the navigation are outside this branch on purpose — `submission-error`
+         renders as `editing` plus the banner, so Previous and Next keep working and the
+         respondent can go back and change an answer before trying again. -->
+    <app-submission-error-banner [failure]="current.failure" />
   }
 
   <app-survey-page-body />

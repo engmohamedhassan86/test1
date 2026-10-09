@@ -246,9 +246,11 @@ describe('SurveyPageComponent — states', () => {
 
     expect(harness.session.state().kind).toBe('submission-error');
 
-    const summary = harness.host.querySelector('.sv-survey__summary');
+    const summary = harness.host.querySelector('.sv-submit-error');
     expect(summary?.getAttribute('role')).toBe('alert');
-    expect(harness.host.querySelector('.sv-survey__retry')?.textContent?.trim()).toBe('Try again');
+    expect(harness.host.querySelector('.sv-submit-error__retry')?.textContent?.trim()).toBe(
+      'Try again',
+    );
 
     // Principle III: no success screen, and the survey is still on the page.
     expect(harness.host.querySelector('app-submission-confirmation')).toBeNull();

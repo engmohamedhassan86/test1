@@ -44,6 +44,7 @@ import { loadingAnnouncement } from '../../core/validators/messages';
 import { ConfigurationErrorComponent } from '../../shared/configuration-error';
 import { NotFoundPageComponent } from '../../shared/not-found-page';
 import { SubmissionConfirmationComponent } from './submission-confirmation';
+import { SubmissionErrorBannerComponent } from './submission-error-banner';
 import { SurveyNavigationComponent } from './survey-navigation';
 import { SurveyPageBodyComponent } from './survey-page-body';
 import { ValidationSummaryComponent } from './validation-summary';
@@ -54,6 +55,7 @@ import { ValidationSummaryComponent } from './validation-summary';
     ConfigurationErrorComponent,
     NotFoundPageComponent,
     SubmissionConfirmationComponent,
+    SubmissionErrorBannerComponent,
     SurveyNavigationComponent,
     SurveyPageBodyComponent,
     ValidationSummaryComponent,
@@ -108,10 +110,6 @@ export class SurveyPageComponent {
         this.documentTitle.apply({ screen: 'survey', surveyTitle: survey.title });
       }
     });
-  }
-
-  protected retry(): void {
-    void this.session.retry();
   }
 
   private async openSurvey(surveyKey: string): Promise<void> {

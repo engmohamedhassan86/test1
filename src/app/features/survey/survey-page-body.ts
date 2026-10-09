@@ -23,9 +23,9 @@
  */
 
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
-  effect,
   ElementRef,
   inject,
   viewChild,
@@ -51,12 +51,26 @@ export class SurveyPageBodyComponent {
   protected readonly page = this.session.currentPage;
 
   constructor() {
-    effect(() => {
+    // `afterRenderEffect`, not `effect`.
+    //
+    // A plain `effect` runs before the DOM it needs exists, and only one of the two focus
+    // targets exposes that. A blocked Next leaves the page index alone, so the question's
+    // wrapper is already rendered and the move appears to work; a blocked **Submit** moves
+    // to the earliest invalid page, so the wrapper belongs to a page that has not been
+    // rendered yet. `querySelector` then finds nothing, the focus silently does not move,
+    // and focus stays on whatever had it — in practice the page heading, which survives the
+    // page change because it is the same element with new text. The respondent is dropped
+    // at the top of a page and left to hunt for the question (US6 scenario 6).
+    //
+    // Running after render makes both cases the same case. It still tracks `focusRequest`,
+    // so the `token` keeps re-firing the move for a repeated request on one question.
+    afterRenderEffect(() => {
       const request = this.session.focusRequest();
       if (request === null) {
         return;
       }
       if (request.questionId === null) {
+        // FR-029: a successful page change focuses the new page's heading.
         this.heading()?.nativeElement.focus();
         return;
       }

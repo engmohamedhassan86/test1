@@ -281,7 +281,7 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     // Principle III: no confirmation until it is acknowledged.
     expect(harness.host.querySelector('app-submission-confirmation')).toBeNull();
     expect(harness.session.state().kind).toBe('submission-error');
-    expect(harness.host.querySelector('.sv-survey__retry')).not.toBeNull();
+    expect(harness.host.querySelector('.sv-submit-error__retry')).not.toBeNull();
 
     // Still on page 4, with the answer that was given.
     expect(position(harness.host)).toBe('Page 4 of 4');

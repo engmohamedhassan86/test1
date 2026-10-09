@@ -18,29 +18,5 @@
   color: var(--p-text-muted-color);
 }
 
-.sv-survey__summary {
-  margin: 0 0 var(--sv-space-5);
-  padding: var(--sv-space-4);
-  border: 1px solid var(--sv-maroon-300);
-  border-left: var(--sv-space-1) solid var(--sv-brand);
-  border-radius: var(--sv-radius);
-  background: var(--sv-brand-subtle);
-}
-
-.sv-survey__summary p {
-  margin: 0 0 var(--sv-space-2);
-  font-weight: 600;
-}
-
-.sv-survey__retry {
-  margin-top: var(--sv-space-3);
-  min-height: 44px;
-  padding: 0 var(--sv-space-5);
-  border: 1px solid var(--sv-brand);
-  border-radius: var(--sv-radius);
-  background: var(--sv-brand);
-  color: var(--sv-on-brand);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
+/* The submission-failure banner's styles moved to `submission-error-banner.css` with the
+   markup in T123, so `.sv-survey__summary` and `.sv-survey__retry` are gone from here. */
