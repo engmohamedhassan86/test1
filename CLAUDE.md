@@ -59,6 +59,38 @@ failing tests. A scoped folder run is ~0.8 KB. Reach for the smallest one that a
 
 Do not paste a whole build log, a whole test report, or a whole file into a comment or a handoff.
 
+## Reading code — search before you open
+
+Find the symbol first, then read only around it. Use `grep -n` or Glob to get a line number, then
+read a range. Never re-read a file you have already read in this run unless you changed it.
+
+The five largest files in the repo are worth knowing, because opening one whole costs more than the
+rest of a normal task:
+
+- `core/validators/survey-config.validator.spec.ts` 1246 lines
+- `core/validators/survey-config.validator.ts` 986 lines
+- `core/services/survey-session.service.spec.ts` 970 lines
+- `core/services/survey-session.service.ts` 704 lines
+- `core/validators/survey-fixtures.contract.spec.ts` 643 lines
+
+Reading all five is ~4,500 lines — about 92% of all non-spec source in the repo (7,008 lines).
+Read the function you are changing, not the file that holds it.
+
+## Handoffs — four lines, not a transcript
+
+When you hand an issue to another agent or back to the board, post exactly this shape:
+
+```
+Goal: <one line>
+Decisions: <what you chose and why, one line each>
+Changed: <file paths, and the commit sha if you committed>
+Open: <what is still unresolved, and who owns it>
+```
+
+No transcript, no command log, no file contents. The next agent reads this file plus your four
+lines and starts working. If something is not in those four lines, it was not important enough to
+carry.
+
 ## Stop condition
 
 If the same check fails twice and your second fix did not change the failure, stop. Do not try a
