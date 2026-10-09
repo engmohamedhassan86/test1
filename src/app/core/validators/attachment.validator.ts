@@ -52,6 +52,17 @@ export function isAcceptedType(
   return acceptedTypes.some((accepted) => accepted === mimeType || accepted === extension);
 }
 
+/**
+ * FR-022: whether a question that accepts attachments is holding all it can.
+ *
+ * The same `maxFiles` ceiling check 5 of `validateAttachmentSelection` enforces, exposed
+ * on its own so the file control can close at the limit without re-deriving the rule. A
+ * question with no policy is never at capacity — it has no slots to fill.
+ */
+export function isAtAttachmentCapacity(policy: AttachmentPolicy | null, held: number): boolean {
+  return policy !== null && held >= policy.maxFiles;
+}
+
 function reject(
   questionId: QuestionId,
   file: AttachmentCandidate,

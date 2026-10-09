@@ -150,7 +150,12 @@ describe('CheckboxQuestionComponent', () => {
 
     const group = harness.host.querySelector('fieldset');
     expect(group?.getAttribute('aria-invalid')).toBe('true');
-    expect(group?.getAttribute('aria-describedby')).toBe('sv-q-q_liked-error');
+    // The error leads, per FR-054's ordering. The required indication trails it because a
+    // `fieldset` is role `group`, which cannot take `aria-required`, so this group is the
+    // one type that carries required-ness as a description.
+    expect(group?.getAttribute('aria-describedby')).toBe(
+      'sv-q-q_liked-error sv-q-q_liked-required',
+    );
     expect(harness.host.querySelector('.sv-question__error')?.textContent).toBe(
       'Select at least 1 option',
     );

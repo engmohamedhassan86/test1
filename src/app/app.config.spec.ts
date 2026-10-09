@@ -88,6 +88,28 @@ describe('routes', () => {
     expect(routes.some((route) => route.component !== undefined)).toBe(false);
   });
 
+  it('resolves every lazy loader to the component the route is for', async () => {
+    // `typeof === 'function'` above proves only that a loader exists. A mistyped import
+    // path or a renamed export still satisfies it and then fails in the browser on
+    // navigation, where nothing in the suite would have caught it. So call each one.
+    const loaded = await Promise.all(
+      routes.map(async (route) => {
+        const loadComponent = route.loadComponent;
+        if (loadComponent === undefined) {
+          throw new Error(`route ${String(route.path)} has no loadComponent`);
+        }
+        const resolved = await loadComponent();
+        return 'name' in resolved ? resolved.name : '';
+      }),
+    );
+
+    expect(loaded).toEqual([
+      'CatalogPageComponent',
+      'SurveyPageComponent',
+      'NotFoundPageComponent',
+    ]);
+  });
+
   it('gives the two single-title screens a static title (FR-077)', () => {
     expect(routes.find((route) => route.path === '')?.title).toBe('Surveys');
     expect(routes.find((route) => route.path === '**')?.title).toBe('Survey not found');

@@ -96,20 +96,32 @@ export class QuestionHostComponent {
   protected readonly titleId = computed(() => `sv-q-${this.question().id}-title`);
   protected readonly descriptionId = computed(() => `sv-q-${this.question().id}-description`);
   protected readonly errorId = computed(() => `sv-q-${this.question().id}-error`);
+  protected readonly requiredId = computed(() => `sv-q-${this.question().id}-required`);
 
   protected readonly error = computed(() => this.session.errorFor(this.question().id));
 
   /**
    * FR-054: the error text and the description are both associated with the control
    * through `aria-describedby`, in that order — the error is the more urgent of the two.
+   *
+   * A required `checkbox` question appends the required indication as a third id. Every
+   * other type carries the required state as `aria-required` on its control, but a
+   * checkbox group is a `fieldset`, whose implicit role is `group`, and `group` does not
+   * support `aria-required` — `axe-core`'s `aria-allowed-attr` fires on it. The
+   * description is the only standards-valid channel left, and FR-005 still has to reach a
+   * screen reader somehow, because the visible marker is `aria-hidden`.
    */
   protected readonly describedBy = computed(() => {
+    const question = this.question();
     const ids: string[] = [];
     if (this.error() !== undefined) {
       ids.push(this.errorId());
     }
-    if (this.question().description !== null) {
+    if (question.description !== null) {
       ids.push(this.descriptionId());
+    }
+    if (question.type === 'checkbox' && question.required) {
+      ids.push(this.requiredId());
     }
     return ids.length === 0 ? null : ids.join(' ');
   });

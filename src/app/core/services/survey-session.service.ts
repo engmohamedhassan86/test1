@@ -231,6 +231,24 @@ export class SurveySessionService {
     this.afterAnswerChange(question.id);
   }
 
+  /**
+   * Adds or removes one option from a checkbox answer, then takes the `setAnswer` path.
+   *
+   * The add-or-remove is here rather than in `checkbox-question` because it is a
+   * transformation of the answer, and plan §6.2 keeps those out of components. It also
+   * reads the current selection from the session itself, so a component cannot toggle
+   * against a stale list it happened to be holding.
+   */
+  toggleOption(question: CheckboxQuestion, value: OptionValue, selected: boolean): void {
+    const answer = this.answerMap().get(question.id);
+    const current: readonly OptionValue[] =
+      answer !== undefined && answer.type === 'checkbox' ? answer.value : [];
+    const next = selected
+      ? [...current, value]
+      : current.filter((candidate) => candidate !== value);
+    this.setAnswer(question, { kind: 'options', values: next });
+  }
+
   /** FR-060: allowed on a required question — clearing is not the same as never answering. */
   clearAnswer(questionId: QuestionId): void {
     const next = new Map(this.answerMap());

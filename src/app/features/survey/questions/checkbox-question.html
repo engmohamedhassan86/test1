@@ -1,11 +1,12 @@
-@let q = question();
-
 <p class="sv-choices__hint">{{ hint() }}</p>
 
+<!-- No `aria-required` here, unlike the other four grouped types: a `fieldset`'s implicit
+     role is `group`, and `group` does not support `aria-required` (`aria-allowed-attr`).
+     `question-host` routes the required indication into this group's `aria-describedby`
+     instead, so FR-005 still reaches a screen reader. -->
 <fieldset
   class="sv-choices"
   [attr.aria-labelledby]="titleId()"
-  [attr.aria-required]="q.required"
   [attr.aria-invalid]="invalid()"
   [attr.aria-describedby]="describedBy()"
 >

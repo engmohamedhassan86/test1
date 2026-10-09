@@ -69,14 +69,14 @@ export class CheckboxQuestionComponent {
   });
 
   /**
-   * The `checked` flag is read from the event target by narrowing rather than by `$any`,
-   * so the template stays free of casts and the compiler still checks this path.
+   * Reads the `checked` flag off the event target and forwards it. The narrowing is here
+   * rather than `$any` in the template, so the compiler still checks this path; the
+   * add-or-remove itself is `session.toggleOption`, because transforming the answer is
+   * `core`'s and not this component's (plan §6.2).
    */
   protected toggle(value: OptionValue, event: Event): void {
     const target = event.target;
     const checked = target instanceof HTMLInputElement && target.checked;
-    const current = this.selectedValues();
-    const next = checked ? [...current, value] : current.filter((held) => held !== value);
-    this.session.setAnswer(this.question(), { kind: 'options', values: next });
+    this.session.toggleOption(this.question(), value, checked);
   }
 }

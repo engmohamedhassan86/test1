@@ -36,6 +36,7 @@ import type { AttachmentId } from '../../../core/models/branded';
 import { formatAcceptedTypes, formatFileSize } from '../../../core/models/display-format';
 import type { Question } from '../../../core/models/survey.model';
 import { SurveySessionService } from '../../../core/services/survey-session.service';
+import { isAtAttachmentCapacity } from '../../../core/validators/attachment.validator';
 import { attachmentCounterMessage } from '../../../core/validators/messages';
 
 /** One row of the held-files list. */
@@ -85,10 +86,9 @@ export class QuestionAttachmentsComponent {
    * stays in place beside a counter that reads `3 of 3 files`. `core` also rejects an
    * over-limit selection with `no-free-slot`, so this is the affordance and not the rule.
    */
-  protected readonly full = computed(() => {
-    const policy = this.policy();
-    return policy !== null && this.held().length >= policy.maxFiles;
-  });
+  protected readonly full = computed(() =>
+    isAtAttachmentCapacity(this.policy(), this.held().length),
+  );
 
   protected readonly locked = this.session.inputsLocked;
 

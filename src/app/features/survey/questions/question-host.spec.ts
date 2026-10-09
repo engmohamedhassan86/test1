@@ -116,6 +116,29 @@ describe('QuestionHostComponent', () => {
         'true',
       );
     });
+
+    it('routes a required checkbox group through aria-describedby, not aria-required', async () => {
+      const { host } = await mountQuestion(checkboxQuestion({ id: 'q_liked', required: true }));
+
+      const group = host.querySelector('fieldset');
+      // A `fieldset`'s implicit role is `group`, which does not support `aria-required`.
+      // Setting it anyway is an `aria-allowed-attr` violation, so the required state has
+      // to travel as a description instead — and it must still travel, or FR-005 reaches
+      // nobody using a screen reader, because the visible marker is `aria-hidden`.
+      expect(group?.getAttribute('aria-required')).toBeNull();
+      const describedBy = group?.getAttribute('aria-describedby') ?? '';
+      expect(describedBy.split(' ')).toContain('sv-q-q_liked-required');
+      // The id resolves to the indication itself, not to a dangling reference.
+      expect(host.querySelector('#sv-q-q_liked-required')?.textContent).toBe('Required');
+    });
+
+    it('leaves an optional checkbox group with no required description', async () => {
+      const { host } = await mountQuestion(checkboxQuestion({ id: 'q_liked', required: false }));
+
+      // The negative half: a host that appended the id unconditionally would announce
+      // every optional group as required.
+      expect(host.querySelector('fieldset')?.getAttribute('aria-describedby')).toBeNull();
+    });
   });
 
   describe('error association', () => {

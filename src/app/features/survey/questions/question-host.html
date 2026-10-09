@@ -15,8 +15,11 @@
     @if (q.required) {
       <!-- FR-005's visible indication. `aria-required` on the control carries it
            programmatically, so this is hidden to keep the accessible name exactly the
-           title (FR-053). -->
-      <span class="sv-question__required" aria-hidden="true">Required</span>
+           title (FR-053). The id is for the one type that cannot take `aria-required` —
+           a checkbox group is a `fieldset`, role `group`, which does not support it — so
+           that group names this span in `aria-describedby` instead. A directly
+           referenced node contributes its text even while `aria-hidden`. -->
+      <span class="sv-question__required" [id]="requiredId()" aria-hidden="true">Required</span>
     } @else {
       <span class="sv-question__optional" aria-hidden="true">Optional</span>
     }
