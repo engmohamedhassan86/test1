@@ -30,6 +30,15 @@ export default defineConfig({
     setupFiles: ['src/test-setup.ts'],
     include: ['src/**/*.spec.ts'],
     reporters: ['default'],
+    deps: {
+      external: ['node:buffer', 'node:fs', 'node:path', 'node:url'],
+    },
+    alias: {
+      'node:buffer': 'node:buffer',
+      'node:fs': 'node:fs',
+      'node:path': 'node:path',
+      'node:url': 'node:url',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'text', 'lcov'],
