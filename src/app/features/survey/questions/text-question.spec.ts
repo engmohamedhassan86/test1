@@ -1,100 +1,161 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { byText } from '@angular/cdk/testing/matchers';
+/**
+ * T105 — FR-008, FR-015 and FR-053's **single-control** form.
+ *
+ * Two assertions here exist because the old task text would have led to the wrong markup:
+ * the control's accessible name must be the question title, **and** it must not be wrapped
+ * in a `radiogroup` or a `fieldset`. A single input is not a group, and claiming it is
+ * would be invalid ARIA rather than harmless extra markup (`spec.md` §735,
+ * `plan.md` §588).
+ */
 
-import { TextQuestionComponent } from './text-question';
-import { SurveyQuestion } from '../core/models/survey.model';
-import { SurveySessionService } from '../core/services/survey-session.service';
+import { describe, expect, it } from 'vitest';
 
-fdescribe('TextQuestionComponent', () => {
-  let fixture: ComponentFixture<TextQuestionComponent>;
-  let surveySessionService: SurveySessionService;
+import {
+  questionId,
+  textareaQuestion,
+  textboxQuestion,
+} from '../../../core/models/__fixtures__/survey-builders';
+import { accessibleNameOf, mountQuestion } from './__fixtures__/question-harness';
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [TextQuestionComponent],
-      providers: [
-        {
-          provide: SurveySessionService,
-          useValue: {
-            setAnswer: () => {},
-            maxLengthOf: (question: SurveyQuestion) => question.maxLength || 80,
-          },
-        },
-      ],
-    }).compileComponents();
+function type(control: HTMLInputElement | HTMLTextAreaElement, value: string): void {
+  control.value = value;
+  control.dispatchEvent(new Event('input'));
+}
 
-    fixture = TestBed.createComponent(TextQuestionComponent);
-    surveySessionService = TestBed.inject(SurveySessionService);
+describe('TextQuestionComponent', () => {
+  describe('textbox', () => {
+    it('renders a single-line input', async () => {
+      const harness = await mountQuestion(textboxQuestion());
 
-    fixture.componentRef.setInput('question', {
-      id: 'q1',
-      type: 'textbox',
-      title: 'Question 1',
-      required: true,
-      maxLength: 80,
+      expect(harness.host.querySelector('input[type="text"]')).not.toBeNull();
+      expect(harness.host.querySelector('textarea')).toBeNull();
     });
 
-    fixture.componentRef.setInput('questionId', 'q1');
-    fixture.componentRef.setInput('answer', null);
-    fixture.detectChanges();
-  });
+    it("has an accessible name equal to the question's title (FR-053)", async () => {
+      const harness = await mountQuestion(textboxQuestion({ title: 'What should we call you?' }));
 
-  it('should bind [maxlength]="session.maxLengthOf"', () => {
-    expect(fixture.debugElement.query('[maxlength]')).toBeTruthy();
-    expect(fixture.debugElement.query('[maxlength]').attributes['maxlength']).toBe('80');
-  });
-
-  it('should render both textbox and textarea through this component', () => {
-    const textboxQuestion: SurveyQuestion = {
-      id: 'q1',
-      type: 'textbox',
-      title: 'Question 1',
-      required: true,
-      maxLength: 80,
-    };
-
-    fixture.componentRef.setInput('question', textboxQuestion);
-    fixture.detectChanges();
-
-    expect(fixture.debugElement.query('input[type="text"]')).toBeTruthy();
-    expect(fixture.debugElement.query('textarea')).toBeFalsy();
-
-    const textareaQuestion: SurveyQuestion = {
-      id: 'q2',
-      type: 'textarea',
-      title: 'Question 2',
-      required: true,
-      maxLength: 2000,
-    };
-
-    fixture.componentRef.setInput('question', textareaQuestion);
-    fixture.detectChanges();
-
-    expect(fixture.debugElement.query('input[type="text"]')).toBeFalsy();
-    expect(fixture.debugElement.query('textarea')).toBeTruthy();
-  });
-
-  it("should carry a programmatic label whose accessible name is that question's title and is not wrapped in a radiogroup", () => {
-    const label = fixture.debugElement.query('label');
-    expect(label).toBeTruthy();
-    expect(label.attributes['for']).toBeDefined();
-    expect(label.textContent).toContain('Question 1');
-
-    const radiogroup = fixture.debugElement.query('[role="radiogroup"]');
-    expect(radiogroup).toBeFalsy();
-  });
-
-  it('should wire error attributes when error is present', () => {
-    const mockSessionService = TestBed.inject(SurveySessionService);
-    (mockSessionService.state as any).and.returnValue({
-      maxLengthOf: () => 80,
+      const input = harness.host.querySelector('input[type="text"]');
+      if (input === null) {
+        throw new Error('expected an input');
+      }
+      expect(accessibleNameOf(harness.host, input)).toBe('What should we call you?');
     });
 
-    fixture.componentRef.setInput('answer', '');
-    fixture.detectChanges();
+    it('is not wrapped in a radiogroup or a fieldset', async () => {
+      const harness = await mountQuestion(textboxQuestion());
 
-    const input = fixture.debugElement.query('[maxlength]');
-    expect(input.attributes['aria-invalid']).toBe('true');
-    expect(input.attributes['aria-describedby']).toBeDefined();
+      expect(harness.host.querySelector('[role="radiogroup"]')).toBeNull();
+      expect(harness.host.querySelector('fieldset')).toBeNull();
+      expect(harness.host.querySelector('[role="group"]')).toBeNull();
+    });
+
+    it('binds maxlength from session.maxLengthOf (FR-015)', async () => {
+      const harness = await mountQuestion(textboxQuestion({ maxLength: 80 }));
+
+      expect(harness.host.querySelector('input[type="text"]')?.getAttribute('maxlength')).toBe(
+        '80',
+      );
+    });
+
+    it('stores the trimmed value through setAnswer', async () => {
+      const harness = await mountQuestion(textboxQuestion({ id: 'q_name' }));
+      const input = harness.host.querySelector<HTMLInputElement>('input[type="text"]');
+      if (input === null) {
+        throw new Error('expected an input');
+      }
+
+      type(input, '  Dana  ');
+      await harness.settle();
+
+      expect(harness.session.answers().get(questionId('q_name'))).toEqual({
+        type: 'textbox',
+        value: 'Dana',
+      });
+    });
+  });
+
+  describe('textarea', () => {
+    it('renders a multi-line control through the same component', async () => {
+      const harness = await mountQuestion(textareaQuestion());
+
+      expect(harness.host.querySelector('app-text-question')).not.toBeNull();
+      expect(harness.host.querySelector('textarea')).not.toBeNull();
+      expect(harness.host.querySelector('input[type="text"]')).toBeNull();
+    });
+
+    it("has an accessible name equal to the question's title (FR-053)", async () => {
+      const harness = await mountQuestion(textareaQuestion({ title: 'Anything we should see?' }));
+
+      const control = harness.host.querySelector('textarea');
+      if (control === null) {
+        throw new Error('expected a textarea');
+      }
+      expect(accessibleNameOf(harness.host, control)).toBe('Anything we should see?');
+    });
+
+    it('is not wrapped in a radiogroup or a fieldset', async () => {
+      const harness = await mountQuestion(textareaQuestion());
+
+      expect(harness.host.querySelector('[role="radiogroup"]')).toBeNull();
+      expect(harness.host.querySelector('fieldset')).toBeNull();
+    });
+
+    it('binds its own maxLength', async () => {
+      const harness = await mountQuestion(textareaQuestion({ maxLength: 1000 }));
+
+      expect(harness.host.querySelector('textarea')?.getAttribute('maxlength')).toBe('1000');
+    });
+
+    it('stores the value it is given', async () => {
+      const harness = await mountQuestion(textareaQuestion({ id: 'q_comments' }));
+      const control = harness.host.querySelector<HTMLTextAreaElement>('textarea');
+      if (control === null) {
+        throw new Error('expected a textarea');
+      }
+
+      type(control, 'The parcel arrived opened.');
+      await harness.settle();
+
+      expect(harness.session.answers().get(questionId('q_comments'))).toEqual({
+        type: 'textarea',
+        value: 'The parcel arrived opened.',
+      });
+    });
+  });
+
+  describe('error wiring and locking', () => {
+    it('wires aria-invalid and aria-describedby when an error stands', async () => {
+      const harness = await mountQuestion(textboxQuestion({ id: 'q_name', required: true }));
+
+      harness.session.next();
+      await harness.settle();
+
+      const input = harness.host.querySelector('input[type="text"]');
+      expect(input?.getAttribute('aria-invalid')).toBe('true');
+      expect(input?.getAttribute('aria-describedby')).toBe('sv-q-q_name-error');
+      expect(harness.host.querySelector('.sv-question__error')?.textContent).toBe(
+        'Enter an answer',
+      );
+    });
+
+    it('reports the minLength rule for a value that is short but not empty', async () => {
+      const harness = await mountQuestion(
+        textboxQuestion({ id: 'q_name', required: true, minLength: 2 }),
+      );
+      const input = harness.host.querySelector<HTMLInputElement>('input[type="text"]');
+      if (input === null) {
+        throw new Error('expected an input');
+      }
+
+      type(input, 'D');
+      await harness.settle();
+      harness.session.next();
+      await harness.settle();
+
+      // FR-014 keeps this distinct from the required rule, which the whitespace case hits.
+      expect(harness.host.querySelector('.sv-question__error')?.textContent).toBe(
+        'Use at least 2 characters',
+      );
+    });
   });
 });

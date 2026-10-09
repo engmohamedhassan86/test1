@@ -1,119 +1,173 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { byText } from '@angular/cdk/testing/matchers';
+/**
+ * T111 — the dispatch, and the three things the host renders for all six types.
+ *
+ * The **required/optional pair** is the load-bearing assertion here. `T091` is the single
+ * place the required indication is rendered, so a regression there regresses FR-005 for
+ * every type at once; a test that only checked the required side would pass against a host
+ * that marked everything required.
+ */
 
-import { QuestionHostComponent } from './questions/question-host';
-import { SurveyQuestion } from '../core/models/survey.model';
-import { SurveySessionService } from '../core/services/survey-session.service';
-import { SurveySession } from '../core/models/response-state.model';
+import { describe, expect, it } from 'vitest';
 
-fdescribe('QuestionHostComponent', () => {
-  let fixture: ComponentFixture<QuestionHostComponent>;
-  let surveySessionService: SurveySessionService;
+import {
+  checkboxQuestion,
+  radioQuestion,
+  ratingQuestion,
+  satisfactionQuestion,
+  textareaQuestion,
+  textboxQuestion,
+} from '../../../core/models/__fixtures__/survey-builders';
+import { optionValue } from '../../../core/models/__fixtures__/survey-builders';
+import { mountQuestion } from './__fixtures__/question-harness';
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [QuestionHostComponent],
-      providers: [
-        {
-          provide: SurveySessionService,
-          useValue: {
-            state: () => ({
-              answers: () => new Map(),
-              isOptionSelectable: () => true,
-            }),
-            setAnswer: () => {},
-          },
-        },
-      ],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(QuestionHostComponent);
-    surveySessionService = TestBed.inject(SurveySessionService);
-
-    fixture.componentRef.setInput('question', {
-      id: 'q1',
-      type: 'radio',
-      title: 'Question 1',
-      required: true,
-      options: [
-        { id: 'opt1', label: 'Option 1', value: '1' },
-        { id: 'opt2', label: 'Option 2', value: '2' },
-      ],
+describe('QuestionHostComponent', () => {
+  describe('dispatch', () => {
+    it('routes a radio question to the radio component', async () => {
+      const { host } = await mountQuestion(radioQuestion());
+      expect(host.querySelector('app-radio-question')).not.toBeNull();
     });
 
-    fixture.detectChanges();
+    it('routes a checkbox question to the checkbox component', async () => {
+      const { host } = await mountQuestion(checkboxQuestion());
+      expect(host.querySelector('app-checkbox-question')).not.toBeNull();
+    });
+
+    it('routes a textbox question to the text component', async () => {
+      const { host } = await mountQuestion(textboxQuestion());
+      expect(host.querySelector('app-text-question')).not.toBeNull();
+      expect(host.querySelector('input[type="text"]')).not.toBeNull();
+    });
+
+    it('routes a textarea question to the same text component', async () => {
+      const { host } = await mountQuestion(textareaQuestion());
+      // FR-008's difference is one line versus many, not two sets of rules.
+      expect(host.querySelector('app-text-question')).not.toBeNull();
+      expect(host.querySelector('textarea')).not.toBeNull();
+    });
+
+    it('routes a rating question to the rating component', async () => {
+      const { host } = await mountQuestion(ratingQuestion());
+      expect(host.querySelector('app-rating-question')).not.toBeNull();
+    });
+
+    it('routes a satisfaction question to the satisfaction component', async () => {
+      const { host } = await mountQuestion(satisfactionQuestion());
+      expect(host.querySelector('app-satisfaction-question')).not.toBeNull();
+    });
+
+    it('renders exactly one control component per question', async () => {
+      const { host } = await mountQuestion(radioQuestion());
+
+      const controls = host.querySelectorAll(
+        'app-radio-question, app-checkbox-question, app-text-question, app-rating-question, app-satisfaction-question',
+      );
+      expect(controls).toHaveLength(1);
+    });
   });
 
-  it('should route to its own component for each of the six types', () => {
-    const radioQuestion = fixture.debugElement.query('[type="radio"]');
-    expect(radioQuestion).toBeTruthy();
+  describe('title, description and required indication', () => {
+    it('renders the question title once', async () => {
+      const { host } = await mountQuestion(radioQuestion({ title: 'Which describes you?' }));
 
-    const mockQuestion: SurveyQuestion = {
-      id: 'q2',
-      type: 'checkbox',
-      title: 'Question 2',
-      required: true,
-      options: [],
-    };
+      const titles = host.querySelectorAll('.sv-question__title');
+      expect(titles).toHaveLength(1);
+      expect(titles[0].textContent).toContain('Which describes you?');
+    });
 
-    fixture.componentRef.setInput('question', mockQuestion);
-    fixture.detectChanges();
+    it('renders the description when the config supplies one', async () => {
+      const { host } = await mountQuestion(
+        radioQuestion({ description: 'Pick the closest match.' }),
+      );
 
-    const checkboxInput = fixture.debugElement.query('[type="checkbox"]');
-    expect(checkboxInput).toBeTruthy();
+      expect(host.querySelector('.sv-question__description')?.textContent).toBe(
+        'Pick the closest match.',
+      );
+    });
 
-    const textQuestion: SurveyQuestion = {
-      id: 'q3',
-      type: 'textbox',
-      title: 'Question 3',
-      required: true,
-      maxLength: 80,
-    };
+    it('leaves no empty element behind when there is no description (FR-073)', async () => {
+      const { host } = await mountQuestion(radioQuestion({ description: null }));
 
-    fixture.componentRef.setInput('question', textQuestion);
-    fixture.detectChanges();
+      // Not an empty paragraph, not a reserved line: nothing at all.
+      expect(host.querySelector('.sv-question__description')).toBeNull();
+    });
 
-    const textInput = fixture.debugElement.query('input[type="text"]');
-    expect(textInput).toBeTruthy();
+    it('shows a visible required indication on a required question (FR-005)', async () => {
+      const { host } = await mountQuestion(radioQuestion({ required: true }));
+
+      expect(host.querySelector('.sv-question__required')).not.toBeNull();
+      expect(host.querySelector('.sv-question__optional')).toBeNull();
+    });
+
+    it('shows no required indication on an optional question (FR-005, the negative half)', async () => {
+      const { host } = await mountQuestion(radioQuestion({ required: false }));
+
+      // Without this, a host that marked everything required would still pass.
+      expect(host.querySelector('.sv-question__required')).toBeNull();
+      expect(host.querySelector('.sv-question__optional')).not.toBeNull();
+    });
+
+    it('carries required-ness programmatically as well as visibly', async () => {
+      const { host } = await mountQuestion(radioQuestion({ required: true }));
+
+      // The visible marker is `aria-hidden`, so `aria-required` is what a screen reader
+      // reads — and keeping it off the title is what keeps the accessible name exact.
+      expect(host.querySelector('[role="radiogroup"]')?.getAttribute('aria-required')).toBe('true');
+      expect(host.querySelector('.sv-question__required')?.getAttribute('aria-hidden')).toBe(
+        'true',
+      );
+    });
   });
 
-  it('should render the question title', () => {
-    expect(fixture.debugElement.query(byText('Question 1')).toBeTruthy());
-  });
+  describe('error association', () => {
+    it('renders no error text and no describedby until an error stands', async () => {
+      const { host } = await mountQuestion(radioQuestion({ required: true }));
 
-  it('should render the optional description only when the config supplies one', () => {
-    expect(fixture.debugElement.query(byText('Question 1')).toBeTruthy());
-    expect(fixture.debugElement.query(byText('Some description')).toBeFalsy());
+      expect(host.querySelector('.sv-question__error')).toBeNull();
+      expect(
+        host.querySelector('[role="radiogroup"]')?.getAttribute('aria-describedby'),
+      ).toBeNull();
+    });
 
-    const mockQuestion: SurveyQuestion = {
-      id: 'q2',
-      type: 'radio',
-      title: 'Question 2',
-      required: true,
-      description: 'Some description',
-      options: [],
-    };
+    it('renders the error text and points aria-describedby at it (FR-054)', async () => {
+      const harness = await mountQuestion(radioQuestion({ id: 'q_pick', required: true }));
 
-    fixture.componentRef.setInput('question', mockQuestion);
-    fixture.detectChanges();
+      harness.session.next();
+      await harness.settle();
 
-    expect(fixture.debugElement.query(byText('Some description')).toBeTruthy());
-  });
+      const error = harness.host.querySelector('.sv-question__error');
+      expect(error?.textContent).toBe('Choose one option');
 
-  it('should show a visible required indication on a required question', () => {
-    expect(fixture.debugElement.query(byText('Required')).toBeTruthy());
+      const group = harness.host.querySelector('[role="radiogroup"]');
+      expect(group?.getAttribute('aria-invalid')).toBe('true');
+      expect(group?.getAttribute('aria-describedby')).toBe(error?.id);
+    });
 
-    const mockQuestion: SurveyQuestion = {
-      id: 'q2',
-      type: 'radio',
-      title: 'Question 2',
-      required: false,
-      options: [],
-    };
+    it('names both the error and the description when both are present', async () => {
+      const harness = await mountQuestion(
+        radioQuestion({ id: 'q_pick', required: true, description: 'Pick one.' }),
+      );
 
-    fixture.componentRef.setInput('question', mockQuestion);
-    fixture.detectChanges();
+      harness.session.next();
+      await harness.settle();
 
-    expect(fixture.debugElement.query(byText('Required')).toBeFalsy());
+      const describedBy =
+        harness.host.querySelector('[role="radiogroup"]')?.getAttribute('aria-describedby') ?? '';
+      // The error comes first: it is the more urgent of the two.
+      expect(describedBy.split(' ')).toEqual(['sv-q-q_pick-error', 'sv-q-q_pick-description']);
+    });
+
+    it('drops the error the moment the answer changes (FR-020)', async () => {
+      const question = radioQuestion({ id: 'q_pick', required: true });
+      const harness = await mountQuestion(question);
+
+      harness.session.next();
+      await harness.settle();
+      expect(harness.host.querySelector('.sv-question__error')).not.toBeNull();
+
+      harness.session.setAnswer(question, { kind: 'option', value: optionValue('a') });
+      await harness.settle();
+
+      expect(harness.host.querySelector('.sv-question__error')).toBeNull();
+    });
   });
 });

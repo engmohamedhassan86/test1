@@ -1,80 +1,137 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { byText } from '@angular/cdk/testing/matchers';
+/**
+ * T103 — FR-006 and FR-053's grouped form for `radio`.
+ */
 
-import { RadioQuestionComponent } from './radio-question';
-import { SurveyQuestion } from '../core/models/survey.model';
-import { SurveySessionService } from '../core/services/survey-session.service';
+import { describe, expect, it } from 'vitest';
 
-fdescribe('RadioQuestionComponent', () => {
-  let fixture: ComponentFixture<RadioQuestionComponent>;
-  let surveySessionService: SurveySessionService;
+import { option, radioQuestion } from '../../../core/models/__fixtures__/survey-builders';
+import { questionId } from '../../../core/models/__fixtures__/survey-builders';
+import { FailingSurveyResponseGateway } from '../../../core/services/testing/failing-survey-response.gateway';
+import { mountQuestion } from './__fixtures__/question-harness';
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [RadioQuestionComponent],
-      providers: [
-        {
-          provide: SurveySessionService,
-          useValue: {
-            setAnswer: () => {},
-            state: () => ({
-              isOptionSelectable: () => true,
-            }),
-          },
-        },
-      ],
-    }).compileComponents();
+function threeOptions() {
+  return [
+    option('seg-new', 'A new customer', 'new'),
+    option('seg-returning', 'A returning customer', 'returning'),
+    option('seg-business', 'A business customer', 'business'),
+  ] as const;
+}
 
-    fixture = TestBed.createComponent(RadioQuestionComponent);
-    surveySessionService = TestBed.inject(SurveySessionService);
+describe('RadioQuestionComponent', () => {
+  it('renders a radiogroup whose accessible name is the question title (FR-053)', async () => {
+    const harness = await mountQuestion(
+      radioQuestion({ title: 'Which of these describes you?', options: threeOptions() }),
+    );
 
-    fixture.componentRef.setInput('question', {
-      id: 'q1',
+    const group = harness.host.querySelector('[role="radiogroup"]');
+    expect(group).not.toBeNull();
+    if (group === null) {
+      throw new Error('expected a radiogroup');
+    }
+    // Not merely "a name is present": the name's text is the assertion, because a group
+    // labelled "Question" passes an axe name-presence check and violates FR-053.
+    expect(harness.accessibleName(group)).toBe('Which of these describes you?');
+  });
+
+  it('renders one radio per option in config order with the label as visible text', async () => {
+    const harness = await mountQuestion(radioQuestion({ options: threeOptions() }));
+
+    const labels = [...harness.host.querySelectorAll('.sv-choice__label')].map((element) =>
+      element.textContent?.trim(),
+    );
+    expect(labels).toEqual(['A new customer', 'A returning customer', 'A business customer']);
+  });
+
+  it('stores the option value, not its id or its label', async () => {
+    const harness = await mountQuestion(
+      radioQuestion({ id: 'q_segment', options: threeOptions() }),
+    );
+
+    harness.host.querySelectorAll<HTMLInputElement>('input[type="radio"]')[1].click();
+    await harness.settle();
+
+    expect(harness.session.answers().get(questionId('q_segment'))).toEqual({
       type: 'radio',
-      title: 'Question 1',
-      required: true,
-      options: [
-        { id: 'opt1', label: 'Option 1', value: '1' },
-        { id: 'opt2', label: 'Option 2', value: '2' },
-      ],
+      value: 'returning',
     });
-
-    fixture.componentRef.setInput('questionId', 'q1');
-    fixture.componentRef.setInput('answer', null);
-    fixture.detectChanges();
   });
 
-  it('should render role="radiogroup" labelled by the question title', () => {
-    expect(fixture.debugElement.query('[role="radiogroup"]')).toBeTruthy();
-    expect(fixture.debugElement.query(byText('Question 1'))).toBeTruthy();
-    const radiogroup = fixture.debugElement.query('[role="radiogroup"]');
-    expect(radiogroup.attributes['aria-labelledby']).toBeDefined();
-  });
+  it('holds at most one value, so a second choice replaces the first (FR-006)', async () => {
+    const harness = await mountQuestion(
+      radioQuestion({ id: 'q_segment', options: threeOptions() }),
+    );
+    const radios = harness.host.querySelectorAll<HTMLInputElement>('input[type="radio"]');
 
-  it('should render options in config order with option labels as visible text', () => {
-    expect(fixture.debugElement.queryAll(byText('Option 1')).length).toBe(1);
-    expect(fixture.debugElement.queryAll(byText('Option 2')).length).toBe(1);
-  });
+    radios[0].click();
+    await harness.settle();
+    radios[2].click();
+    await harness.settle();
 
-  it('should store the option value when selected', () => {
-    const option1 = fixture.debugElement.queryAll('[type="radio"][value="1"]')[0];
-    option1.nativeElement.click();
-    fixture.detectChanges();
-
-    expect(surveySessionService.setAnswer).toHaveBeenCalledWith('q1', '1');
-  });
-
-  it('should show aria-invalid and aria-describedby when error is present', () => {
-    const mockSessionService = TestBed.inject(SurveySessionService);
-    (mockSessionService.state as any).and.returnValue({
-      isOptionSelectable: () => true,
+    expect(harness.session.answers().get(questionId('q_segment'))).toEqual({
+      type: 'radio',
+      value: 'business',
     });
+    expect(harness.session.answers().size).toBe(1);
+  });
 
-    fixture.componentRef.setInput('answer', 'some-answer');
-    fixture.detectChanges();
+  it('reflects the held value as the checked radio', async () => {
+    const question = radioQuestion({ id: 'q_segment', options: threeOptions() });
+    const harness = await mountQuestion(question);
 
-    const radiogroup = fixture.debugElement.query('[role="radiogroup"]');
-    expect(radiogroup.attributes['aria-invalid']).toBe('true');
-    expect(radiogroup.attributes['aria-describedby']).toBeDefined();
+    harness.host.querySelectorAll<HTMLInputElement>('input[type="radio"]')[1].click();
+    await harness.settle();
+
+    const checked = harness.host.querySelectorAll<HTMLInputElement>('input[type="radio"]:checked');
+    expect(checked).toHaveLength(1);
+    expect(checked[0].value).toBe('returning');
+  });
+
+  it('groups the radios under one name, so arrow keys move within the group', async () => {
+    const harness = await mountQuestion(
+      radioQuestion({ id: 'q_segment', options: threeOptions() }),
+    );
+
+    const names = new Set(
+      [...harness.host.querySelectorAll<HTMLInputElement>('input[type="radio"]')].map(
+        (input) => input.name,
+      ),
+    );
+    expect(names).toEqual(new Set(['q_segment']));
+  });
+
+  it('wires aria-invalid and aria-describedby when an error stands', async () => {
+    const harness = await mountQuestion(radioQuestion({ id: 'q_pick', required: true }));
+
+    harness.session.next();
+    await harness.settle();
+
+    const group = harness.host.querySelector('[role="radiogroup"]');
+    expect(group?.getAttribute('aria-invalid')).toBe('true');
+    expect(group?.getAttribute('aria-describedby')).toBe('sv-q-q_pick-error');
+  });
+
+  it('reports aria-invalid false while no error stands', async () => {
+    const harness = await mountQuestion(radioQuestion({ required: true }));
+
+    expect(harness.host.querySelector('[role="radiogroup"]')?.getAttribute('aria-invalid')).toBe(
+      'false',
+    );
+  });
+
+  it('disables every radio while a submission is in flight (FR-039)', async () => {
+    const harness = await mountQuestion(radioQuestion({ id: 'q_pick', required: true }), {
+      // An adapter that answers immediately would be in `submitted` before the assertion.
+      gateway: new FailingSurveyResponseGateway('never-answers'),
+    });
+    harness.host.querySelectorAll<HTMLInputElement>('input[type="radio"]')[0].click();
+    await harness.settle();
+
+    void harness.session.submit();
+    await harness.settle();
+
+    const disabled = [
+      ...harness.host.querySelectorAll<HTMLInputElement>('input[type="radio"]'),
+    ].every((input) => input.disabled);
+    expect(disabled).toBe(true);
   });
 });

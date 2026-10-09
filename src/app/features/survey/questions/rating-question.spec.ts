@@ -1,98 +1,157 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { byText } from '@angular/cdk/testing/matchers';
+/**
+ * T106 — FR-009's two presentations, FR-053's grouped form, FR-060's Clear, and FR-058's
+ * target size.
+ *
+ * The `min: 0` case is the one worth having: zero stars cannot be told apart from no
+ * answer, which is the whole reason the numeric presentation exists.
+ */
 
-import { RatingQuestionComponent } from './rating-question';
-import { SurveyQuestion } from '../core/models/survey.model';
-import { SurveySessionService } from '../core/services/survey-session.service';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-fdescribe('RatingQuestionComponent', () => {
-  let fixture: ComponentFixture<RatingQuestionComponent>;
-  let surveySessionService: SurveySessionService;
+import { describe, expect, it } from 'vitest';
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [RatingQuestionComponent],
-      providers: [
-        {
-          provide: SurveySessionService,
-          useValue: {
-            setAnswer: () => {},
-            state: () => ({
-              isOptionSelectable: () => true,
-            }),
-          },
-        },
-      ],
-    }).compileComponents();
+import { questionId, ratingQuestion } from '../../../core/models/__fixtures__/survey-builders';
+import { mountQuestion } from './__fixtures__/question-harness';
 
-    fixture = TestBed.createComponent(RatingQuestionComponent);
-    surveySessionService = TestBed.inject(SurveySessionService);
+function points(host: HTMLElement): HTMLButtonElement[] {
+  return [...host.querySelectorAll<HTMLButtonElement>('.sv-scale__point')];
+}
 
-    fixture.componentRef.setInput('question', {
-      id: 'q1',
+describe('RatingQuestionComponent', () => {
+  it('renders stars when scale.min is at least 1 (FR-009)', async () => {
+    const harness = await mountQuestion(ratingQuestion({ scale: { min: 1, max: 5 } }));
+
+    expect(points(harness.host)).toHaveLength(5);
+    expect(harness.host.querySelectorAll('.sv-scale__star')).toHaveLength(5);
+    expect(harness.host.querySelectorAll('.sv-scale__number')).toHaveLength(0);
+  });
+
+  it('renders a labelled numeric row when scale.min is 0 (FR-009)', async () => {
+    const harness = await mountQuestion(ratingQuestion({ scale: { min: 0, max: 10 } }));
+
+    // Zero stars is indistinguishable from no answer, so the numbers carry the scale.
+    expect(points(harness.host)).toHaveLength(11);
+    expect(harness.host.querySelectorAll('.sv-scale__number')).toHaveLength(11);
+    expect(harness.host.querySelectorAll('.sv-scale__star')).toHaveLength(0);
+    expect(points(harness.host)[0].textContent?.trim()).toBe('0');
+  });
+
+  it("has a group whose accessible name is the question's title in the star presentation", async () => {
+    const harness = await mountQuestion(
+      ratingQuestion({ title: 'How would you rate the delivery?', scale: { min: 1, max: 5 } }),
+    );
+
+    const group = harness.host.querySelector('[role="radiogroup"]');
+    if (group === null) {
+      throw new Error('expected a radiogroup');
+    }
+    expect(harness.accessibleName(group)).toBe('How would you rate the delivery?');
+  });
+
+  it("has a group whose accessible name is the question's title in the numeric presentation", async () => {
+    const harness = await mountQuestion(
+      ratingQuestion({ title: 'How likely are you to return?', scale: { min: 0, max: 10 } }),
+    );
+
+    const group = harness.host.querySelector('[role="radiogroup"]');
+    if (group === null) {
+      throw new Error('expected a radiogroup');
+    }
+    // Asserted in both presentations: the group markup differs, so one assertion would
+    // leave half of FR-053 unchecked for this type.
+    expect(harness.accessibleName(group)).toBe('How likely are you to return?');
+  });
+
+  it('gives each star an accessible name even though the glyph is decorative', async () => {
+    const harness = await mountQuestion(ratingQuestion({ scale: { min: 1, max: 5 } }));
+
+    expect(harness.host.querySelectorAll('.sv-scale__star[aria-hidden="true"]')).toHaveLength(5);
+    expect(points(harness.host)[2].textContent?.trim()).toContain('3');
+  });
+
+  it('stores the integer that was chosen', async () => {
+    const harness = await mountQuestion(
+      ratingQuestion({ id: 'q_delivery', scale: { min: 1, max: 5 } }),
+    );
+
+    points(harness.host)[3].click();
+    await harness.settle();
+
+    expect(harness.session.answers().get(questionId('q_delivery'))).toEqual({
       type: 'rating',
-      title: 'Question 1',
-      required: true,
-      scale: { min: 1, max: 5 },
+      value: 4,
     });
-
-    fixture.componentRef.setInput('questionId', 'q1');
-    fixture.componentRef.setInput('answer', null);
-    fixture.detectChanges();
   });
 
-  it('should render stars when scale.min >= 1', () => {
-    expect(fixture.debugElement.queryAll('[type="radio"][value="1"]').length).toBe(1);
-    expect(fixture.debugElement.queryAll('[type="radio"][value="2"]').length).toBe(1);
-    expect(fixture.debugElement.queryAll('[type="radio"][value="3"]').length).toBe(1);
-    expect(fixture.debugElement.queryAll('[type="radio"][value="4"]').length).toBe(1);
-    expect(fixture.debugElement.queryAll('[type="radio"][value="5"]').length).toBe(1);
+  it('marks the chosen point as checked, and only that one', async () => {
+    const harness = await mountQuestion(
+      ratingQuestion({ id: 'q_delivery', scale: { min: 1, max: 5 } }),
+    );
+
+    points(harness.host)[3].click();
+    await harness.settle();
+
+    const checked = points(harness.host).filter(
+      (point) => point.getAttribute('aria-checked') === 'true',
+    );
+    expect(checked).toHaveLength(1);
   });
 
-  it("should render a labelled group whose accessible name is the question's title", () => {
-    expect(fixture.debugElement.query('fieldset')).toBeTruthy();
-    expect(fixture.debugElement.query('legend')).toBeTruthy();
-    expect(fixture.debugElement.query(byText('Question 1'))).toBeTruthy();
-    const fieldset = fixture.debugElement.query('fieldset');
-    expect(fieldset.attributes['aria-labelledby']).toBeDefined();
+  it('returns the question to unanswered on Clear, and Next is still accepted (FR-060, US1 scenario 6)', async () => {
+    const harness = await mountQuestion(
+      ratingQuestion({ id: 'q_delivery', required: false, scale: { min: 1, max: 5 } }),
+    );
+
+    points(harness.host)[2].click();
+    await harness.settle();
+    expect(harness.session.answers().has(questionId('q_delivery'))).toBe(true);
+
+    harness.host.querySelector<HTMLButtonElement>('.sv-scale__clear')?.click();
+    await harness.settle();
+
+    // Not reset to the scale's minimum, which would be an answer.
+    expect(harness.session.answers().has(questionId('q_delivery'))).toBe(false);
+    expect(harness.session.questionErrors().size).toBe(0);
   });
 
-  it('should have Clear action returning the question to unanswered', () => {
-    const mockSessionService = TestBed.inject(SurveySessionService);
+  it('disables Clear while there is nothing to clear', async () => {
+    const harness = await mountQuestion(ratingQuestion({ scale: { min: 1, max: 5 } }));
 
-    fixture.componentRef.setInput('answer', '3');
-    fixture.detectChanges();
-
-    const clearButton = fixture.debugElement.query(byText('Clear'));
-    expect(clearButton).toBeTruthy();
-
-    clearButton.parent?.nativeElement.click();
-    fixture.detectChanges();
-
-    expect(surveySessionService.setAnswer).toHaveBeenCalledWith('q1', '');
+    expect(harness.host.querySelector<HTMLButtonElement>('.sv-scale__clear')?.disabled).toBe(true);
   });
 
-  it('should accept Next for an optional rating', () => {
-    const mockQuestion: SurveyQuestion = {
-      id: 'q1',
-      type: 'rating',
-      title: 'Question 1',
-      required: false,
-      scale: { min: 1, max: 5 },
-    };
+  it('gives every star a 44px minimum target (FR-058)', async () => {
+    const harness = await mountQuestion(ratingQuestion({ scale: { min: 1, max: 5 } }));
 
-    fixture.componentRef.setInput('question', mockQuestion);
-    fixture.detectChanges();
+    // jsdom computes no layout and does not inject `styleUrl` CSS into the fixture, so the
+    // two halves are asserted separately: every rendered point carries `sv-scale__point`,
+    // and the stylesheet the component declares sizes that class to 44px. The rendered box
+    // is the 375px smoke gate's job (T146).
+    const rendered = points(harness.host);
+    expect(rendered).toHaveLength(5);
+    expect(rendered.every((point) => point.classList.contains('sv-scale__point'))).toBe(true);
 
-    expect(fixture.debugElement.queryAll('[type="radio"]').length).toBe(5);
+    // Resolved from the project root rather than `import.meta.url`: under the jsdom
+    // environment Vite hands this module an http: URL, which `node:fs` cannot open.
+    const styles = readFileSync(
+      resolve(process.cwd(), 'src/app/features/survey/questions/scale-question.css'),
+      'utf8',
+    );
+    expect(styles).toMatch(/\.sv-scale__point\s*\{[^}]*min-width:\s*44px/s);
+    expect(styles).toMatch(/\.sv-scale__point\s*\{[^}]*min-height:\s*44px/s);
   });
 
-  it('should have each star target 44 × 44px at 375px', () => {
-    const stars = fixture.debugElement.queryAll('[type="radio"]');
-    stars.forEach((star) => {
-      const rect = star.nativeElement.getBoundingClientRect();
-      expect(rect.width).toBeGreaterThanOrEqual(44);
-      expect(rect.height).toBeGreaterThanOrEqual(44);
-    });
+  it('wires aria-invalid and aria-describedby when an error stands', async () => {
+    const harness = await mountQuestion(
+      ratingQuestion({ id: 'q_delivery', required: true, scale: { min: 1, max: 5 } }),
+    );
+
+    harness.session.next();
+    await harness.settle();
+
+    const group = harness.host.querySelector('[role="radiogroup"]');
+    expect(group?.getAttribute('aria-invalid')).toBe('true');
+    expect(group?.getAttribute('aria-describedby')).toBe('sv-q-q_delivery-error');
   });
 });

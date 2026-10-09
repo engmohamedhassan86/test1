@@ -1,101 +1,158 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { byText } from '@angular/cdk/testing/matchers';
+/**
+ * T104 — FR-007, FR-017 and FR-053's grouped form for `checkbox`.
+ *
+ * The selectability pair is the important one: "non-selectable at the ceiling" and
+ * "selectable again after a de-selection" are different assertions, and an implementation
+ * that disabled an option permanently once the ceiling was reached would pass the first.
+ */
 
-import { CheckboxQuestionComponent } from './checkbox-question';
-import { SurveyQuestion } from '../core/models/survey.model';
-import { SurveySessionService } from '../core/services/survey-session.service';
+import { describe, expect, it } from 'vitest';
 
-fdescribe('CheckboxQuestionComponent', () => {
-  let fixture: ComponentFixture<CheckboxQuestionComponent>;
-  let surveySessionService: SurveySessionService;
+import {
+  checkboxQuestion,
+  option,
+  questionId,
+} from '../../../core/models/__fixtures__/survey-builders';
+import { mountQuestion } from './__fixtures__/question-harness';
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [CheckboxQuestionComponent],
-      providers: [
-        {
-          provide: SurveySessionService,
-          useValue: {
-            setAnswer: () => {},
-            state: () => ({
-              isOptionSelectable: (question: SurveyQuestion, value: string) => {
-                return !(value === '2' && question.required);
-              },
-            }),
-          },
-        },
-      ],
-    }).compileComponents();
+function fiveOptions() {
+  return [
+    option('liked-delivery', 'Delivery speed', 'delivery'),
+    option('liked-packaging', 'Packaging', 'packaging'),
+    option('liked-support', 'Support', 'support'),
+    option('liked-price', 'Price', 'price'),
+    option('liked-quality', 'Quality', 'quality'),
+  ] as const;
+}
 
-    fixture = TestBed.createComponent(CheckboxQuestionComponent);
-    surveySessionService = TestBed.inject(SurveySessionService);
+function boxes(host: HTMLElement): HTMLInputElement[] {
+  return [...host.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+}
 
-    fixture.componentRef.setInput('question', {
-      id: 'q1',
+describe('CheckboxQuestionComponent', () => {
+  it('renders a group whose accessible name is the question title (FR-053)', async () => {
+    const harness = await mountQuestion(
+      checkboxQuestion({ title: 'What did you like?', options: fiveOptions() }),
+    );
+
+    const group = harness.host.querySelector('fieldset');
+    expect(group).not.toBeNull();
+    if (group === null) {
+      throw new Error('expected a fieldset');
+    }
+    expect(harness.accessibleName(group)).toBe('What did you like?');
+  });
+
+  it('renders one checkbox per option in config order', async () => {
+    const harness = await mountQuestion(checkboxQuestion({ options: fiveOptions() }));
+
+    const labels = [...harness.host.querySelectorAll('.sv-choice__label')].map((element) =>
+      element.textContent?.trim(),
+    );
+    expect(labels).toEqual(['Delivery speed', 'Packaging', 'Support', 'Price', 'Quality']);
+  });
+
+  it('renders the selection hint from core (US2 scenario 5)', async () => {
+    const harness = await mountQuestion(
+      checkboxQuestion({ maxSelections: 3, options: fiveOptions() }),
+    );
+
+    expect(harness.host.querySelector('.sv-choices__hint')?.textContent?.trim()).toBe(
+      'Select up to 3 options',
+    );
+  });
+
+  it('holds a set of selected values in option order', async () => {
+    const harness = await mountQuestion(
+      checkboxQuestion({ id: 'q_liked', maxSelections: 3, options: fiveOptions() }),
+    );
+
+    // Ticked out of order: the third option, then the first.
+    boxes(harness.host)[2].click();
+    await harness.settle();
+    boxes(harness.host)[0].click();
+    await harness.settle();
+
+    expect(harness.session.answers().get(questionId('q_liked'))).toEqual({
       type: 'checkbox',
-      title: 'Question 1',
-      required: true,
-      options: [
-        { id: 'opt1', label: 'Option 1', value: '1' },
-        { id: 'opt2', label: 'Option 2', value: '2' },
-      ],
+      value: ['delivery', 'support'],
     });
-
-    fixture.componentRef.setInput('questionId', 'q1');
-    fixture.componentRef.setInput('answer', null);
-    fixture.detectChanges();
   });
 
-  it('should render fieldset + legend naming the question', () => {
-    expect(fixture.debugElement.query('fieldset')).toBeTruthy();
-    expect(fixture.debugElement.query('legend')).toBeTruthy();
-    expect(fixture.debugElement.query(byText('Question 1'))).toBeTruthy();
+  it('makes unselected options non-selectable at maxSelections (FR-017)', async () => {
+    const harness = await mountQuestion(
+      checkboxQuestion({ id: 'q_liked', maxSelections: 3, options: fiveOptions() }),
+    );
+
+    for (const index of [0, 1, 2]) {
+      boxes(harness.host)[index].click();
+      await harness.settle();
+    }
+
+    const disabled = boxes(harness.host).map((box) => box.disabled);
+    expect(disabled).toEqual([false, false, false, true, true]);
   });
 
-  it('should render options in config order', () => {
-    expect(fixture.debugElement.queryAll(byText('Option 1')).length).toBe(1);
-    expect(fixture.debugElement.queryAll(byText('Option 2')).length).toBe(1);
+  it('makes them selectable again after a de-selection (FR-017, the other half)', async () => {
+    const harness = await mountQuestion(
+      checkboxQuestion({ id: 'q_liked', maxSelections: 3, options: fiveOptions() }),
+    );
+    for (const index of [0, 1, 2]) {
+      boxes(harness.host)[index].click();
+      await harness.settle();
+    }
+    expect(boxes(harness.host)[4].disabled).toBe(true);
+
+    boxes(harness.host)[0].click();
+    await harness.settle();
+
+    expect(boxes(harness.host)[4].disabled).toBe(false);
   });
 
-  it('should bind [disabled]="!session.isOptionSelectable(...)"', () => {
-    expect(fixture.debugElement.queryAll('[disabled]').length).toBe(0);
+  it('deletes the answer when the last selection is removed', async () => {
+    const harness = await mountQuestion(
+      checkboxQuestion({ id: 'q_liked', options: fiveOptions() }),
+    );
 
-    fixture.componentRef.setInput('answer', ['2']);
-    fixture.detectChanges();
+    boxes(harness.host)[0].click();
+    await harness.settle();
+    boxes(harness.host)[0].click();
+    await harness.settle();
 
-    expect(fixture.debugElement.queryAll('[disabled]').length).toBe(1);
-    expect(
-      fixture.debugElement.queryAll('[disabled]')[0].attributes['aria-disabled'],
-    ).toBeDefined();
+    // Unanswered is absence, so an empty selection is not stored as `[]`.
+    expect(harness.session.answers().has(questionId('q_liked'))).toBe(false);
   });
 
-  it('should render the hint `Select up to 3 options`', () => {
-    const mockQuestion = {
-      id: 'q1',
-      type: 'checkbox',
-      title: 'Question 1',
-      required: true,
-      options: [],
-      maxSelections: 3,
-    };
+  it('reflects the held selection as checked boxes', async () => {
+    const harness = await mountQuestion(
+      checkboxQuestion({ id: 'q_liked', maxSelections: 3, options: fiveOptions() }),
+    );
 
-    fixture.componentRef.setInput('question', mockQuestion as SurveyQuestion);
-    fixture.detectChanges();
+    boxes(harness.host)[1].click();
+    await harness.settle();
 
-    expect(fixture.debugElement.query(byText('Select up to 3 options'))).toBeTruthy();
+    expect(boxes(harness.host).map((box) => box.checked)).toEqual([
+      false,
+      true,
+      false,
+      false,
+      false,
+    ]);
   });
 
-  it('should wire error attributes when error is present', () => {
-    const mockSessionService = TestBed.inject(SurveySessionService);
-    (mockSessionService.state as any).and.returnValue({
-      isOptionSelectable: () => true,
-    });
+  it('wires aria-invalid and aria-describedby when an error stands', async () => {
+    const harness = await mountQuestion(
+      checkboxQuestion({ id: 'q_liked', required: true, minSelections: 1, options: fiveOptions() }),
+    );
 
-    fixture.componentRef.setInput('answer', []);
-    fixture.detectChanges();
+    harness.session.next();
+    await harness.settle();
 
-    const fieldset = fixture.debugElement.query('fieldset');
-    expect(fieldset.attributes['aria-invalid']).toBe('true');
-    expect(fieldset.attributes['aria-describedby']).toBeDefined();
+    const group = harness.host.querySelector('fieldset');
+    expect(group?.getAttribute('aria-invalid')).toBe('true');
+    expect(group?.getAttribute('aria-describedby')).toBe('sv-q-q_liked-error');
+    expect(harness.host.querySelector('.sv-question__error')?.textContent).toBe(
+      'Select at least 1 option',
+    );
   });
 });
