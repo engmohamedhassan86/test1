@@ -6,7 +6,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AttachmentCodecService } from './attachment-codec.service';
 
-function fileOf(bytes: Uint8Array, name = 'receipt.pdf'): File {
+/*
+ * `Uint8Array<ArrayBuffer>`, not the default `Uint8Array<ArrayBufferLike>`: `BlobPart`
+ * admits an `ArrayBufferView<ArrayBuffer>`, and `ArrayBufferLike` also covers
+ * `SharedArrayBuffer`, which a Blob cannot take. Narrowing the parameter is what makes
+ * this type-check — a cast on the argument would have hidden the same distinction.
+ */
+function fileOf(bytes: Uint8Array<ArrayBuffer>, name = 'receipt.pdf'): File {
   return new File([bytes], name, { type: 'application/pdf' });
 }
 

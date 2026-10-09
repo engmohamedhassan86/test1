@@ -15,7 +15,15 @@
  */
 
 import { brand } from '../branded';
-import type { AtLeastTwo, NonEmpty, OptionValue, PageId, QuestionId, SurveyKey } from '../branded';
+import type {
+  AtLeastTwo,
+  AttachmentId,
+  NonEmpty,
+  OptionValue,
+  PageId,
+  QuestionId,
+  SurveyKey,
+} from '../branded';
 import type {
   AcceptedFileType,
   AttachmentPolicy,
@@ -33,6 +41,16 @@ import type {
 
 export function questionId(value: string): QuestionId {
   return brand<QuestionId>(value);
+}
+
+/**
+ * Attachment ids are minted by `IdFactoryService` at runtime, so a spec that needs to
+ * name one it never held — the "remove an attachment this question does not have" path —
+ * has no other way to produce one. It is a distinct builder rather than a reuse of
+ * `questionId` precisely because the brands are not interchangeable.
+ */
+export function attachmentId(value: string): AttachmentId {
+  return brand<AttachmentId>(value);
 }
 
 export function optionValue(value: string): OptionValue {

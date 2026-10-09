@@ -9,10 +9,11 @@
  */
 
 import { TestBed } from '@angular/core/testing';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { Question, Survey } from '../models/survey.model';
 import {
+  attachmentId,
   optionValue,
   page,
   questionId,
@@ -831,7 +832,7 @@ describe('SurveySessionService', () => {
       const subject = attachmentSurvey();
       session.open(subject);
 
-      session.removeAttachment(questionId('q_evidence'), questionId('nope'));
+      session.removeAttachment(questionId('q_evidence'), attachmentId('nope'));
 
       expect(session.state().kind).toBe('ready');
     });
