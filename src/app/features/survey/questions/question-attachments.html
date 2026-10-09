@@ -1,0 +1,73 @@
+@let currentPolicy = policy();
+
+<!-- FR-021 and US3 scenario 10: a question with no attachment block renders no file
+     control at all. The config validator already collapsed `maxFiles: 0` and an absent
+     block into `null`, so this is one branch rather than two. -->
+@if (currentPolicy !== null) {
+  @let rows = held();
+  @let rejected = rejections();
+
+  <div class="sv-files">
+    <!-- A real `<label for>` tied to the input, so clicking the word focuses the control. -->
+    <label class="sv-files__label" [id]="labelId()" [for]="inputId()">Attach a file</label>
+
+    <p class="sv-files__hint" [id]="hintId()">
+      Up to {{ currentPolicy.maxFiles }} files, {{ acceptedLabel() }}, {{ maxSizeLabel() }} each.
+    </p>
+
+    <!-- FR-053: the accessible name has to name *this* question, and "Attach a file" alone
+         does not — four attachment controls on one page would share one name. So
+         `aria-labelledby` points at the question title and then at the label, composing
+         e.g. "Anything we should see? Attach a file". It overrides the `<label for>` for
+         naming purposes, which is the intent; the `for` stays for the click target.
+         `aria-describedby` carries the rules, so they are read with the control rather
+         than discovered only after a rejection. -->
+    <input
+      class="sv-files__input"
+      type="file"
+      multiple
+      [id]="inputId()"
+      [accept]="acceptHint()"
+      [attr.aria-labelledby]="nameIds()"
+      [attr.aria-describedby]="hintId()"
+      [disabled]="full() || locked()"
+      (change)="choose($event)"
+    />
+
+    <!-- FR-025's counter. Polite rather than assertive: it changes as a consequence of an
+         action the respondent just took, so it does not need to interrupt. -->
+    <p class="sv-files__counter" aria-live="polite">{{ counter() }}</p>
+
+    @if (rows.length > 0) {
+      <ul class="sv-files__list">
+        @for (row of rows; track row.id) {
+          <li class="sv-files__item">
+            <span class="sv-files__name">{{ row.name }}</span>
+            <span class="sv-files__size">{{ row.size }}</span>
+            <!-- The accessible name names the file, not just "Remove": a list of three
+                 identical "Remove" buttons is unusable from a screen reader's list. -->
+            <button
+              class="sv-files__remove"
+              type="button"
+              [attr.aria-label]="'Remove ' + row.name"
+              [disabled]="locked()"
+              (click)="remove(row.id)"
+            >
+              Remove
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    <!-- FR-024: one named error per rejected file. Assertive, because a rejection is the
+         respondent learning that something they just did did not take effect. -->
+    @if (rejected.length > 0) {
+      <ul class="sv-files__rejections" role="alert" aria-live="assertive">
+        @for (rejection of rejected; track rejection.fileName + rejection.reason) {
+          <li class="sv-files__rejection">{{ rejection.message }}</li>
+        }
+      </ul>
+    }
+  </div>
+}

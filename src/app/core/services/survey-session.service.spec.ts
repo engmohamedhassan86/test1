@@ -42,14 +42,19 @@ import {
 
 const TIMEOUTS = { fetchMs: 10_000, submitMs: 15_000 };
 
-function configure(gateway: SurveyResponseGateway): SurveySessionService {
+function configure(
+  gateway: SurveyResponseGateway,
+  options: { readonly codec?: AttachmentCodecService } = {},
+): SurveySessionService {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     providers: [
       SurveySessionService,
       AnnouncerService,
-      AttachmentCodecService,
       IdFactoryService,
+      options.codec === undefined
+        ? AttachmentCodecService
+        : { provide: AttachmentCodecService, useValue: options.codec },
       { provide: SURVEY_TIMEOUTS, useValue: TIMEOUTS },
       { provide: SurveyResponseGateway, useValue: gateway },
     ],
@@ -857,11 +862,45 @@ describe('SurveySessionService', () => {
 
       // The re-check runs at Next through `validatePage`, so a passing one must not
       // invent an error. The failing half of FR-027 — a held file that stopped satisfying
-      // its policy — is only reachable by changing the policy under an open session,
-      // which no route does, so it is asserted directly against `attachmentErrorsFor` in
-      // `attachment.validator.spec.ts` instead.
+      // its policy — is asserted directly against `attachmentErrorsFor` in
+      // `attachment.validator.spec.ts`, and at the DOM level in
+      // `features/survey/survey-page.attachment-submit.spec.ts`, which reaches it by
+      // attaching through a question object whose policy is looser than the one the
+      // opened survey holds for the same id.
       expect(session.currentPageIndex()).toBe(1);
       expect(session.questionErrors().size).toBe(0);
+    });
+
+    it('fails closed to submission-error when an attachment cannot be encoded', async () => {
+      // A codec that reads fine and cannot encode. The real case is a `btoa` throw on a
+      // file at the 5 MB ceiling; what matters is that the payload cannot be built.
+      const brokenCodec = {
+        read: async (file: File) => new Uint8Array(await file.arrayBuffer()),
+        toBase64: (): string => {
+          throw new Error('cannot encode');
+        },
+      } as unknown as AttachmentCodecService;
+
+      const gateway = new AcknowledgingSurveyResponseGateway();
+      const session = configure(gateway, { codec: brokenCodec });
+      const subject = attachmentSurvey();
+      session.open(subject);
+      await session.addFiles(questionOn(subject, 0, 0), [
+        fileOf('receipt.pdf', 'application/pdf', 500),
+      ]);
+
+      await session.submit();
+
+      // Nothing was sent, so no confirmation may be shown. The alternative the builder
+      // used to allow — empty `content` — would have been acknowledged here and put the
+      // respondent on the confirmation screen for a file the receiver never received.
+      expect(gateway.calls).toEqual([]);
+      expect(session.state().kind).toBe('submission-error');
+
+      // And the machine is not stranded in `submitting`: the respondent gets a message
+      // and keeps every answer and attachment, so Try again is a real option (SC-007).
+      expect(TestBed.inject(AnnouncerService).assertive()).toContain('Your answers are safe');
+      expect(session.attachmentsFor(questionId('q_evidence'))).toHaveLength(1);
     });
   });
 

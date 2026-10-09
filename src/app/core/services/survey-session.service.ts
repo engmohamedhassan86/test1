@@ -39,7 +39,11 @@ import type { FocusRequest } from '../models/focus-request';
 import type { ResponseState } from '../models/response-state.model';
 import { canTransition } from '../models/response-state.model';
 import type { SurveyConfigError } from '../models/survey-config-error.model';
-import type { SubmissionResult, SurveyResponse } from '../models/survey-response.model';
+import type {
+  SubmissionFailure,
+  SubmissionResult,
+  SurveyResponse,
+} from '../models/survey-response.model';
 import type {
   CheckboxQuestion,
   Question,
@@ -456,11 +460,35 @@ export class SurveySessionService {
     this.transitionTo({ kind: 'submitting', survey });
     this.announcer.announcePolite(submittingAnnouncement());
 
-    const encoded = this.encodeHeldAttachments();
-    const payload = buildSurveyResponse(survey, this.answerMap(), this.attachmentMap(), encoded, {
-      clientSubmissionId: this.submissionId,
-      submittedAt: new Date().toISOString(),
-    });
+    /**
+     * `buildSurveyResponse` throws when an attachment reaches it unencoded, rather than
+     * substituting empty content — contract §2 requires `content` to decode to `sizeBytes`,
+     * and an acknowledged payload carrying an empty file would tell the respondent their
+     * attachment was accepted while the receiver got nothing.
+     *
+     * Caught here so the throw is a *failure the respondent can act on* instead of a
+     * promise rejection that strands the machine in `submitting` with a spinner and no way
+     * out. `transport-error` is the honest kind: nothing was sent, and its message — "We
+     * could not reach the server. Your answers are safe — try again." — is true on both
+     * counts, because the answers and the attachments are untouched below.
+     */
+    let payload: SurveyResponse;
+    try {
+      const encoded = this.encodeHeldAttachments();
+      payload = buildSurveyResponse(survey, this.answerMap(), this.attachmentMap(), encoded, {
+        clientSubmissionId: this.submissionId,
+        submittedAt: new Date().toISOString(),
+      });
+    } catch {
+      const failure: SubmissionFailure = {
+        kind: 'transport-error',
+        message: submissionFailureMessage('transport-error'),
+        details: [],
+      };
+      this.transitionTo({ kind: 'submission-error', survey, failure });
+      this.announcer.announceAssertive(failure.message);
+      return;
+    }
 
     const result = await this.callGateway(payload);
 

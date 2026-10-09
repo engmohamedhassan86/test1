@@ -25,6 +25,14 @@
  * The required indication is `aria-hidden` and `aria-required` carries it programmatically
  * instead, so the accessible name stays exactly the title — which is what T105 to T107
  * assert.
+ *
+ * ## Why the attachment control is rendered here and not in the five type components
+ *
+ * `contracts/survey-config.md` §2 allows an `attachments` block on **any** of the six
+ * types, so rendering it here is what makes that true without five copies of the same
+ * markup — the same argument as the title and the required indication (T118). The control
+ * itself renders nothing when `question.attachments` is `null`, which is the common case,
+ * so every type pays one `@if` for the generality.
  */
 
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
@@ -40,6 +48,7 @@ import type {
 } from '../../../core/models/survey.model';
 import { SurveySessionService } from '../../../core/services/survey-session.service';
 import { CheckboxQuestionComponent } from './checkbox-question';
+import { QuestionAttachmentsComponent } from './question-attachments';
 import { RadioQuestionComponent } from './radio-question';
 import { RatingQuestionComponent } from './rating-question';
 import { SatisfactionQuestionComponent } from './satisfaction-question';
@@ -70,6 +79,7 @@ type QuestionView =
     TextQuestionComponent,
     RatingQuestionComponent,
     SatisfactionQuestionComponent,
+    QuestionAttachmentsComponent,
   ],
   templateUrl: './question-host.html',
   styleUrl: './question-host.css',

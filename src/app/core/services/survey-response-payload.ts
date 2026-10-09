@@ -143,13 +143,27 @@ function descriptorFor(
   attachment: SessionAttachment,
   encoded: EncodedAttachments,
 ): AttachmentDescriptor {
+  const content = encoded.get(attachment.id);
+  if (content === undefined) {
+    // Fails closed rather than substituting `''`.
+    //
+    // An id missing from `encoded` is a caller bug — `submit` encodes every held attachment
+    // before it builds — but the two ways of handling it are not equally safe. `''` makes
+    // this function total at the cost of producing a descriptor whose `content` decodes to
+    // 0 bytes while `sizeBytes` claims otherwise, which contract §2 forbids. That payload
+    // would then be *acknowledged*, and the respondent told their file was accepted while
+    // the receiver got nothing — Principle III's "no success state until every attachment
+    // has been fully handled", failing open on the one path where silence is unrecoverable.
+    // Throwing turns the same bug into a submission error that keeps the answers.
+    throw new Error(
+      `attachment ${attachment.id} (${attachment.name}) was not encoded before the payload was built`,
+    );
+  }
+
   return {
     name: attachment.name,
     mimeType: attachment.mimeType,
     sizeBytes: attachment.sizeBytes,
-    // An id missing from `encoded` would be a caller bug: `submit` encodes every held
-    // attachment before it builds. `''` keeps the function total rather than throwing
-    // inside a pure builder, and the round-trip assertion in T061 is what catches it.
-    content: encoded.get(attachment.id) ?? '',
+    content,
   };
 }

@@ -82,6 +82,36 @@ export async function mountQuestion(
 }
 
 /**
+ * Builds a `File` whose bytes are `sizeBytes` long, for the attachment specs.
+ *
+ * The bytes are real rather than a faked `size` property, because FR-023's size check and
+ * the FR-065 payload both read the actual content: an attachment whose declared size and
+ * byte length disagree is exactly the defect `contracts/response-submission.md` §2 guards
+ * against, so a spec must not manufacture one by accident.
+ *
+ * `Uint8Array<ArrayBuffer>` rather than the default `Uint8Array<ArrayBufferLike>`: the
+ * latter also admits `SharedArrayBuffer` and so is not a `BlobPart`.
+ */
+export function fileOf(name: string, mimeType: string, sizeBytes: number): File {
+  const bytes: Uint8Array<ArrayBuffer> = new Uint8Array(sizeBytes).fill(7);
+  return new File([bytes], name, { type: mimeType });
+}
+
+/**
+ * Puts `files` on a file input and fires `change`, which is the only way to drive one.
+ *
+ * `input.files` has no setter and jsdom ships no usable `DataTransfer`, so the property is
+ * redefined. Redefined rather than mutated on each call, because the component clears
+ * `input.value` after reading — a browser resets `files` with it, and a test that reused one
+ * definition would leave a stale `FileList` behind and make a second selection look like it
+ * had re-attached the first file.
+ */
+export function selectFiles(input: HTMLInputElement, files: readonly File[]): void {
+  Object.defineProperty(input, 'files', { value: [...files], configurable: true });
+  input.dispatchEvent(new Event('change'));
+}
+
+/**
  * Resolves `aria-labelledby` to the text it names, which is what FR-053 is actually about:
  * "a label is present" and "the label is the question's title" are different assertions,
  * and axe can only see the first (`T129`'s third recorded limit).

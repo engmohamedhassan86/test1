@@ -240,20 +240,28 @@ describe('buildSurveyResponse', () => {
     expect(response.answers).toEqual([]);
   });
 
-  it('falls back to an empty content string for an attachment the caller did not encode', () => {
+  it('refuses to build a payload for an attachment the caller did not encode', () => {
     const held = attachment();
 
-    const response = buildSurveyResponse(
-      customerFeedbackSurvey(),
-      new Map(),
-      attachmentsFor('q_evidence', [held]),
-      NO_ENCODED,
-      IDS,
-    );
-
-    // A caller bug rather than a reachable state — `submit` encodes every held
-    // attachment first — but the builder stays total instead of throwing.
-    expect(response.answers[0].attachments?.[0].content).toBe('');
+    // A caller bug rather than a reachable state — `submit` encodes every held attachment
+    // first — but the two ways of handling it are not equally safe, so the builder fails
+    // closed instead of staying total.
+    //
+    // The alternative, `content: ''`, produces a descriptor whose content decodes to 0
+    // bytes while `sizeBytes` claims otherwise, which contract §2 forbids. That payload
+    // would be *acknowledged*, so the respondent would be shown the confirmation screen
+    // for a file the receiver never got — Principle III failing open on the one path where
+    // the loss is silent and unrecoverable. Throwing turns the same bug into a submission
+    // error that keeps every answer and attachment.
+    expect(() =>
+      buildSurveyResponse(
+        customerFeedbackSurvey(),
+        new Map(),
+        attachmentsFor('q_evidence', [held]),
+        NO_ENCODED,
+        IDS,
+      ),
+    ).toThrow(/was not encoded/);
   });
 
   it('carries a nominal OptionValue through unchanged', () => {

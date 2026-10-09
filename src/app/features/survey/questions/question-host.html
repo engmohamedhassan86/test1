@@ -59,6 +59,11 @@
     />
   }
 
+  <!-- T118: rendered for every type, because the contract allows an `attachments` block
+       on any of the six. It renders nothing when the question has no policy. Placed after
+       the control and before the error so the tab order reads control -> file control. -->
+  <app-question-attachments [question]="q" [titleId]="titleId()" />
+
   @if (currentError !== undefined) {
     <p class="sv-question__error" [id]="errorId()">{{ currentError.message }}</p>
   }
