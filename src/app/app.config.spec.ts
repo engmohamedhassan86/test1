@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { PRIME_NG_CONFIG, PrimeNG } from 'primeng/config';
 import { appConfig } from './app.config';
 import { routes } from './app.routes';
+import { SimulatedSurveyResponseGateway, SurveyResponseGateway } from './core/services';
+import { SURVEY_TIMEOUTS } from './core/services/survey-timeouts';
 import { primeUiLicenseKey } from './primeui-license';
 import { surveyViewerPreset } from './theme/survey-viewer-preset';
 
@@ -35,6 +37,22 @@ describe('appConfig', () => {
 
   it('enables PrimeNG ripple', () => {
     expect(TestBed.inject(PrimeNG).ripple()).toBe(true);
+  });
+
+  it('binds the simulated gateway as the default submission adapter (T090, contract §5)', () => {
+    const gateway = TestBed.inject(SurveyResponseGateway);
+
+    // Selecting another adapter is a change to this one provider and nothing else, so the
+    // assertion is that the *default* really is the simulated one — a build that shipped
+    // the HTTP adapter by accident would post respondent data to an endpoint that does
+    // not exist.
+    expect(gateway).toBeInstanceOf(SimulatedSurveyResponseGateway);
+  });
+
+  it('provides the fetch and submit deadlines as a value (FR-075, FR-038)', () => {
+    // Injected rather than read from a literal inside the services, which is what lets
+    // both deadlines be asserted in milliseconds under fake timers.
+    expect(TestBed.inject(SURVEY_TIMEOUTS)).toEqual({ fetchMs: 10_000, submitMs: 15_000 });
   });
 
   it('hands the injected PrimeUI licence key to PrimeNG', () => {

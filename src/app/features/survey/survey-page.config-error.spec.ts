@@ -1,5 +1,5 @@
 /**
- * T102 — Principle I at the viewer: invalid configuration renders the configuration-error
+ * T088 — Principle I at the viewer: invalid configuration renders the configuration-error
  * screen and **none** of the survey, for every failure class the contract defines.
  *
  * The per-class block is driven off `INVALID_SURVEY_CONFIG_CASES` — the same table the
