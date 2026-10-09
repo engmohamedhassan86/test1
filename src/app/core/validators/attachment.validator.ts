@@ -169,18 +169,24 @@ export function attachmentErrorsFor(
     return attachmentError(question.id, 'You can attach up to 0 files to this question');
   }
 
-  for (const attachment of existing) {
-    const reason = firstFailure(attachment, policy, []);
+  // The count runs before the per-file loop so that an over-count set reports the count
+  // message once, rather than the first file reporting `no-free-slot` against its siblings.
+  // Below the limit, `existing.length - 1` free slots remain, so that check cannot fire inside
+  // the loop and the duplicate check gets to see the rest of the set.
+  if (existing.length > policy.maxFiles) {
+    return attachmentError(question.id, attachmentRejectionMessage('no-free-slot', '', policy));
+  }
+
+  for (let index = 0; index < existing.length; index += 1) {
+    const attachment = existing[index];
+    const others = existing.filter((_, other) => other !== index);
+    const reason = firstFailure(attachment, policy, others);
     if (reason !== null) {
       return attachmentError(
         question.id,
         attachmentRejectionMessage(reason, attachment.name, policy),
       );
     }
-  }
-
-  if (existing.length > policy.maxFiles) {
-    return attachmentError(question.id, attachmentRejectionMessage('no-free-slot', '', policy));
   }
 
   return null;

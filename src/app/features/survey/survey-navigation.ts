@@ -12,8 +12,9 @@
  * exactly what Principle II forbids.
  */
 
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 
+import { submitButtonLabel } from '../../core/validators/messages';
 import { SurveySessionService } from '../../core/services/survey-session.service';
 
 @Component({
@@ -29,6 +30,7 @@ export class SurveyNavigationComponent {
   protected readonly isFirstPage = this.session.isFirstPage;
   protected readonly primaryAction = this.session.primaryAction;
   protected readonly inputsLocked = this.session.inputsLocked;
+  protected readonly submitLabel = computed(() => submitButtonLabel(this.inputsLocked()));
 
   protected previous(): void {
     this.session.previous();

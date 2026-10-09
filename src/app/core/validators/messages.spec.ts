@@ -10,6 +10,7 @@ import {
   attachmentRejectionMessage,
   attachmentRemovedAnnouncement,
   attachmentAddedAnnouncement,
+  configurationErrorSubject,
   emptyCatalogMessage,
   loadingAnnouncement,
   maxLengthMessage,
@@ -22,6 +23,8 @@ import {
   scaleRangeMessage,
   selectionHintMessage,
   submissionFailureMessage,
+  submitButtonLabel,
+  submittedAnnouncement,
   submittingAnnouncement,
   validationBlockedAnnouncement,
 } from './messages';
@@ -241,5 +244,26 @@ describe('the counter, the hint and the announcements', () => {
   it('announces loading and submitting politely', () => {
     expect(loadingAnnouncement()).toBe('Loading');
     expect(submittingAnnouncement()).toBe('Submitting your response');
+  });
+
+  it('announces an acknowledged submission with its reference (FR-055)', () => {
+    const announcement = submittedAnnouncement('sub_12345');
+
+    // The reference is carried because the acknowledgement removes the Submit button the
+    // respondent was focused on, so this announcement is the only thing that reaches a
+    // screen-reader user — the confirmation's `<code>` is nowhere near their focus.
+    expect(announcement).toBe('Your response has been received. Your reference is sub_12345');
+    // It must displace `submittingAnnouncement()` rather than read as a continuation of it.
+    expect(announcement).not.toContain(submittingAnnouncement());
+  });
+
+  it('labels Submit, and says Submitting while a submission is in flight (FR-039)', () => {
+    expect(submitButtonLabel(false)).toBe('Submit');
+    expect(submitButtonLabel(true)).toBe('Submitting…');
+  });
+
+  it('names the configuration-error subject per scope', () => {
+    expect(configurationErrorSubject('manifest')).toBe('The survey catalog');
+    expect(configurationErrorSubject('survey')).toBe('The survey');
   });
 });

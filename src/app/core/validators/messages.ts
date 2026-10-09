@@ -212,3 +212,24 @@ export function submittedAnnouncement(submissionId: string): string {
 export function loadingAnnouncement(): string {
   return 'Loading';
 }
+
+/**
+ * FR-039: the Submit button's own label, which changes while a submission is in flight.
+ *
+ * Presentational, but it lives here because it is respondent-facing, and `messages.ts` is
+ * otherwise the exhaustive catalogue of respondent-facing wording — a string composed in a
+ * template is a string nobody finds when the copy changes.
+ */
+export function submitButtonLabel(inputsLocked: boolean): string {
+  return inputsLocked ? 'Submitting…' : 'Submit';
+}
+
+/**
+ * The subject of a configuration-error screen: the catalog itself, or one survey.
+ *
+ * The scope decides the noun, and the noun is wording, so the choice belongs here rather
+ * than in `configuration-error`'s template.
+ */
+export function configurationErrorSubject(scope: 'manifest' | 'survey'): string {
+  return scope === 'manifest' ? 'The survey catalog' : 'The survey';
+}

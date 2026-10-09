@@ -20,21 +20,7 @@ import { DocumentTitleService } from '../core/services/document-title.service';
 @Component({
   selector: 'app-not-found-page',
   imports: [RouterLink],
-  template: `
-    <section class="sv-not-found">
-      <h1>Survey not found</h1>
-
-      @if (surveyKey() !== '') {
-        <p>
-          There is no survey with the key <code>{{ surveyKey() }}</code> in the catalog.
-        </p>
-      } @else {
-        <p>That address does not match a survey in the catalog.</p>
-      }
-
-      <p><a routerLink="/">Back to all surveys</a></p>
-    </section>
-  `,
+  templateUrl: './not-found-page.html',
   styleUrl: './not-found-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

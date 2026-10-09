@@ -14,19 +14,9 @@ import { AnnouncerService } from '../core/services/announcer.service';
 
 @Component({
   selector: 'app-live-region',
-  template: `
-    <div class="sv-visually-hidden" aria-live="polite" aria-atomic="true" data-testid="polite">
-      {{ polite() }}
-    </div>
-    <div
-      class="sv-visually-hidden"
-      aria-live="assertive"
-      aria-atomic="true"
-      data-testid="assertive"
-    >
-      {{ assertive() }}
-    </div>
-  `,
+  templateUrl: './live-region.html',
+  // No `styleUrl`: both regions are visually hidden by the global `sv-visually-hidden`
+  // utility, so this component owns no styles of its own.
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LiveRegionComponent {

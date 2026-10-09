@@ -18,42 +18,22 @@
  * only way out of it.
  */
 
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { configurationErrorSubject } from '../core/validators/messages';
 import type { SurveyConfigError } from '../core/models/survey-config-error.model';
 
 @Component({
   selector: 'app-configuration-error',
   imports: [RouterLink],
-  template: `
-    <section class="sv-config-error" role="alert" aria-labelledby="sv-config-error-heading">
-      <h1 id="sv-config-error-heading">This survey is not available</h1>
-
-      <p class="sv-config-error__subject">
-        {{ error().scope === 'manifest' ? 'The survey catalog' : 'The survey' }}
-        <code>{{ error().subject }}</code>
-        could not be used because its configuration does not satisfy its contract.
-      </p>
-
-      <ul class="sv-config-error__issues">
-        @for (issue of error().issues; track $index) {
-          <li>
-            <span class="sv-config-error__code">{{ issue.code }}</span>
-            @if (issue.path !== '') {
-              <code class="sv-config-error__path">{{ issue.path }}</code>
-            }
-            <span>{{ issue.message }}</span>
-          </li>
-        }
-      </ul>
-
-      <p><a routerLink="/">Back to all surveys</a></p>
-    </section>
-  `,
+  templateUrl: './configuration-error.html',
   styleUrl: './configuration-error.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigurationErrorComponent {
   readonly error = input.required<SurveyConfigError>();
+
+  /** The scope's noun, from `messages.ts` — the template composes no wording. */
+  protected readonly subject = computed(() => configurationErrorSubject(this.error().scope));
 }
