@@ -191,6 +191,23 @@ export function submittingAnnouncement(): string {
   return 'Submitting your response';
 }
 
+/**
+ * FR-055: announced politely once the response is acknowledged.
+ *
+ * It carries the reference number because of *where* the respondent is when it fires. The
+ * acknowledgement removes the Submit button they were focused on, so focus falls to
+ * `<body>` and a screen-reader user is not placed anywhere near the confirmation's
+ * `<code>`; the announcement is the only thing that reaches them. Setting it also replaces
+ * the `submittingAnnouncement()` still sitting in the polite region, which would otherwise
+ * tell a respondent revisiting that region that the submission is still in flight.
+ *
+ * The wording tracks `submission-confirmation.html` deliberately: the announcement and the
+ * screen say the same thing, so the two are not separately maintained facts.
+ */
+export function submittedAnnouncement(submissionId: string): string {
+  return `Your response has been received. Your reference is ${submissionId}`;
+}
+
 /** Announced politely while either fetch is in flight (US4 scenario 10). */
 export function loadingAnnouncement(): string {
   return 'Loading';

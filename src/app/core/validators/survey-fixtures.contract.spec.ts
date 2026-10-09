@@ -138,7 +138,7 @@ function loadManifestEntries(): readonly ManifestEntry[] {
 
 const MANIFEST_ENTRIES = loadManifestEntries();
 
-// --- is the validator half live yet? ------------------------------------------------
+// --- locating the validator half ----------------------------------------------------
 
 interface ConfigIssueLike {
   readonly code: string;
@@ -155,14 +155,24 @@ interface ValidationLike {
 type ConfigValidator = (raw: unknown, servedKey: string) => ValidationLike;
 type ManifestValidator = (raw: unknown) => ValidationLike;
 
-function findModule(...candidates: readonly string[]): string | undefined {
-  return candidates.map((file) => resolve(VALIDATORS_DIR, file)).find((file) => existsSync(file));
+/**
+ * S10 LOW-1. This used to return `undefined` and gate the whole validator half behind a
+ * `describe.skipIf`, because the modules were a forward reference while Phase 2C was
+ * unbuilt. They have existed since 2C landed, so an absence now means a **rename**, not an
+ * unbuilt phase — and a `skipIf` would answer a rename by silently disabling half of this
+ * suite, reporting green. Throwing is the whole point of the change.
+ */
+function requireModule(...candidates: readonly string[]): string {
+  const found = candidates
+    .map((file) => resolve(VALIDATORS_DIR, file))
+    .find((file) => existsSync(file));
+  if (found === undefined) {
+    throw new Error(
+      `none of ${candidates.join(', ')} exists in ${VALIDATORS_DIR} — if a validator was renamed, update this contract spec rather than letting it skip`,
+    );
+  }
+  return found;
 }
-
-const CONFIG_VALIDATOR_MODULE = findModule('survey-config.validator.ts', 'index.ts');
-const MANIFEST_VALIDATOR_MODULE = findModule('survey-manifest.validator.ts', 'index.ts');
-const VALIDATORS_LIVE =
-  CONFIG_VALIDATOR_MODULE !== undefined && MANIFEST_VALIDATOR_MODULE !== undefined;
 
 // --- half 1: the authored content ---------------------------------------------------
 
@@ -546,18 +556,18 @@ describe('authored survey content', () => {
 
 // --- half 2: the validators themselves ---------------------------------------------
 
-describe.skipIf(!VALIDATORS_LIVE)('validated against core/validators', () => {
+describe('validated against core/validators', () => {
   let validateSurveyConfig: ConfigValidator;
   let validateSurveyManifest: ManifestValidator;
 
   beforeAll(async () => {
-    // Absolute specifiers, because the modules do not exist until Phase 2C lands and a
-    // static import would fail at transform time rather than skip.
+    // Absolute specifiers resolved at run time, so a rename surfaces as this spec failing
+    // on a named missing file rather than as a transform-time error in an unrelated place.
     const configModule: Record<string, unknown> = await import(
-      /* @vite-ignore */ CONFIG_VALIDATOR_MODULE as string
+      /* @vite-ignore */ requireModule('survey-config.validator.ts', 'index.ts')
     );
     const manifestModule: Record<string, unknown> = await import(
-      /* @vite-ignore */ MANIFEST_VALIDATOR_MODULE as string
+      /* @vite-ignore */ requireModule('survey-manifest.validator.ts', 'index.ts')
     );
     const config = configModule['validateSurveyConfig'];
     const manifest = manifestModule['validateSurveyManifest'];

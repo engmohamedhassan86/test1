@@ -28,6 +28,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
   effect,
   inject,
@@ -91,7 +92,29 @@ export class SurveyPageComponent {
 
   protected readonly surveyTitle = computed(() => this.session.survey()?.title ?? '');
 
+  /**
+   * Which load is allowed to write. Incremented when a load starts **and** on destroy, so
+   * an older in-flight load can never match it again.
+   *
+   * The session is root-provided and `open`/`openFailed` both begin with `reset()`, so a
+   * load that settles late does not merely render the wrong survey — it wipes the answers,
+   * attachments, page index and `submissionId` of whatever session is live now. The two
+   * fetches have a 15s deadline each, which is ample room on a stalled connection for the
+   * respondent to go back, open a second survey and start answering it.
+   *
+   * A counter rather than an `AbortController` because the race to win is the *write*, not
+   * the request: the catalog and loader seams return parsed results, and a cancelled fetch
+   * would still leave the `await` to resume and fall through to a write.
+   */
+  private loadEpoch = 0;
+
   constructor() {
+    // Destroy retires every epoch handed out so far, which is the cancellation half: a load
+    // in flight when the viewer is torn down writes nothing on its way out.
+    inject(DestroyRef).onDestroy(() => {
+      this.loadEpoch += 1;
+    });
+
     effect(() => {
       // Re-runs when the route key changes, which is what makes reopening a survey start
       // a fresh session at page 1 rather than resuming the previous one.
@@ -113,10 +136,15 @@ export class SurveyPageComponent {
   }
 
   private async openSurvey(surveyKey: string): Promise<void> {
+    const epoch = ++this.loadEpoch;
+
     this.notFoundKey.set(null);
     this.announcer.announcePolite(loadingAnnouncement());
 
     const resolution = await this.catalog.resolve(surveyKey);
+    if (epoch !== this.loadEpoch) {
+      return;
+    }
 
     if (resolution.outcome === 'not-found') {
       this.announcer.clearPolite();
@@ -132,6 +160,11 @@ export class SurveyPageComponent {
     }
 
     const validation = await this.loader.load(resolution.entry);
+    if (epoch !== this.loadEpoch) {
+      // Not even `clearPolite()`: the live load owns the region, and clearing it here would
+      // silence the "Loading" the respondent is currently waiting on.
+      return;
+    }
     this.announcer.clearPolite();
 
     if (validation.outcome === 'invalid') {

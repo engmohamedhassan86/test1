@@ -29,6 +29,7 @@ import {
   textareaQuestion,
 } from '../models/__fixtures__/survey-builders';
 import type { SubmissionFailureKind } from '../models/survey-response.model';
+import { submissionFailureMessage } from '../validators/messages';
 import { AnnouncerService } from './announcer.service';
 import { AttachmentCodecService } from './attachment-codec.service';
 import { IdFactoryService } from './id-factory.service';
@@ -555,6 +556,44 @@ describe('SurveySessionService', () => {
       expect(session.answers().size).toBe(0);
     });
 
+    /**
+     * S10 HIGH-1. The acknowledgement removes the Submit button the respondent was focused
+     * on, so focus falls to `<body>` and the confirmation's reference number is nowhere near
+     * them — the polite region is the only thing that reaches a screen-reader user. Asserted
+     * as "not the submitting message" as well as "the submitted message", because leaving
+     * the stale "Submitting your response" in the region is the second half of the defect:
+     * it tells a respondent revisiting the region that the submission is still in flight.
+     */
+    it('announces the acknowledgement politely, with its reference (FR-055)', async () => {
+      const gateway = new AcknowledgingSurveyResponseGateway('sub-9', '2026-10-08T11:00:00.000Z');
+      const session = configure(gateway);
+      const announcer = TestBed.inject(AnnouncerService);
+      const subject = requiredRadioSurvey();
+      session.open(subject);
+      session.setAnswer(questionOn(subject, 0, 0), { kind: 'option', value: optionValue('a') });
+
+      await session.submit();
+
+      expect(session.state().kind).toBe('submitted');
+      expect(announcer.polite()).toBe('Your response has been received. Your reference is sub-9');
+      expect(announcer.polite()).not.toBe('Submitting your response');
+    });
+
+    it('leaves the submitting message in place on a failure, which is assertive (FR-055)', async () => {
+      const session = configure(new FailingSurveyResponseGateway('server-error'));
+      const announcer = TestBed.inject(AnnouncerService);
+      const subject = requiredRadioSurvey();
+      session.open(subject);
+      session.setAnswer(questionOn(subject, 0, 0), { kind: 'option', value: optionValue('a') });
+
+      await session.submit();
+
+      // The success announcement is bound to the success path only: a failure is FR-055's
+      // assertive half, and must not claim the response was received.
+      expect(announcer.assertive()).toBe(submissionFailureMessage('server-error'));
+      expect(announcer.polite()).not.toContain('has been received');
+    });
+
     it('announces that it is submitting and locks the inputs while in flight (FR-039)', async () => {
       const gateway = new FailingSurveyResponseGateway('never-answers');
       const session = configure(gateway);
@@ -803,6 +842,54 @@ describe('SurveySessionService', () => {
       // file rather than a thrown error.
       expect(session.attachmentsFor(questionId('q_evidence'))).toHaveLength(0);
       expect(session.attachmentRejections()[0].reason).toBe('unreadable');
+    });
+
+    /**
+     * S10 MEDIUM-1. Two selections overlap whenever the respondent picks a second file
+     * while the first is still being read — a large file on a slow disk is enough. The
+     * defect was a list snapshotted before the reads: the later write appended to a list
+     * that predated the earlier batch, so the earlier batch vanished *after* it had been
+     * announced as attached.
+     */
+    it('keeps both batches when two selections overlap', async () => {
+      const session = configure(new AcknowledgingSurveyResponseGateway());
+      const subject = attachmentSurvey();
+      session.open(subject);
+      const question = questionOn(subject, 0, 0);
+
+      // `first` is still mid-read when `second` starts, which is the overlap.
+      const first = session.addFiles(question, [fileOf('a.pdf', 'application/pdf', 10)]);
+      const second = session.addFiles(question, [fileOf('b.pdf', 'application/pdf', 20)]);
+      await Promise.all([first, second]);
+
+      const held = session.attachmentsFor(questionId('q_evidence'));
+      expect(held.map((attachment) => attachment.name).sort()).toEqual(['a.pdf', 'b.pdf']);
+    });
+
+    it('refuses the overflow of an overlapping selection rather than exceeding maxFiles', async () => {
+      const session = configure(new AcknowledgingSurveyResponseGateway());
+      const subject = attachmentSurvey();
+      session.open(subject);
+      const question = questionOn(subject, 0, 0);
+
+      // Four files across two overlapping selections, against a `maxFiles` of 2. Each
+      // selection passed its own check against a list that held nothing.
+      const first = session.addFiles(question, [
+        fileOf('a.pdf', 'application/pdf', 10),
+        fileOf('b.pdf', 'application/pdf', 20),
+      ]);
+      const second = session.addFiles(question, [
+        fileOf('c.pdf', 'application/pdf', 30),
+        fileOf('d.pdf', 'application/pdf', 40),
+      ]);
+      await Promise.all([first, second]);
+
+      // FR-025's ceiling holds across the overlap, and the files that did not fit are
+      // reported rather than silently dropped.
+      expect(session.attachmentsFor(questionId('q_evidence'))).toHaveLength(policy.maxFiles);
+      expect(
+        session.attachmentRejections().some((rejection) => rejection.reason === 'no-free-slot'),
+      ).toBe(true);
     });
 
     it('frees the slot immediately on removal and announces it politely (FR-026)', async () => {

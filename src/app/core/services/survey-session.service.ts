@@ -58,6 +58,7 @@ import {
   attachmentRemovedAnnouncement,
   multiplePagesInvalidMessage,
   submissionFailureMessage,
+  submittedAnnouncement,
   submittingAnnouncement,
   validationBlockedAnnouncement,
 } from '../validators/messages';
@@ -271,39 +272,76 @@ export class SurveySessionService {
       return;
     }
 
-    const existing = this.attachmentsFor(question.id);
-    const candidates: readonly AttachmentCandidate[] = files.map(candidateOf);
-    const outcome = validateAttachmentSelection(question.id, policy, existing, candidates);
+    // The file each candidate came from, paired up front: the reads below are the only
+    // place the two are needed together, and a lookup by value would have to assume the
+    // candidate objects are distinguishable, which two identical files are not.
+    const pairs: readonly { readonly file: File; readonly candidate: AttachmentCandidate }[] =
+      files.map((file) => ({ file, candidate: candidateOf(file) }));
 
-    const accepted: SessionAttachment[] = [];
+    const existing = this.attachmentsFor(question.id);
+    const outcome = validateAttachmentSelection(
+      question.id,
+      policy,
+      existing,
+      pairs.map((pair) => pair.candidate),
+    );
+
     const rejected: AttachmentRejection[] = [...outcome.rejected];
 
-    for (const candidate of outcome.accepted) {
-      // `candidates[i]` was built from `files[i]`, and `outcome.accepted` holds those same
-      // candidate objects, so the index is the file.
-      const file = files[candidates.indexOf(candidate)];
-      const bytes = await this.codec.read(file);
+    // Only the files that passed FR-023's five checks are read — a rejected 50 MB file is
+    // never pulled into memory.
+    const read: { readonly candidate: AttachmentCandidate; readonly bytes: Uint8Array }[] = [];
+
+    for (const pair of pairs) {
+      if (!outcome.accepted.includes(pair.candidate)) {
+        continue;
+      }
+      const bytes = await this.codec.read(pair.file);
       if (bytes === 'unreadable') {
         rejected.push({
           questionId: question.id,
-          fileName: candidate.name,
+          fileName: pair.candidate.name,
           reason: 'unreadable',
-          message: `${candidate.name}: this file could not be read`,
+          message: `${pair.candidate.name}: this file could not be read`,
         });
         continue;
       }
-      accepted.push({
-        id: this.ids.newAttachmentId(),
-        name: candidate.name,
-        mimeType: candidate.mimeType,
-        sizeBytes: candidate.sizeBytes,
-        bytes,
-      });
+      read.push({ candidate: pair.candidate, bytes });
     }
+
+    /**
+     * `existing` above was read *before* the awaits, so a second selection that started and
+     * finished while these bytes were being read is not in it — appending to it would drop
+     * that batch after it had already been announced as attached, and would let the two
+     * batches together exceed `maxFiles`.
+     *
+     * So the checks are re-run against what the question holds **now**. They are pure, and
+     * `duplicate` and `no-free-slot` are exactly the two that depend on what is already
+     * held, so re-running them is the whole fix. From here to the write there is no `await`,
+     * which is what makes the validate-and-write half atomic against another selection.
+     */
+    const current = this.attachmentsFor(question.id);
+    const settled = validateAttachmentSelection(
+      question.id,
+      policy,
+      current,
+      read.map((entry) => entry.candidate),
+    );
+    rejected.push(...settled.rejected);
+
+    const accepted: SessionAttachment[] = read
+      .filter((entry) => settled.accepted.includes(entry.candidate))
+      .map((entry) => ({
+        id: this.ids.newAttachmentId(),
+        name: entry.candidate.name,
+        mimeType: entry.candidate.mimeType,
+        sizeBytes: entry.candidate.sizeBytes,
+        bytes: entry.bytes,
+      }));
 
     if (accepted.length > 0) {
       const next = new Map(this.attachmentMap());
-      next.set(question.id, [...existing, ...accepted]);
+      next.set(question.id, [...current, ...accepted]);
       this.attachmentMap.set(next);
       this.dirtyFlag.set(true);
       this.clearErrorFor(question.id);
@@ -512,6 +550,9 @@ export class SurveySessionService {
 
     if (result.outcome === 'acknowledged') {
       this.transitionTo({ kind: 'submitted', survey, receipt: result.receipt });
+      // FR-055: politely, and before the answers go — this both conveys the acknowledgement
+      // and displaces the `submittingAnnouncement()` still held by the polite region.
+      this.announcer.announcePolite(submittedAnnouncement(result.receipt.submissionId));
       // FR-045: the session's answers are discarded once the response is acknowledged.
       this.answerMap.set(new Map());
       this.attachmentMap.set(new Map());
