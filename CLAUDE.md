@@ -36,14 +36,14 @@ No NgModules. No RxJS in components — use signals.
 
 Run the scoped command first. Only run a full pass before you hand work off or mark an issue done.
 
-| Goal | Command |
-| --- | --- |
-| One spec file | `pnpm vitest run <path-to-spec> --reporter=dot` |
-| One folder | `pnpm vitest run src/app/core/validators --reporter=dot` |
-| Types, app only | `pnpm typecheck:app` |
-| Types, specs only | `pnpm typecheck:spec` |
-| Format one path | `pnpm prettier --write <path>` |
-| Full suite (handoff only) | `pnpm test` |
+| Goal                      | Command                                                  |
+| ------------------------- | -------------------------------------------------------- |
+| One spec file             | `pnpm vitest run <path-to-spec> --reporter=dot`          |
+| One folder                | `pnpm vitest run src/app/core/validators --reporter=dot` |
+| Types, app only           | `pnpm typecheck:app`                                     |
+| Types, specs only         | `pnpm typecheck:spec`                                    |
+| Format one path           | `pnpm prettier --write <path>`                           |
+| Full suite (handoff only) | `pnpm test`                                              |
 
 Vitest prints failure detail on stderr, so always redirect with `2>&1` before you filter.
 These three recipes are measured against this repo — they keep every failure and drop the noise:
