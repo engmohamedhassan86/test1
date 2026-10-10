@@ -16,6 +16,7 @@
 export * from './announcer.service';
 export * from './attachment-codec.service';
 export * from './document-title.service';
+export * from './http-survey-response.gateway';
 export * from './id-factory.service';
 export * from './json-fetch.service';
 export * from './simulated-survey-response.gateway';
