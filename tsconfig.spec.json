@@ -2,6 +2,8 @@
 /* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "extends": "./tsconfig.json",
+  /* `node` is available to tests only. `tsconfig.app.json` sets `"types": []`, so
+     application code still cannot reach Node APIs by accident. */
   "compilerOptions": {
     "types": ["vitest/globals", "node"]
   },
