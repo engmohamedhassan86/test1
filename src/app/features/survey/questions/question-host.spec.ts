@@ -1,5 +1,5 @@
 /**
- * T111 — the dispatch, and the three things the host renders for all six types.
+ * T111 — the dispatch, and the three things the host renders for all seven types.
  *
  * The **required/optional pair** is the load-bearing assertion here. `T091` is the single
  * place the required indication is rendered, so a regression there regresses FR-005 for
@@ -16,6 +16,7 @@ import {
   satisfactionQuestion,
   textareaQuestion,
   textboxQuestion,
+  toggleButtonQuestion,
 } from '../../../core/models/__fixtures__/survey-builders';
 import { optionValue } from '../../../core/models/__fixtures__/survey-builders';
 import { mountQuestion } from './__fixtures__/question-harness';
@@ -55,11 +56,27 @@ describe('QuestionHostComponent', () => {
       expect(host.querySelector('app-satisfaction-question')).not.toBeNull();
     });
 
+    it('routes a toggle_button question to the toggle component', async () => {
+      const { host } = await mountQuestion(toggleButtonQuestion());
+      expect(host.querySelector('app-toggle-button-question')).not.toBeNull();
+    });
+
     it('renders exactly one control component per question', async () => {
       const { host } = await mountQuestion(radioQuestion());
 
       const controls = host.querySelectorAll(
-        'app-radio-question, app-checkbox-question, app-text-question, app-rating-question, app-satisfaction-question',
+        'app-radio-question, app-checkbox-question, app-text-question, app-rating-question, app-satisfaction-question, app-toggle-button-question',
+      );
+      expect(controls).toHaveLength(1);
+    });
+
+    it('renders no second control for a toggle either', async () => {
+      // The toggle is the `@else` arm of the host template, so a dispatch mistake shows up
+      // as a second control here rather than as a missing one.
+      const { host } = await mountQuestion(toggleButtonQuestion());
+
+      const controls = host.querySelectorAll(
+        'app-radio-question, app-checkbox-question, app-text-question, app-rating-question, app-satisfaction-question, app-toggle-button-question',
       );
       expect(controls).toHaveLength(1);
     });

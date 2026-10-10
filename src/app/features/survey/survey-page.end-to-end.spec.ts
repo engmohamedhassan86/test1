@@ -10,14 +10,17 @@
  * the session directly would pass against a viewer whose buttons were not connected at
  * all.
  *
- * The survey spreads the six question types over four pages, which is why the walk goes
+ * The survey spreads the seven question types over four pages, which is why the walk goes
  * all the way to page 4 instead of stopping once it has shown that one Next works.
  */
 
 import { describe, expect, it } from 'vitest';
 
 import { customerFeedbackSurvey } from '../../core/models/__fixtures__/survey-builders';
-import { FailingSurveyResponseGateway } from '../../core/services/testing/failing-survey-response.gateway';
+import {
+  AcknowledgingSurveyResponseGateway,
+  FailingSurveyResponseGateway,
+} from '../../core/services/testing/failing-survey-response.gateway';
 import { manifestEntry, mountViewer } from './__fixtures__/survey-harness';
 import type { ViewerHarness } from './__fixtures__/survey-harness';
 import { SurveyPageComponent } from './survey-page';
@@ -202,6 +205,70 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     // The reference is on the page and is not empty.
     const reference = harness.host.querySelector('.sv-confirmation__reference code');
     expect(reference?.textContent?.trim()).not.toBe('');
+  });
+
+  describe('the toggle_button on page 4 (feature 002)', () => {
+    /** Walks pages 1 to 3 through the controls and lands on page 4. */
+    async function walkToPage4(harness: ViewerHarness<SurveyPageComponent>): Promise<void> {
+      await completePage1(harness);
+      await clickNth(harness, '.sv-nav__button--primary', 0);
+      await completePage2(harness);
+      await clickNth(harness, '.sv-nav__button--primary', 0);
+      await clickNth(harness, '.sv-nav__button--primary', 0);
+      expect(position(harness.host)).toBe('Page 4 of 4');
+      // Page 4's required radio, so Submit is not blocked by something unrelated.
+      await clickNth(harness, 'input[type="radio"]', 0);
+    }
+
+    async function openWith(
+      gateway: AcknowledgingSurveyResponseGateway,
+    ): Promise<ViewerHarness<SurveyPageComponent>> {
+      return mountViewer(SurveyPageComponent, 'customer-feedback', {
+        resolution: { outcome: 'found', entry: manifestEntry() },
+        validation: { outcome: 'valid', survey: SUBJECT },
+        gateway,
+      });
+    }
+
+    it('renders the switch with its authored off label', async () => {
+      const harness = await openWith(new AcknowledgingSurveyResponseGateway());
+      await walkToPage4(harness);
+
+      const toggle = harness.host.querySelector('.sv-toggle');
+      expect(toggle?.getAttribute('role')).toBe('switch');
+      expect(toggle?.getAttribute('aria-checked')).toBe('false');
+      expect(harness.text()).toContain('Would you like news about new toys?');
+      expect(harness.text()).toContain('No news');
+    });
+
+    it('submits true after the respondent turns the switch on', async () => {
+      const gateway = new AcknowledgingSurveyResponseGateway();
+      const harness = await openWith(gateway);
+      await walkToPage4(harness);
+
+      await clickNth(harness, '.sv-toggle', 0);
+      expect(harness.host.querySelector('.sv-toggle')?.getAttribute('aria-checked')).toBe('true');
+
+      await clickNth(harness, '.sv-nav__button--primary', 0);
+      expect(harness.session.state().kind).toBe('submitted');
+
+      const entry = gateway.calls[0]?.answers.find((row) => row.questionId === 'q_notifications');
+      expect(entry).toEqual({ questionId: 'q_notifications', type: 'toggle_button', value: true });
+    });
+
+    it('submits false when the respondent leaves the switch alone', async () => {
+      const gateway = new AcknowledgingSurveyResponseGateway();
+      const harness = await openWith(gateway);
+      await walkToPage4(harness);
+
+      await clickNth(harness, '.sv-nav__button--primary', 0);
+      expect(harness.session.state().kind).toBe('submitted');
+
+      // Not omitted and not `null`: the switch was showing off, so the payload says off.
+      const entry = gateway.calls[0]?.answers.find((row) => row.questionId === 'q_notifications');
+      expect(entry).toEqual({ questionId: 'q_notifications', type: 'toggle_button', value: false });
+      expect(typeof entry?.value).toBe('boolean');
+    });
   });
 
   it('renders no question control once the confirmation shows (scenario 4, SC-005)', async () => {

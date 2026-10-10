@@ -27,6 +27,7 @@ import {
   customerFeedbackSurvey,
   attachmentPolicy,
   textareaQuestion,
+  toggleButtonQuestion,
 } from '../models/__fixtures__/survey-builders';
 import type { SubmissionFailureKind } from '../models/survey-response.model';
 import { submissionFailureMessage } from '../validators/messages';
@@ -191,6 +192,39 @@ describe('SurveySessionService', () => {
       // The trim on the way in is what makes US2 scenario 2 fall out of the model: `"  "`
       // never became an answer, so the required rule is the one that runs.
       expect(session.questionErrors().get(questionId('q_name'))?.rule).toBe('required-text');
+    });
+
+    it('stores both toggle positions, including false (feature 002)', () => {
+      const session = configure(new AcknowledgingSurveyResponseGateway());
+      const subject = survey([page('p1', 'Only', [toggleButtonQuestion({ id: 'q_notify' })])]);
+      session.open(subject);
+      const question = questionOn(subject, 0, 0);
+
+      session.setAnswer(question, { kind: 'boolean', value: true });
+      expect(session.answers().get(questionId('q_notify'))).toEqual({
+        type: 'toggle_button',
+        value: true,
+      });
+
+      session.setAnswer(question, { kind: 'boolean', value: false });
+      // The delete-when-empty rule above does not reach this type: `false` is a
+      // deliberate opt-out, not an empty value.
+      expect(session.answers().get(questionId('q_notify'))).toEqual({
+        type: 'toggle_button',
+        value: false,
+      });
+    });
+
+    it('ignores an input of the wrong kind for a toggle rather than storing a coercion', () => {
+      const session = configure(new AcknowledgingSurveyResponseGateway());
+      const subject = survey([page('p1', 'Only', [toggleButtonQuestion({ id: 'q_notify' })])]);
+      session.open(subject);
+
+      session.setAnswer(questionOn(subject, 0, 0), { kind: 'text', value: 'true' });
+
+      // `"true"` must not become `true`: §6.1 stores nothing for an input the type does
+      // not accept, which keeps the boolean field honest.
+      expect(session.answers().has(questionId('q_notify'))).toBe(false);
     });
 
     it('orders a checkbox selection by the question option order, not selection order', () => {

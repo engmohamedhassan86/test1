@@ -754,6 +754,13 @@ function normalise(question: Question, input: AnswerInput): Answer | null {
       return input.kind === 'point' && isSatisfactionPoint(input.value)
         ? { type: 'satisfaction', value: input.value }
         : null;
+
+    case 'toggle_button':
+      // Both positions are stored, `false` included. This is the one type where `false` is
+      // an answer rather than an empty value, so the delete-when-empty rule above does not
+      // apply to it — dropping `false` would make "switched it off" indistinguishable from
+      // "never touched it" and would lose a deliberate opt-out.
+      return input.kind === 'boolean' ? { type: 'toggle_button', value: input.value } : null;
   }
   return assertNever(question);
 }

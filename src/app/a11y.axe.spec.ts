@@ -6,16 +6,16 @@
  *
  * The **survey viewer** is swept as all four pages of `customer-feedback`, one page at a
  * time, not page 1 alone. The viewer renders a single page per route and the fixture
- * spreads the six question types across four pages:
+ * spreads the seven question types across four pages:
  *
  * ```
  * page 1  textbox, radio          page 3  textarea (with an attachment policy)
- * page 2  satisfaction, checkbox, rating   page 4  textarea, radio
+ * page 2  satisfaction, checkbox, rating   page 4  textarea, radio, toggle_button
  * ```
  *
- * So a page-1-only sweep never sees four of the six types — `satisfaction`, `checkbox`,
- * `rating` and `textarea`. Sweeping pages 1 and 2 is not enough either: `textarea` appears
- * only on pages 3 and 4. Only all four pages reach all six.
+ * So a page-1-only sweep never sees five of the seven types — `satisfaction`, `checkbox`,
+ * `rating`, `textarea` and `toggle_button`. Sweeping pages 1 and 2 is not enough either:
+ * `textarea` appears only on pages 3 and 4. Only all four pages reach all seven.
  *
  * ## Three limits on what this check can see
  *
@@ -302,10 +302,10 @@ describe('accessibility — axe over the seven SC-009 screens', () => {
     expect(session.currentPageIndex()).toBe(SUBJECT.pages.length - 1);
   });
 
-  it('reaches every one of the six question types during the viewer sweep', async () => {
+  it('reaches every one of the seven question types during the viewer sweep', async () => {
     // The guard that makes the sweep above mean what T129 says it means. If the fixture
-    // ever stops spreading the six types over the four pages, this fails here rather than
-    // leaving the sweep quietly checking fewer types than it claims.
+    // ever stops spreading the seven types over the four pages, this fails here rather
+    // than leaving the sweep quietly checking fewer types than it claims.
     const swept = new Set(SUBJECT.pages.flatMap((page) => page.questions.map((q) => q.type)));
     expect([...swept].sort()).toEqual([
       'checkbox',
@@ -314,6 +314,7 @@ describe('accessibility — axe over the seven SC-009 screens', () => {
       'satisfaction',
       'textarea',
       'textbox',
+      'toggle_button',
     ]);
   });
 

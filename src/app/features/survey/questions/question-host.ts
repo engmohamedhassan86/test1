@@ -1,7 +1,7 @@
 /**
  * The one place a question type is dispatched — T091, FR-003, FR-005.
  *
- * It renders, **once for all six types**, the question's title, its optional `description`
+ * It renders, **once for all seven types**, the question's title, its optional `description`
  * when present, and a visible indication of whether an answer is required. Putting those
  * three here rather than in each type component means no type can omit them — which is
  * also why one regression here regresses FR-005 for every type, and why T111 asserts both
@@ -19,8 +19,8 @@
  * - **grouped** (`radio`, `checkbox`, `rating`, `satisfaction`) — the group carries
  *   `aria-labelledby` pointing at the title, so the group's accessible name *is* the
  *   question's title text;
- * - **single control** (`textbox`, `textarea`) — the input carries the same
- *   `aria-labelledby` and is **not** wrapped in a group.
+ * - **single control** (`textbox`, `textarea`, `toggle_button`) — the input carries the
+ *   same `aria-labelledby` and is **not** wrapped in a group.
  *
  * The required indication is `aria-hidden` and `aria-required` carries it programmatically
  * instead, so the accessible name stays exactly the title — which is what T105 to T107
@@ -45,6 +45,7 @@ import type {
   RatingQuestion,
   SatisfactionQuestion,
   TextQuestion,
+  ToggleButtonQuestion,
 } from '../../../core/models/survey.model';
 import { SurveySessionService } from '../../../core/services/survey-session.service';
 import { CheckboxQuestionComponent } from './checkbox-question';
@@ -53,6 +54,7 @@ import { RadioQuestionComponent } from './radio-question';
 import { RatingQuestionComponent } from './rating-question';
 import { SatisfactionQuestionComponent } from './satisfaction-question';
 import { TextQuestionComponent } from './text-question';
+import { ToggleButtonQuestionComponent } from './toggle-button-question';
 
 /**
  * The DOM id of one question's wrapper. Shared with `survey-page.ts`, which uses it to
@@ -69,7 +71,8 @@ type QuestionView =
   | { readonly kind: 'checkbox'; readonly question: CheckboxQuestion }
   | { readonly kind: 'text'; readonly question: TextQuestion }
   | { readonly kind: 'rating'; readonly question: RatingQuestion }
-  | { readonly kind: 'satisfaction'; readonly question: SatisfactionQuestion };
+  | { readonly kind: 'satisfaction'; readonly question: SatisfactionQuestion }
+  | { readonly kind: 'toggle_button'; readonly question: ToggleButtonQuestion };
 
 @Component({
   selector: 'app-question-host',
@@ -79,6 +82,7 @@ type QuestionView =
     TextQuestionComponent,
     RatingQuestionComponent,
     SatisfactionQuestionComponent,
+    ToggleButtonQuestionComponent,
     QuestionAttachmentsComponent,
   ],
   templateUrl: './question-host.html',
@@ -140,7 +144,9 @@ function viewOf(question: Question): QuestionView {
       return { kind: 'rating', question };
     case 'satisfaction':
       return { kind: 'satisfaction', question };
+    case 'toggle_button':
+      return { kind: 'toggle_button', question };
   }
-  // No `default` branch: a seventh type is a build failure here (plan §5.3).
+  // No `default` branch: an eighth type is a build failure here (plan §5.3).
   return assertNever(question);
 }

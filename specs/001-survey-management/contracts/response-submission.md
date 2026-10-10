@@ -30,6 +30,7 @@ One operation: take a submission payload, return an acknowledgement or a failure
     { "questionId": "q_segment", "type": "radio", "value": "returning-customer" },
     { "questionId": "q_satisfaction", "type": "satisfaction", "value": 4 },
     { "questionId": "q_liked", "type": "checkbox", "value": ["delivery", "support"] },
+    { "questionId": "q_notifications", "type": "toggle_button", "value": true },
     {
       "questionId": "q_evidence",
       "type": "textarea",
@@ -52,7 +53,7 @@ One operation: take a submission payload, return an acknowledgement or a failure
 | `surveyKey`          | yes      | The manifest key of the survey answered.                                                                                                                                                                                                                                                    |
 | `clientSubmissionId` | yes      | Non-empty opaque string, at most 64 characters. Generated once per survey session when the first submission starts — on first entry to `submitting`, not on a Submit that validation blocks; identical on every retry of that session; different for a freshly opened survey (spec FR-061). |
 | `submittedAt`        | yes      | ISO 8601 UTC timestamp taken on the client when this attempt's Submit was activated. Refreshed per attempt, including a retry.                                                                                                                                                              |
-| `answers`            | yes      | One entry per **answered** question, in survey page then question order. Unanswered optional questions are omitted, not sent as `null`.                                                                                                                                                     |
+| `answers`            | yes      | One entry per **answered** question, in survey page then question order. Unanswered optional questions are omitted, not sent as `null`. A `toggle_button` is the one exception — see below.                                                                                                 |
 
 `clientSubmissionId` exists because after a `timeout` the client cannot know whether the first attempt
 landed. The receiver is expected to treat a repeat of a `clientSubmissionId` it has already accepted as the
@@ -68,14 +69,20 @@ value as an `Idempotency-Key` request header (spec FR-061).
 | `value`       | yes      | Shape fixed by `type`, below.                                                                  |
 | `attachments` | no       | Present only when the question accepted at least one file. Never `null`, never an empty array. |
 
-| `type`         | `value` shape                                                                                                                 |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `radio`        | One option `value` string from that question's options.                                                                       |
-| `checkbox`     | Array of option `value` strings, no duplicates, in the question's option order, length within the question's selection rules. |
-| `textbox`      | Trimmed string, length within the question's length rules.                                                                    |
-| `textarea`     | Trimmed string, length within the question's length rules.                                                                    |
-| `rating`       | Integer within the question's `scale`.                                                                                        |
-| `satisfaction` | Integer 1 to 5.                                                                                                               |
+| `type`          | `value` shape                                                                                                                 |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `radio`         | One option `value` string from that question's options.                                                                       |
+| `checkbox`      | Array of option `value` strings, no duplicates, in the question's option order, length within the question's selection rules. |
+| `textbox`       | Trimmed string, length within the question's length rules.                                                                    |
+| `textarea`      | Trimmed string, length within the question's length rules.                                                                    |
+| `rating`        | Integer within the question's `scale`.                                                                                        |
+| `satisfaction`  | Integer 1 to 5.                                                                                                               |
+| `toggle_button` | A native JSON boolean — `true` or `false`. Never the strings `"true"`/`"false"` and never `1`/`0`.                            |
+
+**`toggle_button` is always present.** It has no unanswered state — a switch always showed a position, and
+`defaultValue` is what it showed — so an untouched toggle is sent carrying `defaultValue` rather than
+omitted. Omitting it would send a response that contradicts what the respondent saw on screen, and `false`
+is a deliberate opt-out that a missing entry would make indistinguishable from never touching the control.
 
 ### Attachment entry
 

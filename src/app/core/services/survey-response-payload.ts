@@ -81,7 +81,12 @@ function answerEntryFor(
   const held = attachments.get(question.id) ?? [];
 
   // Rule 2, widened by §8.1: omitted only when there is neither a value nor a file.
-  if (answer === undefined && held.length === 0) {
+  //
+  // A `toggle_button` is exempt. It has no unanswered state — the switch always showed a
+  // position, and `defaultValue` is what it showed — so omitting an untouched toggle would
+  // send a payload that contradicts what the respondent saw, which is worse than sending a
+  // value they did not set. `emptyValueFor` supplies that position below.
+  if (answer === undefined && held.length === 0 && question.type !== 'toggle_button') {
     return null;
   }
 
@@ -102,11 +107,16 @@ function answerEntryFor(
  */
 function valueOf(
   question: Question,
-  value: string | number | readonly string[],
+  value: string | number | boolean | readonly string[],
 ): AnswerEntry['value'] {
   switch (question.type) {
     case 'checkbox':
       return Array.isArray(value) ? [...value] : [String(value)];
+    case 'toggle_button':
+      // A native JSON boolean, which is what the contract asks for. The coercion is here
+      // rather than a pass-through so a non-boolean arriving by any route fails closed to
+      // `false` instead of putting a string in a boolean field.
+      return value === true;
     case 'radio':
     case 'textbox':
     case 'textarea':
@@ -119,9 +129,13 @@ function valueOf(
 
 /**
  * §8.1: the type's empty value for an attachment-only question. Only the two text types
- * can reach this — the other four have no attachment policy in any valid config that also
- * leaves them unanswerable — but the switch is exhaustive so a seventh type is a build
- * failure here too.
+ * normally reach this — the other four have no attachment policy in any valid config that
+ * also leaves them unanswerable — but the switch is exhaustive so an eighth type is a
+ * build failure here too.
+ *
+ * `toggle_button` is the exception that reaches this on the ordinary path, because
+ * `answerEntryFor` sends every untouched toggle here: its "empty" value is the position
+ * the control was showing, not a blank.
  */
 function emptyValueFor(question: Question): AnswerEntry['value'] {
   switch (question.type) {
@@ -135,6 +149,8 @@ function emptyValueFor(question: Question): AnswerEntry['value'] {
     case 'rating':
     case 'satisfaction':
       return 0;
+    case 'toggle_button':
+      return question.defaultValue;
   }
   return assertNever(question);
 }

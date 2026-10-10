@@ -3,7 +3,7 @@
 @let currentError = error();
 
 <!-- The id is FR-030's focus target: `survey-page.ts` focuses the first focusable control
-     inside this wrapper, which works for all six types without any of them needing a
+     inside this wrapper, which works for all seven types without any of them needing a
      `tabindex` on a group that is not itself focusable. -->
 <div
   class="sv-question"
@@ -54,8 +54,14 @@
       [titleId]="titleId()"
       [describedBy]="describedBy()"
     />
-  } @else {
+  } @else if (view_.kind === 'satisfaction') {
     <app-satisfaction-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
+  } @else {
+    <app-toggle-button-question
       [question]="view_.question"
       [titleId]="titleId()"
       [describedBy]="describedBy()"

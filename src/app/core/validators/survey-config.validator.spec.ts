@@ -1214,6 +1214,156 @@ describe('§9.7 — ordering, and how many issues a failure reports', () => {
   });
 });
 
+/**
+ * Feature 002 — the `toggle_button` block, R45a to R45c.
+ *
+ * Both type-specific keys are optional and both default, so the first test here is the
+ * one that matters most: the minimal authored toggle is complete. The rest are the ways an
+ * author can get the block wrong, each failing closed at its own path.
+ */
+describe('toggle_button (feature 002)', () => {
+  function toggle(extra: Record<string, unknown> = {}): Record<string, unknown> {
+    return { id: 'q_notify', type: 'toggle_button', title: 'Send me news?', ...extra };
+  }
+
+  function validToggle(raw: unknown): Record<string, unknown> {
+    const result = validateSurveyConfig(raw, SERVED_KEY);
+    expect(result.outcome).toBe('valid');
+    if (result.outcome !== 'valid') {
+      throw new Error('expected a valid config');
+    }
+    return result.survey.pages[0].questions[0] as unknown as Record<string, unknown>;
+  }
+
+  it('accepts a toggle with neither options nor defaultValue, defaulting both', () => {
+    const question = validToggle(documentWithQuestion(toggle()));
+
+    expect(question['type']).toBe('toggle_button');
+    expect(question['options']).toEqual({ onLabel: 'On', offLabel: 'Off' });
+    expect(question['defaultValue']).toBe(false);
+    expect(question['required']).toBe(false);
+  });
+
+  it('keeps both authored labels', () => {
+    expect(
+      validToggle(
+        documentWithQuestion(toggle({ options: { onLabel: 'Yes please', offLabel: 'No thanks' } })),
+      )['options'],
+    ).toEqual({ onLabel: 'Yes please', offLabel: 'No thanks' });
+  });
+
+  it('defaults the label the author omitted and keeps the one they gave', () => {
+    // Either label may be omitted on its own, so a config that only renames "On" does not
+    // have to restate "Off".
+    expect(
+      validToggle(documentWithQuestion(toggle({ options: { onLabel: 'Yes please' } })))['options'],
+    ).toEqual({ onLabel: 'Yes please', offLabel: 'Off' });
+  });
+
+  it('trims a label', () => {
+    expect(
+      validToggle(documentWithQuestion(toggle({ options: { onLabel: '  Yes please  ' } })))[
+        'options'
+      ],
+    ).toEqual({ onLabel: 'Yes please', offLabel: 'Off' });
+  });
+
+  it('keeps defaultValue true as a boolean', () => {
+    expect(validToggle(documentWithQuestion(toggle({ defaultValue: true })))['defaultValue']).toBe(
+      true,
+    );
+  });
+
+  it('rejects a non-boolean defaultValue as F06 at its own path', () => {
+    // `"true"` is the mistake most likely to be made, and the one a truthiness check
+    // would wave through into a boolean-typed field.
+    expectIssue(
+      validateSurveyConfig(documentWithQuestion(toggle({ defaultValue: 'true' })), SERVED_KEY),
+      'F06',
+      'pages[0].questions[0].defaultValue',
+    );
+  });
+
+  it('rejects an options array as F06, because this type takes an object', () => {
+    expectIssue(
+      validateSurveyConfig(
+        documentWithQuestion(toggle({ options: [{ id: 'a', label: 'A', value: 'a' }] })),
+        SERVED_KEY,
+      ),
+      'F06',
+      'pages[0].questions[0].options',
+    );
+  });
+
+  it('rejects an unknown key inside options as F03', () => {
+    expectIssue(
+      validateSurveyConfig(
+        documentWithQuestion(toggle({ options: { onLabel: 'Yes', maybeLabel: 'Maybe' } })),
+        SERVED_KEY,
+      ),
+      'F03',
+      'pages[0].questions[0].options.maybeLabel',
+    );
+  });
+
+  it('rejects a non-string label as F06', () => {
+    expectIssue(
+      validateSurveyConfig(documentWithQuestion(toggle({ options: { offLabel: 0 } })), SERVED_KEY),
+      'F06',
+      'pages[0].questions[0].options.offLabel',
+    );
+  });
+
+  it('rejects a blank label as F13 rather than silently defaulting it', () => {
+    // A switch with no visible word on it is unusable, and `"  "` is an authoring
+    // mistake — not a request for the default.
+    expectIssue(
+      validateSurveyConfig(
+        documentWithQuestion(toggle({ options: { onLabel: '   ' } })),
+        SERVED_KEY,
+      ),
+      'F13',
+      'pages[0].questions[0].options.onLabel',
+    );
+  });
+
+  it('rejects a scale on a toggle as F05, the field-for-another-type split', () => {
+    expectIssue(
+      validateSurveyConfig(documentWithQuestion(toggle({ scale: { min: 1, max: 5 } })), SERVED_KEY),
+      'F05',
+      'pages[0].questions[0].scale',
+    );
+  });
+
+  it('rejects defaultValue on a type that does not define it as F05', () => {
+    expectIssue(
+      validateSurveyConfig(
+        documentWithQuestion({
+          id: 'q_mood',
+          type: 'satisfaction',
+          title: 'How was today?',
+          defaultValue: true,
+        }),
+        SERVED_KEY,
+      ),
+      'F05',
+      'pages[0].questions[0].defaultValue',
+    );
+  });
+
+  it('allows an attachments block on a toggle, like every other type', () => {
+    expect(
+      validToggle(
+        documentWithQuestion(
+          toggle({
+            attachments: { maxFiles: 1, acceptedTypes: ['image/png'], maxSizeBytes: 1024 },
+          }),
+        ),
+      )['attachments'],
+    ).toEqual({ maxFiles: 1, acceptedTypes: ['image/png'], maxSizeBytes: 1024 });
+  });
+});
+
 describe('the error envelope', () => {
   it('names the survey key as the subject and the survey as the scope', () => {
     const result = validateSurveyConfig({}, 'customer-feedback');

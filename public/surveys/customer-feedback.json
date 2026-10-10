@@ -122,7 +122,7 @@
     {
       "id": "final-thoughts",
       "title": "Final Thoughts",
-      "description": "Two last questions and you are done.",
+      "description": "Three last questions and you are done.",
       "questions": [
         {
           "id": "q_comments",
@@ -153,6 +153,17 @@
               "value": "unsure"
             }
           ]
+        },
+        {
+          "id": "q_notifications",
+          "type": "toggle_button",
+          "title": "Would you like news about new toys?",
+          "description": "We send one short email a month. You can stop it at any time.",
+          "options": {
+            "onLabel": "Send me news",
+            "offLabel": "No news"
+          },
+          "defaultValue": false
         }
       ]
     }

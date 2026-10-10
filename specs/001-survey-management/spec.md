@@ -485,8 +485,9 @@ Each case below is a decision, not an open question.
   list of questions. Page order is array order; question order within a page is array order.
 - **FR-002**: Page and question ids MUST be unique within a survey; a duplicate id is a configuration
   error (FR-040).
-- **FR-003**: The viewer MUST support exactly six question types: `radio`, `checkbox`, `textbox`,
-  `textarea`, `rating`, `satisfaction`. Any other value of `type` is a configuration error.
+- **FR-003**: The viewer MUST support exactly seven question types: `radio`, `checkbox`, `textbox`,
+  `textarea`, `rating`, `satisfaction`, `toggle_button`. Any other value of `type` is a configuration
+  error.
 - **FR-004**: Adding, changing or removing a survey MUST require only a config file plus one manifest
   entry, with no change under `src/app/**`.
 - **FR-005**: Each question MUST render its title, its optional description, and a visible indication of
@@ -540,18 +541,19 @@ Each case below is a decision, not an open question.
   alone. A survey config MUST NOT be able to supply error wording, so that every message is predictable
   from the contract and no config can leave a rule unexplained. The catalogue is exactly:
 
-  | Rule broken                          | Message                              | Substitution                     |
-  | ------------------------------------ | ------------------------------------ | -------------------------------- |
-  | Required `radio` unanswered          | `Choose one option`                  | —                                |
-  | Required `checkbox` unanswered       | `Select at least N option(s)`        | `N` = effective minimum (FR-016) |
-  | Required `textbox`/`textarea` empty  | `Enter an answer`                    | —                                |
-  | Required `rating`/`satisfaction`     | `Choose a value between MIN and MAX` | the question's inclusive range   |
-  | `minLength` on a non-empty answer    | `Use at least N characters`          | `N` = `minLength`                |
-  | `maxLength` exceeded                 | `Use at most N characters`           | `N` = `maxLength`                |
-  | Below `minSelections`                | `Select at least N option(s)`        | `N` = effective minimum          |
-  | Above `maxSelections`                | `Select no more than N options`      | `N` = `maxSelections`            |
-  | `rating`/`satisfaction` out of range | `Choose a value between MIN and MAX` | the question's inclusive range   |
-  | Attachment invalid at submit         | `FILENAME: REASON`                   | the FR-023 reason for that file  |
+  | Rule broken                          | Message                              | Substitution                       |
+  | ------------------------------------ | ------------------------------------ | ---------------------------------- |
+  | Required `radio` unanswered          | `Choose one option`                  | —                                  |
+  | Required `checkbox` unanswered       | `Select at least N option(s)`        | `N` = effective minimum (FR-016)   |
+  | Required `textbox`/`textarea` empty  | `Enter an answer`                    | —                                  |
+  | Required `rating`/`satisfaction`     | `Choose a value between MIN and MAX` | the question's inclusive range     |
+  | `minLength` on a non-empty answer    | `Use at least N characters`          | `N` = `minLength`                  |
+  | `maxLength` exceeded                 | `Use at most N characters`           | `N` = `maxLength`                  |
+  | Below `minSelections`                | `Select at least N option(s)`        | `N` = effective minimum            |
+  | Above `maxSelections`                | `Select no more than N options`      | `N` = `maxSelections`              |
+  | `rating`/`satisfaction` out of range | `Choose a value between MIN and MAX` | the question's inclusive range     |
+  | Attachment invalid at submit         | `FILENAME: REASON`                   | the FR-023 reason for that file    |
+  | Required `toggle_button` left off    | `Turn on LABEL to continue`          | `LABEL` = the question's `onLabel` |
 
   `option(s)` MUST be singular when `N` is 1 and plural otherwise. The question each message belongs to is
   conveyed by its association with that question (FR-054), never by naming the question inside the
@@ -572,6 +574,12 @@ Each case below is a decision, not an open question.
 - **FR-073**: A survey's optional `description` MUST render as visible text above the current page title,
   and a page's optional `description` MUST render as visible text below its page title. When either is
   absent, nothing MUST be rendered in its place.
+- **FR-078**: A `toggle_button` question MUST render as one on/off switch carrying the configured
+  `options.onLabel` / `options.offLabel` as visible text, defaulting to `On` and `Off`. It MUST show
+  `defaultValue` as its position until the respondent changes it, and MUST submit its value as a native
+  boolean in every case. Because a switch always shows a position, this type has no unanswered state: it
+  MUST NOT be omitted from the payload, it MUST offer no Clear action, and `required` on it MUST mean the
+  value is `true` rather than that a value is present.
 
 #### Attachments
 
@@ -720,7 +728,7 @@ Each case below is a decision, not an open question.
   linking to `/`. This MUST be distinguishable from a configuration error.
 - **FR-051**: Any unmatched path MUST render the not-found screen with a link to `/`.
 - **FR-052**: The default fixture MUST be a four-page customer-feedback survey with the pages "About
-  You", "Your Experience", "Supporting Files" and "Final Thoughts", exercising all six question types,
+  You", "Your Experience", "Supporting Files" and "Final Thoughts", exercising all seven question types,
   required and optional questions, min/max selections, min/max length, and a question with attachments
   enabled whose policy is `maxFiles: 3`, `acceptedTypes: ["image/png", "image/jpeg", "application/pdf"]`
   and `maxSizeBytes: 5242880`.
@@ -787,7 +795,7 @@ Each case below is a decision, not an open question.
   using the keyboard alone, with no mouse interaction.
 - **SC-002**: The catalog at `/` renders its list within 1s of the manifest response, and the first
   question of a survey renders within 1s of its config response, on a mid-range mobile device.
-- **SC-003**: For each of the six question types, at least one invalid input blocks Next, focuses the
+- **SC-003**: For each of the seven question types, at least one invalid input blocks Next, focuses the
   offending control, and announces an error naming the rule.
 - **SC-004**: 100% of files that violate type, size, emptiness, duplication or count are rejected at
   selection time, each with an error naming the file, and no valid file in the same selection is lost.

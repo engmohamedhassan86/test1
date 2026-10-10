@@ -9,6 +9,7 @@ import {
   satisfactionQuestion,
   textareaQuestion,
   textboxQuestion,
+  toggleButtonQuestion,
 } from '../models/__fixtures__/survey-builders';
 import type { Answer, AtLeastTwo, SatisfactionPoint, SurveyOption } from '../models';
 import { validateAnswer } from './answer.validator';
@@ -410,6 +411,67 @@ describe('validateAnswer — satisfaction (FR-010, FR-018)', () => {
       questionId: question.id,
       rule: 'scale-range',
       message: 'Choose a value between 1 and 5',
+    });
+  });
+});
+
+/**
+ * Feature 002. The rule here is not the required rule every other type has: a switch
+ * always shows a position, so "unanswered" is not a state this type can be in, and
+ * `required` has to mean the value is `true` — the consent reading.
+ */
+describe('validateAnswer — toggle_button (feature 002)', () => {
+  function toggleAnswer(value: boolean): Answer {
+    return { type: 'toggle_button', value };
+  }
+
+  it('passes an optional toggle whatever position it is in', () => {
+    const question = toggleButtonQuestion();
+
+    expect(validateAnswer(question, undefined)).toBeNull();
+    expect(validateAnswer(question, toggleAnswer(false))).toBeNull();
+    expect(validateAnswer(question, toggleAnswer(true))).toBeNull();
+  });
+
+  it('reports required-toggle when a required toggle is off', () => {
+    const question = toggleButtonQuestion({
+      required: true,
+      options: { onLabel: 'I agree', offLabel: 'I do not agree' },
+    });
+
+    expect(validateAnswer(question, toggleAnswer(false))).toEqual({
+      questionId: question.id,
+      rule: 'required-toggle',
+      message: 'Turn on I agree to continue',
+    });
+  });
+
+  it('passes a required toggle that is on', () => {
+    expect(validateAnswer(toggleButtonQuestion({ required: true }), toggleAnswer(true))).toBeNull();
+  });
+
+  it('reads defaultValue for an untouched required toggle rather than reporting absence', () => {
+    // Off by default and never touched is the same as off: the respondent saw it off.
+    expect(
+      validateAnswer(toggleButtonQuestion({ required: true, defaultValue: false }), undefined),
+    ).not.toBeNull();
+
+    // On by default and never touched passes. Demanding a touch would be a rule the
+    // respondent has no way to see.
+    expect(
+      validateAnswer(toggleButtonQuestion({ required: true, defaultValue: true }), undefined),
+    ).toBeNull();
+  });
+
+  it('fails closed when an answer of the wrong variant arrives for a required toggle', () => {
+    // Not reachable through the control, but a value restored or injected by another
+    // route must not pass a required consent question.
+    const question = toggleButtonQuestion({ required: true, defaultValue: false });
+
+    expect(validateAnswer(question, { type: 'textbox', value: 'true' })).toEqual({
+      questionId: question.id,
+      rule: 'required-toggle',
+      message: 'Turn on On to continue',
     });
   });
 });

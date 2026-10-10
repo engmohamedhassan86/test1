@@ -15,7 +15,10 @@ export type Answer =
   | { readonly type: 'textbox'; readonly value: string }
   | { readonly type: 'textarea'; readonly value: string }
   | { readonly type: 'rating'; readonly value: number }
-  | { readonly type: 'satisfaction'; readonly value: SatisfactionPoint };
+  | { readonly type: 'satisfaction'; readonly value: SatisfactionPoint }
+  // The one variant that is never absent once the respondent has touched its control, and
+  // whose absence still has a value — `toggleValue` reads `defaultValue` through it.
+  | { readonly type: 'toggle_button'; readonly value: boolean };
 
 /** The answer variant that belongs to a given question member, by discriminant. */
 export type AnswerFor<TQuestion extends Question> = Extract<Answer, { type: TQuestion['type'] }>;
@@ -29,7 +32,8 @@ export type AnswerInput =
   | { readonly kind: 'text'; readonly value: string }
   | { readonly kind: 'option'; readonly value: OptionValue }
   | { readonly kind: 'options'; readonly values: readonly OptionValue[] }
-  | { readonly kind: 'point'; readonly value: number };
+  | { readonly kind: 'point'; readonly value: number }
+  | { readonly kind: 'boolean'; readonly value: boolean };
 
 export type AnswerMap = ReadonlyMap<QuestionId, Answer>;
 

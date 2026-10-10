@@ -16,9 +16,10 @@ export const QUESTION_TYPES = [
   'textarea',
   'rating',
   'satisfaction',
+  'toggle_button',
 ] as const;
 
-/** FR-003: exactly these six. Any other `type` value is configuration failure F04. */
+/** FR-003: exactly these seven. Any other `type` value is configuration failure F04. */
 export type QuestionType = (typeof QUESTION_TYPES)[number];
 
 export interface SurveyOption {
@@ -99,13 +100,41 @@ export interface SatisfactionQuestion extends QuestionBase {
   readonly type: 'satisfaction';
 }
 
+/**
+ * The two visible labels of a toggle. Both are always present on the normalised question:
+ * the validator substitutes `TOGGLE_LABEL_DEFAULTS` for an absent or omitted label, so no
+ * component chooses wording of its own.
+ */
+export interface ToggleLabels {
+  readonly onLabel: string;
+  readonly offLabel: string;
+}
+
+/**
+ * A boolean question, rendered as one on/off switch rather than as two choices.
+ *
+ * It is the one type with **no unanswered state**: a switch always shows a position, so
+ * `defaultValue` is the position it shows before the respondent touches it, and the
+ * submitted value is a native boolean in every case (never omitted, never `null`). That is
+ * also why `required` cannot mean "has a value" here — it means the value must be `true`,
+ * the consent reading, which is the only one a switch can express.
+ */
+export interface ToggleButtonQuestion extends QuestionBase {
+  readonly type: 'toggle_button';
+  /** Authoring default `TOGGLE_LABEL_DEFAULTS`. */
+  readonly options: ToggleLabels;
+  /** Authoring default `false`. */
+  readonly defaultValue: boolean;
+}
+
 export type Question =
   | RadioQuestion
   | CheckboxQuestion
   | TextboxQuestion
   | TextareaQuestion
   | RatingQuestion
-  | SatisfactionQuestion;
+  | SatisfactionQuestion
+  | ToggleButtonQuestion;
 
 /** The two members that own `options`. */
 export type ChoiceQuestion = RadioQuestion | CheckboxQuestion;
@@ -130,6 +159,26 @@ export interface Survey {
   readonly description: string | null;
   /** FR-001, F11: at least one page, in display order. */
   readonly pages: NonEmpty<SurveyPage>;
+}
+
+/** The authoring defaults for a toggle's two labels. Visible text, never a colour alone. */
+export const TOGGLE_LABEL_DEFAULTS: ToggleLabels = { onLabel: 'On', offLabel: 'Off' };
+
+/**
+ * The position a toggle shows: the respondent's answer when there is one, and the
+ * configured `defaultValue` until then. The one place that fallback is expressed, so the
+ * control, the validator and the payload builder cannot disagree about it.
+ */
+export function toggleValue(
+  question: ToggleButtonQuestion,
+  answered: boolean | undefined,
+): boolean {
+  return answered ?? question.defaultValue;
+}
+
+/** The label that belongs to a toggle's current position. */
+export function toggleLabel(question: ToggleButtonQuestion, value: boolean): string {
+  return value ? question.options.onLabel : question.options.offLabel;
 }
 
 export type SatisfactionPoint = 1 | 2 | 3 | 4 | 5;

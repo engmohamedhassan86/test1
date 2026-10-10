@@ -76,7 +76,7 @@ duplicate of either as a configuration failure, so the two must not be interchan
 
 ## 3. `src/app/core/models/survey.model.ts` — the survey
 
-### 3.1 The six question types
+### 3.1 The seven question types
 
 ```ts
 import type { AtLeastTwo, NonEmpty, OptionValue, PageId, QuestionId, SurveyKey } from './branded';
@@ -88,6 +88,7 @@ export const QUESTION_TYPES = [
   'textarea',
   'rating',
   'satisfaction',
+  'toggle_button',
 ] as const;
 
 /** FR-003: exactly these six. Any other `type` value is configuration failure F04. */
@@ -174,13 +175,32 @@ export interface SatisfactionQuestion extends QuestionBase {
   readonly type: 'satisfaction';
 }
 
+/** The two visible labels of a toggle. Both are always present after normalisation. */
+export interface ToggleLabels {
+  readonly onLabel: string;
+  readonly offLabel: string;
+}
+
+/**
+ * A boolean question, rendered as one on/off switch. The one member with **no unanswered
+ * state**: a switch always shows a position, so `defaultValue` is the position it shows
+ * until the respondent touches it, the submitted value is always a native boolean, and
+ * `required` means the value must be `true` rather than present.
+ */
+export interface ToggleButtonQuestion extends QuestionBase {
+  readonly type: 'toggle_button';
+  readonly options: ToggleLabels;
+  readonly defaultValue: boolean;
+}
+
 export type Question =
   | RadioQuestion
   | CheckboxQuestion
   | TextboxQuestion
   | TextareaQuestion
   | RatingQuestion
-  | SatisfactionQuestion;
+  | SatisfactionQuestion
+  | ToggleButtonQuestion;
 
 /** The two members that own `options`; useful where only choice questions are legal. */
 export type ChoiceQuestion = RadioQuestion | CheckboxQuestion;
@@ -405,7 +425,10 @@ export type Answer =
   | { readonly type: 'textbox'; readonly value: string }
   | { readonly type: 'textarea'; readonly value: string }
   | { readonly type: 'rating'; readonly value: number }
-  | { readonly type: 'satisfaction'; readonly value: SatisfactionPoint };
+  | { readonly type: 'satisfaction'; readonly value: SatisfactionPoint }
+  // The one variant for which `false` is an answer rather than an empty value, so the
+  // delete-when-empty rule above does not reach it.
+  | { readonly type: 'toggle_button'; readonly value: boolean };
 
 /** The answer variant that belongs to a given question member, by discriminant. */
 export type AnswerFor<TQuestion extends Question> = Extract<Answer, { type: TQuestion['type'] }>;
@@ -475,6 +498,7 @@ export type ValidationRuleId =
   | 'required-checkbox'
   | 'required-text'
   | 'required-scale'
+  | 'required-toggle'
   | 'min-length'
   | 'max-length'
   | 'min-selections'

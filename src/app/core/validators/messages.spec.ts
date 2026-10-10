@@ -1,5 +1,5 @@
 /**
- * T032 — all ten FR-069 rows verbatim, the `option(s)` plural rule, the `FILENAME: REASON`
+ * T032 — all eleven FR-069 rows verbatim, the `option(s)` plural rule, the `FILENAME: REASON`
  * row with each of the six reasons, and all seven submission-failure texts verbatim from
  * `contracts/response-submission.md` §4.
  */
@@ -20,6 +20,7 @@ import {
   multiplePagesInvalidMessage,
   requiredRadioMessage,
   requiredTextMessage,
+  requiredToggleMessage,
   scaleRangeMessage,
   selectionHintMessage,
   submissionFailureMessage,
@@ -37,9 +38,10 @@ import {
   satisfactionQuestion,
   textareaQuestion,
   textboxQuestion,
+  toggleButtonQuestion,
 } from '../models/__fixtures__/survey-builders';
 
-describe('the ten FR-069 rows, verbatim', () => {
+describe('the first ten FR-069 rows, verbatim', () => {
   it('row 1 — required radio unanswered', () => {
     expect(requiredRadioMessage()).toBe('Choose one option');
   });
@@ -91,6 +93,20 @@ describe('the ten FR-069 rows, verbatim', () => {
   });
 });
 
+describe('row 11 — a required toggle left off (feature 002)', () => {
+  it("names the question's own onLabel, so the instruction matches the control", () => {
+    expect(
+      requiredToggleMessage(
+        toggleButtonQuestion({ options: { onLabel: 'I agree', offLabel: 'I do not agree' } }),
+      ),
+    ).toBe('Turn on I agree to continue');
+  });
+
+  it('falls back to the default label when the config named none', () => {
+    expect(requiredToggleMessage(toggleButtonQuestion())).toBe('Turn on On to continue');
+  });
+});
+
 describe('option(s) plural rule (FR-069)', () => {
   it('is singular at N = 1', () => {
     expect(minSelectionsMessage(checkboxQuestion({ minSelections: 1 }))).toBe(
@@ -120,6 +136,14 @@ describe('no message names the question it belongs to (FR-069)', () => {
     minLengthMessage(textboxQuestion({ title: 'What should we call you?', minLength: 2 })),
     maxLengthMessage(textareaQuestion({ title: 'Anything else?', maxLength: 80 })),
     scaleRangeMessage(satisfactionQuestion({ title: 'How satisfied were you?' })),
+    // The toggle row names the control's `onLabel`, which is config — but still never the
+    // question title, which is what FR-069 forbids.
+    requiredToggleMessage(
+      toggleButtonQuestion({
+        title: 'Anything else you would like?',
+        options: { onLabel: 'Yes', offLabel: 'No' },
+      }),
+    ),
   ])('%s carries no question title', (message) => {
     // Association is FR-054's job. One wording has to serve every survey, so a title
     // leaking into a message would be a defect even though it reads better.

@@ -8,19 +8,23 @@ import {
   SATISFACTION_LABELS,
   SATISFACTION_POINTS,
   SATISFACTION_SCALE,
+  TOGGLE_LABEL_DEFAULTS,
   effectiveMinSelections,
   ratingPresentation,
   scaleOf,
   scalePoints,
+  toggleLabel,
+  toggleValue,
 } from './survey.model';
 import {
   checkboxQuestion,
   ratingQuestion,
   satisfactionQuestion,
+  toggleButtonQuestion,
 } from './__fixtures__/survey-builders';
 
 describe('QUESTION_TYPES', () => {
-  it('holds exactly the six FR-003 values, in contract order', () => {
+  it('holds exactly the seven FR-003 values, in contract order', () => {
     expect(QUESTION_TYPES).toEqual([
       'radio',
       'checkbox',
@@ -28,11 +32,43 @@ describe('QUESTION_TYPES', () => {
       'textarea',
       'rating',
       'satisfaction',
+      'toggle_button',
     ]);
   });
 
-  it('has no seventh member', () => {
-    expect(QUESTION_TYPES).toHaveLength(6);
+  it('has no eighth member', () => {
+    expect(QUESTION_TYPES).toHaveLength(7);
+  });
+});
+
+describe('toggleValue and toggleLabel (feature 002)', () => {
+  it('reads the answer when there is one, in either position', () => {
+    const question = toggleButtonQuestion({ defaultValue: true });
+
+    // `false` is an answer here, so it must win over a `true` default — this is the case
+    // a `||` instead of a `??` would get wrong.
+    expect(toggleValue(question, false)).toBe(false);
+    expect(toggleValue(question, true)).toBe(true);
+  });
+
+  it('falls back to defaultValue when there is no answer', () => {
+    expect(toggleValue(toggleButtonQuestion({ defaultValue: true }), undefined)).toBe(true);
+    expect(toggleValue(toggleButtonQuestion({ defaultValue: false }), undefined)).toBe(false);
+  });
+
+  it('names the position with the configured label', () => {
+    const question = toggleButtonQuestion({
+      options: { onLabel: 'Send me news', offLabel: 'No news' },
+    });
+
+    expect(toggleLabel(question, true)).toBe('Send me news');
+    expect(toggleLabel(question, false)).toBe('No news');
+  });
+
+  it('defaults the two labels to On and Off', () => {
+    expect(TOGGLE_LABEL_DEFAULTS).toEqual({ onLabel: 'On', offLabel: 'Off' });
+    expect(toggleLabel(toggleButtonQuestion(), true)).toBe('On');
+    expect(toggleLabel(toggleButtonQuestion(), false)).toBe('Off');
   });
 });
 
