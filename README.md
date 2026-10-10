@@ -98,4 +98,4 @@ Two things the workflow has to get right for a project site served from
   render normally — this is the standard Pages SPA fallback.
 
 [`vercel.json`](vercel.json) is left in place but is **not** the deploy path, and a Vercel preview is
-not a deliverable. No secrets are stored in this repository.
+not a deliverable. No secrets are stored in this repository..
