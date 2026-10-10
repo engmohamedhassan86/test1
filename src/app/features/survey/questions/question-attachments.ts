@@ -1,7 +1,7 @@
 /**
  * The attachment control — T117, FR-021, FR-025, FR-065, FR-071.
  *
- * Rendered by `question-host` for **any** of the six types, because `contracts/survey-config.md`
+ * Rendered by `question-host` for **any** of the seven types, because `contracts/survey-config.md`
  * §2 allows an `attachments` block on any of them. It renders nothing at all when
  * `question.attachments` is `null`, which the config validator has already made the single
  * representation of both "no block" and `maxFiles: 0` — so FR-021 and US3 scenario 10 are

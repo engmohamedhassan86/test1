@@ -83,16 +83,16 @@ behind an index fallback:
 | `description` | no       | At most 300 characters.                                              |
 | `questions`   | yes      | Array, in display order. May be empty; such a page always validates. |
 
-### Question — fields common to all six types
+### Question — fields common to all seven types
 
-| Field         | Required | Rule                                                                                 |
-| ------------- | -------- | ------------------------------------------------------------------------------------ |
-| `id`          | yes      | `^[a-z0-9][a-z0-9-_]{0,63}$`, unique within the survey (not merely within its page). |
-| `type`        | yes      | Exactly one of `radio`, `checkbox`, `textbox`, `textarea`, `rating`, `satisfaction`. |
-| `title`       | yes      | Non-empty after trimming, at most 300 characters.                                    |
-| `description` | no       | At most 500 characters.                                                              |
-| `required`    | no       | Boolean. Absent means `false`.                                                       |
-| `attachments` | no       | Attachment policy, section 3. Allowed on any type.                                   |
+| Field         | Required | Rule                                                                                                  |
+| ------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `id`          | yes      | `^[a-z0-9][a-z0-9-_]{0,63}$`, unique within the survey (not merely within its page).                  |
+| `type`        | yes      | Exactly one of `radio`, `checkbox`, `textbox`, `textarea`, `rating`, `satisfaction`, `toggle_button`. |
+| `title`       | yes      | Non-empty after trimming, at most 300 characters.                                                     |
+| `description` | no       | At most 500 characters.                                                                               |
+| `required`    | no       | Boolean. Absent means `false`.                                                                        |
+| `attachments` | no       | Attachment policy, section 3. Allowed on any type.                                                    |
 
 A question carries only the fields listed for its own type. `minLength` on a `radio`, `options` on a
 `textarea`, or `scale` on a `checkbox` are all validation failures.
@@ -141,6 +141,26 @@ Takes no type-specific field. The scale is fixed at the five points 1 to 5, labe
 "Dissatisfied", "Neutral", "Satisfied" and "Very satisfied", each shown as visible text (spec FR-010). A
 `scale` field on a `satisfaction` question is a validation failure. A Clear action returns the question to
 unanswered (spec FR-060).
+
+### `toggle_button`
+
+| Field          | Required | Rule                                                                                                                                                                                                      |
+| -------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `options`      | no       | `{ "onLabel": string, "offLabel": string }`. Either key may be omitted on its own. Absent means `{ "onLabel": "On", "offLabel": "Off" }`. Each label is non-empty after trimming, at most 200 characters. |
+| `defaultValue` | no       | Boolean. Absent means `false`.                                                                                                                                                                            |
+
+Boolean only, rendered as one on/off switch. Note that `options` here is an **object of two labels**, not
+the array of choices that `radio` and `checkbox` carry.
+
+This is the one type with **no unanswered state**: a switch always shows a position, so `defaultValue` is
+the position it shows before the respondent touches it. Two consequences follow, and both are contract, not
+implementation detail:
+
+- the submitted value is always present and always a native JSON boolean — never omitted, never `null`;
+- `required` cannot mean "has a value". It means the value must be `true` — the consent reading, which is
+  the only one a switch can express.
+
+There is no Clear action, because there is no unanswered state to return to.
 
 ### 2.1 Option
 
@@ -217,16 +237,17 @@ ever arrives for.
 The default fixture `customer-feedback` MUST exercise every rule above. It has four pages and the
 following questions; wording may be refined by the Survey Content Author, structure may not.
 
-| Page             | Question id      | Type           | Required | Rules                                                                                                                                 |
-| ---------------- | ---------------- | -------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| About You        | `q_name`         | `textbox`      | yes      | `minLength: 2`, `maxLength: 80`                                                                                                       |
-| About You        | `q_segment`      | `radio`        | yes      | 3 options (new, returning, business)                                                                                                  |
-| Your Experience  | `q_satisfaction` | `satisfaction` | yes      | fixed 1-5                                                                                                                             |
-| Your Experience  | `q_liked`        | `checkbox`     | yes      | 5 options, `minSelections: 1`, `maxSelections: 3`                                                                                     |
-| Your Experience  | `q_delivery`     | `rating`       | no       | `scale: { min: 1, max: 5 }`                                                                                                           |
-| Supporting Files | `q_evidence`     | `textarea`     | no       | `maxLength: 1000`, `attachments: { maxFiles: 3, acceptedTypes: ["image/png","image/jpeg","application/pdf"], maxSizeBytes: 5242880 }` |
-| Final Thoughts   | `q_comments`     | `textarea`     | no       | `maxLength: 2000`                                                                                                                     |
-| Final Thoughts   | `q_recommend`    | `radio`        | yes      | 3 options (yes, no, unsure)                                                                                                           |
+| Page             | Question id       | Type            | Required | Rules                                                                                                                                 |
+| ---------------- | ----------------- | --------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| About You        | `q_name`          | `textbox`       | yes      | `minLength: 2`, `maxLength: 80`                                                                                                       |
+| About You        | `q_segment`       | `radio`         | yes      | 3 options (new, returning, business)                                                                                                  |
+| Your Experience  | `q_satisfaction`  | `satisfaction`  | yes      | fixed 1-5                                                                                                                             |
+| Your Experience  | `q_liked`         | `checkbox`      | yes      | 5 options, `minSelections: 1`, `maxSelections: 3`                                                                                     |
+| Your Experience  | `q_delivery`      | `rating`        | no       | `scale: { min: 1, max: 5 }`                                                                                                           |
+| Supporting Files | `q_evidence`      | `textarea`      | no       | `maxLength: 1000`, `attachments: { maxFiles: 3, acceptedTypes: ["image/png","image/jpeg","application/pdf"], maxSizeBytes: 5242880 }` |
+| Final Thoughts   | `q_comments`      | `textarea`      | no       | `maxLength: 2000`                                                                                                                     |
+| Final Thoughts   | `q_recommend`     | `radio`         | yes      | 3 options (yes, no, unsure)                                                                                                           |
+| Final Thoughts   | `q_notifications` | `toggle_button` | no       | `options: { onLabel: "Send me news", offLabel: "No news" }`, `defaultValue: false`                                                    |
 
 Invalid fixtures, one per failure class in section 4, belong beside it for the contract tests.
 
@@ -255,7 +276,7 @@ validators in `src/app/core/validators` are the only functions permitted to narr
 is the **normalised** model below: every "absent means X" rule in sections 1–3 has already been applied, so
 no consumer re-applies a default and no consumer sees an optional validation field.
 
-Full declarations, imports and rationale are in `../data-model.md`. The six union members, which this
+Full declarations, imports and rationale are in `../data-model.md`. The seven union members, which this
 contract names as non-optional, are reproduced here verbatim so that this document stands alone.
 
 ```ts
@@ -266,6 +287,7 @@ export const QUESTION_TYPES = [
   'textarea',
   'rating',
   'satisfaction',
+  'toggle_button',
 ] as const;
 
 export type QuestionType = (typeof QUESTION_TYPES)[number];
@@ -339,13 +361,25 @@ export interface SatisfactionQuestion extends QuestionBase {
   readonly type: 'satisfaction';
 }
 
+export interface ToggleLabels {
+  readonly onLabel: string;
+  readonly offLabel: string;
+}
+
+export interface ToggleButtonQuestion extends QuestionBase {
+  readonly type: 'toggle_button';
+  readonly options: ToggleLabels;
+  readonly defaultValue: boolean;
+}
+
 export type Question =
   | RadioQuestion
   | CheckboxQuestion
   | TextboxQuestion
   | TextareaQuestion
   | RatingQuestion
-  | SatisfactionQuestion;
+  | SatisfactionQuestion
+  | ToggleButtonQuestion;
 
 export interface SurveyPage {
   readonly id: PageId;
@@ -475,18 +509,18 @@ the respondent-facing text does not, because the respondent can act on neither d
 
 Paths below are abbreviated `Q` for `pages[i].questions[j]`.
 
-| Rule | Check                                                                                                                                                                                                                                                                                                                         | Code                                                           | Path            |
-| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | --------------- |
-| R19  | The element is a JSON object                                                                                                                                                                                                                                                                                                  | F06                                                            | `Q`             |
-| R20  | `type` is present and is a string                                                                                                                                                                                                                                                                                             | F02 / F06                                                      | `Q.type`        |
-| R21  | `type` is one of the six in `QUESTION_TYPES`                                                                                                                                                                                                                                                                                  | F04                                                            | `Q.type`        |
-| R22  | Only keys in (common set ∪ the set for this `type`) are present. Common: `id`, `type`, `title`, `description`, `required`, `attachments`. Per type: `radio` → `options`; `checkbox` → `options`, `minSelections`, `maxSelections`; `textbox`/`textarea` → `minLength`, `maxLength`; `rating` → `scale`; `satisfaction` → none | F05 when the key is a contract field on another type, else F03 | `Q.<key>`       |
-| R23  | `id` and `title` are present                                                                                                                                                                                                                                                                                                  | F02                                                            | `Q.<key>`       |
-| R24  | `id` is a string matching `^[a-z0-9][a-z0-9-_]{0,63}$`                                                                                                                                                                                                                                                                        | F06 / F13                                                      | `Q.id`          |
-| R25  | `id` has not been seen on **any** earlier question in the survey, not merely on this page                                                                                                                                                                                                                                     | F08                                                            | `Q.id`          |
-| R26  | `title` is a string, non-empty after trimming, at most 300 code points                                                                                                                                                                                                                                                        | F06 / F13                                                      | `Q.title`       |
-| R27  | `description`, when present, is a string of at most 500 code points                                                                                                                                                                                                                                                           | F06 / F13                                                      | `Q.description` |
-| R28  | `required`, when present, is a boolean                                                                                                                                                                                                                                                                                        | F06                                                            | `Q.required`    |
+| Rule | Check                                                                                                                                                                                                                                                                                                                                                                      | Code                                                           | Path            |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | --------------- |
+| R19  | The element is a JSON object                                                                                                                                                                                                                                                                                                                                               | F06                                                            | `Q`             |
+| R20  | `type` is present and is a string                                                                                                                                                                                                                                                                                                                                          | F02 / F06                                                      | `Q.type`        |
+| R21  | `type` is one of the seven in `QUESTION_TYPES`                                                                                                                                                                                                                                                                                                                             | F04                                                            | `Q.type`        |
+| R22  | Only keys in (common set ∪ the set for this `type`) are present. Common: `id`, `type`, `title`, `description`, `required`, `attachments`. Per type: `radio` → `options`; `checkbox` → `options`, `minSelections`, `maxSelections`; `textbox`/`textarea` → `minLength`, `maxLength`; `rating` → `scale`; `satisfaction` → none; `toggle_button` → `options`, `defaultValue` | F05 when the key is a contract field on another type, else F03 | `Q.<key>`       |
+| R23  | `id` and `title` are present                                                                                                                                                                                                                                                                                                                                               | F02                                                            | `Q.<key>`       |
+| R24  | `id` is a string matching `^[a-z0-9][a-z0-9-_]{0,63}$`                                                                                                                                                                                                                                                                                                                     | F06 / F13                                                      | `Q.id`          |
+| R25  | `id` has not been seen on **any** earlier question in the survey, not merely on this page                                                                                                                                                                                                                                                                                  | F08                                                            | `Q.id`          |
+| R26  | `title` is a string, non-empty after trimming, at most 300 code points                                                                                                                                                                                                                                                                                                     | F06 / F13                                                      | `Q.title`       |
+| R27  | `description`, when present, is a string of at most 500 code points                                                                                                                                                                                                                                                                                                        | F06 / F13                                                      | `Q.description` |
+| R28  | `required`, when present, is a boolean                                                                                                                                                                                                                                                                                                                                     | F06                                                            | `Q.required`    |
 
 ### 9.4 Type-specific rules
 
@@ -509,6 +543,9 @@ Paths below are abbreviated `Q` for `pages[i].questions[j]`.
 | R43  | `rating`            | `scale`, when present, is an object whose only keys are `min` and `max`, both present integers                          | F02 / F03 / F06 | `Q.scale`                |
 | R44  | `rating`            | `0 <= min`, `min < max`, `max <= 10`                                                                                    | F14             | `Q.scale.min\|max`       |
 | R45  | `satisfaction`      | no type-specific key is present — `scale` here is F05 by R22                                                            | F05             | `Q.scale`                |
+| R45a | `toggle_button`     | `options`, when present, is an **object** whose only keys are `onLabel` and `offLabel`, each optional                   | F03 / F06       | `Q.options`              |
+| R45b | `toggle_button`     | `defaultValue`, when present, is a boolean — `"true"` is F06, not a truthy string                                       | F06             | `Q.defaultValue`         |
+| R45c | `toggle_button`     | each present label is a string, non-empty after trimming, at most 200 code points; an absent label takes its default    | F06 / F13       | `Q.options.<key>`        |
 
 ### 9.5 Attachment-policy rules, when `attachments` is present
 

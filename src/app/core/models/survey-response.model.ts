@@ -18,7 +18,8 @@ export interface AttachmentDescriptor {
 export interface AnswerEntry {
   readonly questionId: QuestionId;
   readonly type: QuestionType;
-  readonly value: string | number | readonly string[];
+  /** A `toggle_button` carries a native JSON boolean here — never `"true"` and never 1. */
+  readonly value: string | number | boolean | readonly string[];
   /** Omitted entirely when the question accepted no file. Never `null`, never `[]`. */
   readonly attachments?: NonEmpty<AttachmentDescriptor>;
 }

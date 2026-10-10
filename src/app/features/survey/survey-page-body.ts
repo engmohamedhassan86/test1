@@ -81,7 +81,7 @@ export class SurveyPageBodyComponent {
 
 /**
  * FR-030's focus target. Focusing the first focusable descendant rather than the wrapper
- * itself is what lets one rule serve all six types: a `role="radiogroup"` div is not
+ * itself is what lets one rule serve all seven types: a `role="radiogroup"` div is not
  * focusable, and giving every group a `tabindex` to make it so would put a non-control in
  * the tab order.
  */

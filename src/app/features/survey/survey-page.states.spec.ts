@@ -49,7 +49,7 @@ const PASSABLE = survey(
   { title: 'Customer Feedback' },
 );
 
-/** Everything a respondent could type into, across all six types. */
+/** Everything a respondent could type into, across all seven types. */
 function controls(host: HTMLElement): Element[] {
   return [...host.querySelectorAll('input, textarea, [role="radiogroup"], fieldset')];
 }

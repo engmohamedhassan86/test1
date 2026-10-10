@@ -16,7 +16,7 @@
  */
 
 import { assertNever } from '../models/assert-never';
-import { effectiveMinSelections, scaleOf } from '../models/survey.model';
+import { effectiveMinSelections, scaleOf, toggleValue } from '../models/survey.model';
 import type { Question } from '../models/survey.model';
 import type { Answer } from '../models/answer.model';
 import type { ValidationError, ValidationRuleId } from '../models/validation.model';
@@ -28,6 +28,7 @@ import {
   minSelectionsMessage,
   requiredRadioMessage,
   requiredTextMessage,
+  requiredToggleMessage,
   scaleRangeMessage,
 } from './messages';
 
@@ -107,7 +108,21 @@ export function validateAnswer(
       }
       return null;
     }
+
+    case 'toggle_button': {
+      // A switch always shows a position, so there is no "unanswered" to report on: an
+      // absent answer means the respondent left it at `defaultValue`, which is a real
+      // value. `required` therefore reads as consent — the value must be `true`.
+      const value = toggleValue(
+        question,
+        answer?.type === 'toggle_button' ? answer.value : undefined,
+      );
+      if (question.required && !value) {
+        return error(question, 'required-toggle', requiredToggleMessage(question));
+      }
+      return null;
+    }
   }
-  // No `default` branch: a seventh question type is a build failure here (plan §5.3).
+  // No `default` branch: an eighth question type is a build failure here (plan §5.3).
   return assertNever(question);
 }

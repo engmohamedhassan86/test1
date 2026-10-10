@@ -87,7 +87,7 @@ export const INVALID_F03_UNKNOWN_FIELD: unknown = {
   ],
 };
 
-/** F04 — `slider` is not one of the six types. Path `pages[1].questions[0].type`. */
+/** F04 — `slider` is not one of the seven types. Path `pages[1].questions[0].type`. */
 export const INVALID_F04_UNKNOWN_QUESTION_TYPE: unknown = {
   key: 'mini-pulse',
   title: 'Mini Pulse',

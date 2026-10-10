@@ -20,6 +20,7 @@ import type {
   CheckboxQuestion,
   ScaleQuestion,
   TextQuestion,
+  ToggleButtonQuestion,
 } from '../models/survey.model';
 import type { AttachmentRejectionReason } from '../models/answer.model';
 import type { SubmissionFailureKind } from '../models/survey-response.model';
@@ -51,6 +52,17 @@ export function requiredTextMessage(): string {
 export function scaleRangeMessage(question: ScaleQuestion): string {
   const { min, max } = scaleOf(question);
   return `Choose a value between ${min} and ${max}`;
+}
+
+/**
+ * A required `toggle_button` left off.
+ *
+ * It names the question's own `onLabel` rather than saying "turn this on", because the
+ * label is the only word on the control the respondent can see — `Notify me` reads as an
+ * instruction they can act on, where a generic sentence makes them hunt for the switch.
+ */
+export function requiredToggleMessage(question: ToggleButtonQuestion): string {
+  return `Turn on ${question.options.onLabel} to continue`;
 }
 
 /** `minLength` on a non-empty answer. */

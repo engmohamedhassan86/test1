@@ -25,7 +25,7 @@ import { validateSurveyManifest } from '../../core/validators/survey-manifest.va
 import { manifestEntry, mountViewer } from './__fixtures__/survey-harness';
 import { SurveyPageComponent } from './survey-page';
 
-/** Everything a respondent could type into, across all six types. */
+/** Everything a respondent could type into, across all seven types. */
 function controls(host: HTMLElement): Element[] {
   return [...host.querySelectorAll('input, textarea, [role="radiogroup"], fieldset')];
 }

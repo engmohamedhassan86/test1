@@ -26,7 +26,7 @@ import type {
   QuestionId,
   SurveyKey,
 } from '../models/branded';
-import { QUESTION_TYPES } from '../models/survey.model';
+import { QUESTION_TYPES, TOGGLE_LABEL_DEFAULTS } from '../models/survey.model';
 import type {
   AcceptedFileType,
   AttachmentPolicy,
@@ -78,6 +78,9 @@ const TYPE_SPECIFIC_KEYS: Readonly<Record<QuestionType, readonly string[]>> = {
   textarea: ['minLength', 'maxLength'],
   rating: ['scale'],
   satisfaction: [],
+  // `options` is an object here, not the array the two choice types carry. The key is
+  // shared because the contract names it, and the shape is enforced per type below.
+  toggle_button: ['options', 'defaultValue'],
 };
 
 /** Every key the contract defines anywhere on a question, for the R22 F05/F03 split. */
@@ -87,6 +90,7 @@ const ALL_QUESTION_KEYS: readonly string[] = [
 ];
 
 const OPTION_KEYS = ['id', 'label', 'value'] as const;
+const TOGGLE_OPTION_KEYS = ['onLabel', 'offLabel'] as const;
 const SCALE_KEYS = ['min', 'max'] as const;
 const ATTACHMENT_KEYS = ['maxFiles', 'acceptedTypes', 'maxSizeBytes'] as const;
 
@@ -500,7 +504,7 @@ function readQuestion(
     return log.add('F06', typePath, wrongType(typePath, 'a string', typeRead.actual));
   }
 
-  // R21 — one of the six. Without a known type, no type-specific rule can run.
+  // R21 — one of the seven. Without a known type, no type-specific rule can run.
   const matched = QUESTION_TYPES.find((candidate) => candidate === typeRead.value);
   if (matched === undefined) {
     return log.add(
@@ -605,8 +609,10 @@ function readQuestion(
     case 'satisfaction':
       // R45 — no type-specific key exists; `scale` here was already F05 at R22.
       return { ...common, type: 'satisfaction' };
+    case 'toggle_button':
+      return readToggleButton(log, object.value, basePath, common);
   }
-  // No `default` branch: a seventh question type is a build failure here (plan §5.3).
+  // No `default` branch: an eighth question type is a build failure here (plan §5.3).
   return assertNever(type);
 }
 
@@ -782,6 +788,82 @@ function readRating(
   }
 
   return { ...common, type: 'rating', scale: { min: min.value, max: max.value } };
+}
+
+/**
+ * R45a to R45c — the `toggle_button` block.
+ *
+ * Both type-specific keys are optional and both have a contract default, so an authored
+ * `{ "type": "toggle_button", "id": …, "title": … }` is complete and renders `On`/`Off`
+ * starting off. Every failure here is the same closed-door the other readers take: the
+ * question is dropped and the whole config fails, never half-applied.
+ */
+function readToggleButton(
+  log: IssueLog,
+  object: JsonObject,
+  basePath: string,
+  common: CommonFields,
+): Question | undefined {
+  // R45b — `defaultValue`, when present, is a boolean. Absent → false.
+  let defaultValue = false;
+  const rawDefault = object['defaultValue'];
+  if (rawDefault !== undefined) {
+    const read = requireBoolean(rawDefault);
+    if (!read.ok) {
+      const path = `${basePath}.defaultValue`;
+      return log.add('F06', path, wrongType(path, 'a boolean', read.actual));
+    }
+    defaultValue = read.value;
+  }
+
+  // R45a — `options`, when present, is an object whose only keys are the two labels.
+  // Either label may be omitted on its own and falls back to its default.
+  const optionsPath = `${basePath}.options`;
+  const rawOptions = object['options'];
+  if (rawOptions === undefined) {
+    return { ...common, type: 'toggle_button', options: TOGGLE_LABEL_DEFAULTS, defaultValue };
+  }
+
+  const optionsObject = requireObject(rawOptions);
+  if (!optionsObject.ok) {
+    return log.add('F06', optionsPath, wrongType(optionsPath, 'an object', optionsObject.actual));
+  }
+  const unknownKeys = rejectUnknownKeys(optionsObject.value, TOGGLE_OPTION_KEYS);
+  const firstUnknown = unknownKeys[0];
+  if (firstUnknown !== undefined) {
+    const path = `${optionsPath}.${firstUnknown}`;
+    return log.add('F03', path, `${path}: unknown field`);
+  }
+
+  const onLabel = readToggleLabel(log, optionsObject.value, optionsPath, 'onLabel');
+  const offLabel = readToggleLabel(log, optionsObject.value, optionsPath, 'offLabel');
+  if (onLabel === undefined || offLabel === undefined) {
+    return undefined;
+  }
+
+  return { ...common, type: 'toggle_button', options: { onLabel, offLabel }, defaultValue };
+}
+
+/**
+ * R45c — one label: absent falls back to its default, present must be a non-blank string
+ * within `OPTION_LABEL_MAX`. A blank label is rejected rather than silently defaulted,
+ * because `"  "` is an authoring mistake and a switch with no visible word on it is
+ * unusable (FR-010's "visible text, never a colour alone" applies to this type too).
+ *
+ * F06 for the wrong JSON type, F13 for blank or over-length.
+ */
+function readToggleLabel(
+  log: IssueLog,
+  options: JsonObject,
+  basePath: string,
+  key: 'onLabel' | 'offLabel',
+): string | undefined {
+  if (options[key] === undefined) {
+    return TOGGLE_LABEL_DEFAULTS[key];
+  }
+  // Same three checks as every other required visible string, so the F06/F13 wording and
+  // the code-point counting are not restated here.
+  return readTitle(log, options, `${basePath}.${key}`, key, OPTION_LABEL_MAX);
 }
 
 // --- R11 to R18: one page ------------------------------------------------------------

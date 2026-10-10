@@ -26,6 +26,7 @@ import {
   survey,
   textareaQuestion,
   textboxQuestion,
+  toggleButtonQuestion,
 } from '../models/__fixtures__/survey-builders';
 import { buildSurveyResponse } from './survey-response-payload';
 
@@ -88,11 +89,14 @@ describe('buildSurveyResponse', () => {
       IDS,
     );
 
+    // `q_notifications` is the fixture's toggle, which is never omitted — it sits last
+    // because that is its position in the survey, not because it was answered last.
     expect(response.answers.map((entry) => entry.questionId)).toEqual([
       'q_name',
       'q_segment',
       'q_satisfaction',
       'q_recommend',
+      'q_notifications',
     ]);
   });
 
@@ -105,7 +109,9 @@ describe('buildSurveyResponse', () => {
       IDS,
     );
 
-    expect(response.answers).toHaveLength(1);
+    // The textbox and the toggle only: the other six optional/unanswered questions are
+    // gone, and the toggle is here because it has no unanswered state to be dropped for.
+    expect(response.answers).toHaveLength(2);
     expect(response.answers[0]).toEqual({ questionId: 'q_name', type: 'textbox', value: 'Dana' });
   });
 
@@ -121,6 +127,7 @@ describe('buildSurveyResponse', () => {
         textareaQuestion({ id: 'q_textarea' }),
         ratingQuestion({ id: 'q_rating' }),
         satisfactionQuestion({ id: 'q_satisfaction' }),
+        toggleButtonQuestion({ id: 'q_toggle' }),
       ]),
     ]);
 
@@ -133,6 +140,7 @@ describe('buildSurveyResponse', () => {
         ['q_textarea', { type: 'textarea', value: 'The parcel arrived opened.' }],
         ['q_rating', { type: 'rating', value: 4 }],
         ['q_satisfaction', { type: 'satisfaction', value: 5 }],
+        ['q_toggle', { type: 'toggle_button', value: true }],
       ]),
       NO_ATTACHMENTS,
       NO_ENCODED,
@@ -146,6 +154,7 @@ describe('buildSurveyResponse', () => {
       { questionId: 'q_textarea', type: 'textarea', value: 'The parcel arrived opened.' },
       { questionId: 'q_rating', type: 'rating', value: 4 },
       { questionId: 'q_satisfaction', type: 'satisfaction', value: 5 },
+      { questionId: 'q_toggle', type: 'toggle_button', value: true },
     ]);
   });
 
@@ -197,8 +206,10 @@ describe('buildSurveyResponse', () => {
 
     // By the letter of §2 this question is unanswered and would be dropped, taking the
     // respondent's receipt with it. §8.1 resolves that: it is included with "".
-    expect(response.answers).toHaveLength(1);
-    expect(response.answers[0].questionId).toBe('q_evidence');
+    expect(response.answers.map((entry) => entry.questionId)).toEqual([
+      'q_evidence',
+      'q_notifications',
+    ]);
     expect(response.answers[0].value).toBe('');
     expect(response.answers[0].attachments).toHaveLength(1);
   });
@@ -229,8 +240,10 @@ describe('buildSurveyResponse', () => {
   });
 
   it('builds an empty answers array for a survey nothing was answered on', () => {
+    // Every type except `toggle_button` is droppable, so the smallest survey that can
+    // produce an empty array is one without a toggle in it.
     const response = buildSurveyResponse(
-      customerFeedbackSurvey(),
+      survey([page('p1', 'Only page', [textboxQuestion({ id: 'q_name' })])]),
       new Map(),
       NO_ATTACHMENTS,
       NO_ENCODED,
@@ -238,6 +251,60 @@ describe('buildSurveyResponse', () => {
     );
 
     expect(response.answers).toEqual([]);
+  });
+
+  describe('toggle_button (feature 002)', () => {
+    const configured = survey([
+      page('p1', 'Only page', [
+        toggleButtonQuestion({ id: 'q_notify', options: { onLabel: 'Yes', offLabel: 'No' } }),
+      ]),
+    ]);
+
+    it('sends a native boolean true, not the string "true" and not 1', () => {
+      const response = buildSurveyResponse(
+        configured,
+        answers([['q_notify', { type: 'toggle_button', value: true }]]),
+        NO_ATTACHMENTS,
+        NO_ENCODED,
+        IDS,
+      );
+
+      expect(response.answers).toEqual([
+        { questionId: 'q_notify', type: 'toggle_button', value: true },
+      ]);
+      // The distinction a receiver cannot recover: `"true"` and `1` both read as truthy.
+      expect(typeof response.answers[0].value).toBe('boolean');
+    });
+
+    it('sends a native boolean false for a switch the respondent turned off', () => {
+      const response = buildSurveyResponse(
+        configured,
+        answers([['q_notify', { type: 'toggle_button', value: false }]]),
+        NO_ATTACHMENTS,
+        NO_ENCODED,
+        IDS,
+      );
+
+      // Not omitted: turning a switch off is a deliberate opt-out, which a missing entry
+      // would make indistinguishable from never touching it.
+      expect(response.answers).toEqual([
+        { questionId: 'q_notify', type: 'toggle_button', value: false },
+      ]);
+    });
+
+    it('sends defaultValue for a switch the respondent never touched', () => {
+      const onByDefault = survey([
+        page('p1', 'Only page', [toggleButtonQuestion({ id: 'q_notify', defaultValue: true })]),
+      ]);
+
+      const response = buildSurveyResponse(onByDefault, new Map(), NO_ATTACHMENTS, NO_ENCODED, IDS);
+
+      // The control was showing on, so the payload says on. Omitting it would send a
+      // response that contradicts what the respondent saw.
+      expect(response.answers).toEqual([
+        { questionId: 'q_notify', type: 'toggle_button', value: true },
+      ]);
+    });
   });
 
   it('refuses to build a payload for an attachment the caller did not encode', () => {

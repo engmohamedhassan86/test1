@@ -18,7 +18,10 @@
  * **Scenario 9** is `survey-page.retention.spec.ts` (T116), which needs a different walk.
  *
  * Together with the per-type specs T103-T107 this discharges **SC-003**: every one of the
- * six question types blocks Next on an invalid input.
+ * seven question types blocks Next on an invalid input. `toggle_button` is covered only by
+ * its own spec, because the default fixture's toggle is optional — a required toggle left
+ * off is the invalid input for that type, and `questions/toggle-button-question.spec.ts`
+ * drives it.
  */
 
 import { TestBed } from '@angular/core/testing';

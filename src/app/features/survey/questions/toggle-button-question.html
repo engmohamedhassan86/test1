@@ -1,0 +1,25 @@
+@let q = question();
+@let on = checked();
+
+<!-- One control, so it carries `aria-labelledby` itself rather than sitting in a group —
+     the single-control form of FR-053, the same as the two text types. -->
+<button
+  type="button"
+  role="switch"
+  class="sv-toggle"
+  [class.sv-toggle--on]="on"
+  [attr.aria-checked]="on"
+  [attr.aria-labelledby]="titleId()"
+  [attr.aria-required]="q.required"
+  [attr.aria-invalid]="invalid()"
+  [attr.aria-describedby]="describedBy()"
+  [disabled]="locked()"
+  (click)="flip()"
+>
+  <!-- The track is decorative: the state reaches a screen reader through `aria-checked`,
+       and the label beside it is the visible text FR-010 asks of every control. -->
+  <span class="sv-toggle__track" aria-hidden="true">
+    <span class="sv-toggle__thumb"></span>
+  </span>
+  <span class="sv-toggle__label">{{ label() }}</span>
+</button>

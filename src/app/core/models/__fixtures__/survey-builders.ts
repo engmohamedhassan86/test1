@@ -37,7 +37,10 @@ import type {
   SurveyPage,
   TextareaQuestion,
   TextboxQuestion,
+  ToggleButtonQuestion,
+  ToggleLabels,
 } from '../survey.model';
+import { TOGGLE_LABEL_DEFAULTS } from '../survey.model';
 
 export function questionId(value: string): QuestionId {
   return brand<QuestionId>(value);
@@ -180,6 +183,21 @@ export function satisfactionQuestion(overrides: CommonOverrides = {}): Satisfact
   };
 }
 
+export function toggleButtonQuestion(
+  overrides: CommonOverrides & {
+    readonly options?: ToggleLabels;
+    readonly defaultValue?: boolean;
+  } = {},
+): ToggleButtonQuestion {
+  return {
+    ...common(overrides, 'q_toggle', 'Keep me posted'),
+    type: 'toggle_button',
+    // The validator substitutes these for absent labels, so the builder does too.
+    options: overrides.options ?? TOGGLE_LABEL_DEFAULTS,
+    defaultValue: overrides.defaultValue ?? false,
+  };
+}
+
 export function page(
   id: string,
   title: string,
@@ -211,7 +229,7 @@ export function singleQuestionSurvey(question: Question): Survey {
 }
 
 /**
- * A structural stand-in for the default `customer-feedback` fixture: the same eight
+ * A structural stand-in for the default `customer-feedback` fixture: the same nine
  * questions over the same four pages, so a component spec can exercise the real shape
  * without reading the file from disk. The authored file itself is asserted by the
  * Survey Content Author's `survey-fixtures.contract.spec.ts`.
@@ -297,6 +315,13 @@ export function customerFeedbackSurvey(): Survey {
             option('rec-no', 'No', 'no'),
             option('rec-unsure', 'Not sure', 'unsure'),
           ],
+        }),
+        toggleButtonQuestion({
+          id: 'q_notifications',
+          title: 'Would you like news about new toys?',
+          description: 'We send one short email a month. You can stop it at any time.',
+          options: { onLabel: 'Send me news', offLabel: 'No news' },
+          defaultValue: false,
         }),
       ]),
     ],

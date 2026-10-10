@@ -13,6 +13,7 @@ export type ValidationRuleId =
   | 'required-checkbox'
   | 'required-text'
   | 'required-scale'
+  | 'required-toggle'
   | 'min-length'
   | 'max-length'
   | 'min-selections'

@@ -82,6 +82,7 @@ const QUESTION_TYPES = [
   'textarea',
   'rating',
   'satisfaction',
+  'toggle_button',
 ] as const;
 
 type QuestionType = (typeof QUESTION_TYPES)[number];
@@ -96,6 +97,8 @@ const TYPE_SPECIFIC_KEYS: Readonly<Record<QuestionType, readonly string[]>> = {
   textarea: ['minLength', 'maxLength'],
   rating: ['scale'],
   satisfaction: [],
+  // `options` here is an object of two labels, not the array the choice types carry.
+  toggle_button: ['options', 'defaultValue'],
 };
 
 /** Contract §2: the `maxLength` ceiling, which differs between the two text types. */
@@ -446,7 +449,7 @@ describe('authored survey content', () => {
       expect(pages[0]?.['description']).toBe('Who we are hearing from.');
     });
 
-    it('has the eight questions of contract §5, in order', () => {
+    it('has the nine questions of contract §5, in order', () => {
       expect(questions.map((question) => [question['id'], question['type']])).toEqual([
         ['q_name', 'textbox'],
         ['q_segment', 'radio'],
@@ -456,10 +459,11 @@ describe('authored survey content', () => {
         ['q_evidence', 'textarea'],
         ['q_comments', 'textarea'],
         ['q_recommend', 'radio'],
+        ['q_notifications', 'toggle_button'],
       ]);
     });
 
-    it('exercises all six question types', () => {
+    it('exercises all seven question types', () => {
       expect(new Set(questions.map((question) => question['type']))).toEqual(
         new Set(QUESTION_TYPES),
       );
@@ -617,6 +621,7 @@ describe('validated against core/validators', () => {
       'q_evidence',
       'q_comments',
       'q_recommend',
+      'q_notifications',
     ]);
 
     const byId = new Map(questions.map((question) => [question['id'] as string, question]));
@@ -629,6 +634,15 @@ describe('validated against core/validators', () => {
     ).toBe(3);
     expect(byId.get('q_comments')?.['attachments']).toBeNull();
     expect(byId.get('q_comments')?.['minLength']).toBe(0);
+
+    // The toggle's authored labels survive normalisation, and `defaultValue` is a real
+    // boolean rather than a truthy string.
+    expect(byId.get('q_notifications')?.['options']).toEqual({
+      onLabel: 'Send me news',
+      offLabel: 'No news',
+    });
+    expect(byId.get('q_notifications')?.['defaultValue']).toBe(false);
+    expect(byId.get('q_notifications')?.['required']).toBe(false);
   });
 
   it.each(INVALID_SURVEY_CONFIG_CASES)('rejects $name at its own path', (testCase) => {
