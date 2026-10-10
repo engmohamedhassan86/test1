@@ -1295,6 +1295,25 @@ describe('toggle_button (feature 002)', () => {
     );
   });
 
+  it('rejects the toggle options object on a radio, closing FR-079 in both directions', () => {
+    // The key `options` means two shapes depending on `type`, which is the authoring trap
+    // D-003 accepts. FR-079 is the mitigation: an author copying a toggle into a radio
+    // must fail closed at `Q.options` too, never render a radio with no choices.
+    expectIssue(
+      validateSurveyConfig(
+        documentWithQuestion({
+          id: 'q_segment',
+          type: 'radio',
+          title: 'You are…',
+          options: { onLabel: 'Yes', offLabel: 'No' },
+        }),
+        SERVED_KEY,
+      ),
+      'F06',
+      'pages[0].questions[0].options',
+    );
+  });
+
   it('rejects an unknown key inside options as F03', () => {
     expectIssue(
       validateSurveyConfig(
