@@ -50,7 +50,6 @@ Thumbs.db
 
 # Deploy tooling
 .vercel
-.wrangler
 dist
 coverage
 

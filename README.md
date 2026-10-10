@@ -35,12 +35,12 @@ PrimeNG 22 is commercially licensed. PrimeKidz uses the free **Community License
 
 Put the key in the `PRIMEUI_LICENSE_KEY` environment variable. Nothing else needs to change:
 
-| Context    | Where to set it                                                     |
-| ---------- | ------------------------------------------------------------------- |
-| Local      | copy [`.env.example`](.env.example) to `.env` — `.env` is untracked |
-| CI         | GitHub Actions repository secret of the same name                   |
-| Vercel     | project environment variable, Production and Preview scopes         |
-| Cloudflare | build environment variable on whatever runs `pnpm run build`        |
+| Context      | Where to set it                                                     |
+| ------------ | ------------------------------------------------------------------- |
+| Local        | copy [`.env.example`](.env.example) to `.env` — `.env` is untracked |
+| CI           | GitHub Actions repository secret of the same name                   |
+| GitHub Pages | the same repository secret — the deploy workflow reads it at build  |
+| Vercel       | project environment variable, Production and Preview scopes         |
 
 Never commit the key. It is injected at build time by
 [`scripts/with-primeui-license.mjs`](scripts/with-primeui-license.mjs) for `pnpm start` and
@@ -77,13 +77,25 @@ Business logic belongs in `src/app/core/**`, never in templates.
 
 ## Deployment
 
-The app is a static SPA with an index fallback.
+The app is a static SPA with an index fallback. **GitHub Pages is the deploy path.**
 
-- Vercel: [`vercel.json`](vercel.json) — the Vercel GitHub integration is already connected to this
-  repository and deploys on merge to `main`. CI does not run a deploy step and needs no Vercel token;
-  `vercel.json` only supplies the install command, build command, output directory, and SPA rewrite.
-- Cloudflare Workers static assets: [`wrangler.jsonc`](wrangler.jsonc) — committed as a fallback
-  target. Nothing deploys it automatically.
+[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) runs on every push to
+`main`: it builds, uploads `dist/survey-viewer/browser` as the Pages artifact, and deploys it with
+`actions/deploy-pages`. It is deliberately a separate workflow from CI, so a deploy can never stand
+in for a quality gate. The only credential it uses is the built-in `GITHUB_TOKEN` under
+`permissions: { contents: read, pages: write, id-token: write }` — there is no external deploy
+secret to store or rotate.
 
-Both serve from `dist/survey-viewer/browser`. No secrets are stored in this repository —
-`PRIMEUI_LICENSE_KEY` is set on each deploy target, as described above.
+Two things the workflow has to get right for a project site served from
+`https://<owner>.github.io/<repo>/`:
+
+- `--base-href /<repo>/`, derived from `GITHUB_REPOSITORY`. Without it every hashed asset 404s.
+  All app-side fetches (`survey-manifest.json`, `surveys/*.json`) are relative, so they follow the
+  base href and need no change.
+- `404.html` is a copy of `index.html`. Pages has no rewrite rules, so a deep link such as
+  `/surveys/customer-feedback` is a filesystem miss; serving the app shell from `404.html` boots the
+  router, which then renders the right survey. The response carries a 404 status, which browsers
+  render normally — this is the standard Pages SPA fallback.
+
+[`vercel.json`](vercel.json) is left in place but is **not** the deploy path, and a Vercel preview is
+not a deliverable. No secrets are stored in this repository.
