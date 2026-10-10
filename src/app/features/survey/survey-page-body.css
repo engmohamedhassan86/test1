@@ -1,0 +1,28 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-page__survey-description {
+  margin: 0 0 var(--sv-space-4);
+  color: var(--p-text-muted-color);
+}
+
+.sv-page__title {
+  margin: 0 0 var(--sv-space-2);
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+@media (min-width: 768px) {
+  .sv-page__title {
+    font-size: 1.5rem;
+  }
+}
+
+/* The heading is a programmatic focus target after Next, so it shows no ring of its own. */
+.sv-page__title:focus {
+  outline: none;
+}
+
+.sv-page__description {
+  margin: 0 0 var(--sv-space-4);
+  color: var(--p-text-muted-color);
+}

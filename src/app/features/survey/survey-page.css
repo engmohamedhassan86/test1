@@ -1,0 +1,22 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-survey__title {
+  margin: 0 0 var(--sv-space-4);
+  color: var(--sv-brand);
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+@media (min-width: 768px) {
+  .sv-survey__title {
+    font-size: 2rem;
+  }
+}
+
+.sv-survey__status {
+  margin: 0;
+  color: var(--p-text-muted-color);
+}
+
+/* The submission-failure banner's styles moved to `submission-error-banner.css` with the
+   markup in T123, so `.sv-survey__summary` and `.sv-survey__retry` are gone from here. */

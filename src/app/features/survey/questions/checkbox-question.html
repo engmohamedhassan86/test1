@@ -1,0 +1,25 @@
+<p class="sv-choices__hint">{{ hint() }}</p>
+
+<!-- No `aria-required` here, unlike the other four grouped types: a `fieldset`'s implicit
+     role is `group`, and `group` does not support `aria-required` (`aria-allowed-attr`).
+     `question-host` routes the required indication into this group's `aria-describedby`
+     instead, so FR-005 still reaches a screen reader. -->
+<fieldset
+  class="sv-choices"
+  [attr.aria-labelledby]="titleId()"
+  [attr.aria-invalid]="invalid()"
+  [attr.aria-describedby]="describedBy()"
+>
+  @for (view of options(); track view.option.id) {
+    <label class="sv-choice">
+      <input
+        type="checkbox"
+        [value]="view.option.value"
+        [checked]="view.selected()"
+        [disabled]="locked() || !view.selectable()"
+        (change)="toggle(view.option.value, $event)"
+      />
+      <span class="sv-choice__label">{{ view.option.label }}</span>
+    </label>
+  }
+</fieldset>

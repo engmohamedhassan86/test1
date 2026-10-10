@@ -1,0 +1,18 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-not-found h1 {
+  margin: 0 0 var(--sv-space-3);
+  color: var(--sv-brand);
+  font-size: 1.375rem;
+  line-height: 1.3;
+}
+
+@media (min-width: 768px) {
+  .sv-not-found h1 {
+    font-size: 1.75rem;
+  }
+}
+
+.sv-not-found p {
+  margin: 0 0 var(--sv-space-4);
+}

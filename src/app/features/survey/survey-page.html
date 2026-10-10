@@ -1,0 +1,46 @@
+@let missingKey = notFound();
+@let current = state();
+
+@if (missingKey !== null) {
+  <!-- FR-045: the not-found screen is not a viewer state, so it is not in the switch. -->
+  <app-not-found-page [surveyKey]="missingKey" />
+} @else if (current.kind === 'loading') {
+  <!-- FR-040: no question, no control, no error. The state carries no `Survey` at all. -->
+  <p class="sv-survey__status" role="status">Loading the survey…</p>
+} @else if (current.kind === 'configuration-error') {
+  <!-- FR-042, Principle I: the error screen alone, with a link to `/`. -->
+  <app-configuration-error [error]="current.error" />
+} @else if (current.kind === 'submitted') {
+  <!-- US1 scenario 4: the confirmation alone, and no question control. -->
+  <app-submission-confirmation [surveyTitle]="current.survey.title" [receipt]="current.receipt" />
+} @else {
+  <h1 class="sv-survey__title">{{ current.survey.title }}</h1>
+
+  @if (current.kind === 'validation-error') {
+    <!-- FR-030: `validation-error` renders as `editing` **plus** the summary and the
+         per-question errors `question-host` draws. Next and Submit stay enabled on
+         purpose: the session refuses them by re-validating, and a disabled Next could not
+         re-announce the error or move focus a second time (US2 scenario 2). -->
+    @let invalidPage = currentPage();
+    @if (invalidPage !== null) {
+      <app-validation-summary
+        [page]="invalidPage"
+        [errors]="currentPageErrors()"
+        [scope]="current.scope"
+        [surveyReport]="current.surveyReport"
+      />
+    }
+  }
+
+  @if (current.kind === 'submission-error') {
+    <!-- FR-045, US6 scenario 4: the banner above the page the respondent left, which is
+         still rendered below with every answer and attachment intact and editable. The
+         body and the navigation are outside this branch on purpose — `submission-error`
+         renders as `editing` plus the banner, so Previous and Next keep working and the
+         respondent can go back and change an answer before trying again. -->
+    <app-submission-error-banner [failure]="current.failure" />
+  }
+
+  <app-survey-page-body />
+  <app-survey-navigation />
+}

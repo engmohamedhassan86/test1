@@ -1,0 +1,56 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-submit-error {
+  /* The failure is carried by a border as well as by colour (WCAG 1.4.1). */
+  margin: 0 0 var(--sv-space-5);
+  padding: var(--sv-space-4);
+  border: 1px solid var(--sv-maroon-300);
+  border-left: var(--sv-space-1) solid var(--sv-brand);
+  border-radius: var(--sv-radius);
+  background: var(--sv-brand-subtle);
+}
+
+.sv-submit-error__message {
+  margin: 0;
+  color: var(--sv-maroon-800);
+  font-weight: 600;
+}
+
+.sv-submit-error__details {
+  margin: var(--sv-space-2) 0 0;
+  padding-left: var(--sv-space-5);
+}
+
+.sv-submit-error__detail {
+  margin-top: var(--sv-space-1);
+}
+
+.sv-submit-error__retry {
+  /* FR-058's 44px target, which gate 5 measures in a real browser. */
+  margin-top: var(--sv-space-3);
+  min-height: 44px;
+  padding: 0 var(--sv-space-5);
+  border: 1px solid var(--sv-brand);
+  border-radius: var(--sv-radius);
+  background: var(--sv-brand);
+  color: var(--sv-on-brand);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sv-submit-error__retry:hover:not(:disabled) {
+  background: var(--sv-brand-hover);
+}
+
+.sv-submit-error__retry:disabled {
+  border-color: var(--p-content-border-color);
+  background: var(--p-content-border-color);
+  color: var(--p-text-muted-color);
+  cursor: not-allowed;
+}
+
+.sv-submit-error__retry:focus-visible {
+  outline: var(--sv-focus-ring-width) solid var(--sv-focus-ring-color);
+  outline-offset: var(--sv-focus-ring-offset);
+}

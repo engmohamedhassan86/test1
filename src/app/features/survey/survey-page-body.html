@@ -1,0 +1,21 @@
+@let currentSurvey = survey();
+@let currentPage = page();
+
+@if (currentSurvey !== null && currentPage !== null) {
+  <!-- FR-073: the survey description sits above the page title. -->
+  @if (currentSurvey.description !== null) {
+    <p class="sv-page__survey-description">{{ currentSurvey.description }}</p>
+  }
+
+  <h2 #pageHeading class="sv-page__title" tabindex="-1">{{ currentPage.title }}</h2>
+
+  <!-- FR-073: the page description sits below it, and nothing stands in for an absent one. -->
+  @if (currentPage.description !== null) {
+    <p class="sv-page__description">{{ currentPage.description }}</p>
+  }
+
+  <!-- A page with zero questions is valid and renders its title and navigation only. -->
+  @for (question of currentPage.questions; track question.id) {
+    <app-question-host [question]="question" />
+  }
+}

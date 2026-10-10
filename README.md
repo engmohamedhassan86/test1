@@ -21,9 +21,12 @@ All work follows [Spec Kit](https://github.com/github/spec-kit). The project rul
 | `pnpm run build`         | Production build to `dist/survey-viewer/browser` |
 | `pnpm test`              | Unit tests (Vitest)                              |
 | `pnpm run test:coverage` | Unit tests with coverage, fails under 80%        |
-| `pnpm run typecheck`     | `tsc --noEmit` for app and spec configs          |
-| `pnpm run format`        | Write Prettier formatting                        |
-| `pnpm run format:check`  | Check Prettier formatting                        |
+| `pnpm run typecheck:app` | `tsc --noEmit` for app config                    |
+
+    `pnpm run typecheck:spec`| `tsc --noEmit` for spec config                        |
+
+| `pnpm run format` | Write Prettier formatting |
+| `pnpm run format:check` | Check Prettier formatting |
 
 ## PrimeUI licence key
 
@@ -53,7 +56,7 @@ PrimeTek's offline verification works and is not a leak.
 
 ## Quality gates
 
-CI runs, in order: install → `format:check` → `typecheck` → `test:coverage` → `build`. Coverage
+CI runs, in order: install → `format:check` → `typecheck:app` → `typecheck:spec` → `test:coverage` → `build`. Coverage
 must stay at or above 80%. Reviewers also run a browser smoke test at 375px and 1280px.
 
 ## Layout

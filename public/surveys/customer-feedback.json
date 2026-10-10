@@ -1,0 +1,160 @@
+{
+  "key": "customer-feedback",
+  "title": "Customer Feedback",
+  "description": "Four short pages about your recent order.",
+  "pages": [
+    {
+      "id": "about-you",
+      "title": "About You",
+      "description": "Who we are hearing from.",
+      "questions": [
+        {
+          "id": "q_name",
+          "type": "textbox",
+          "title": "What should we call you?",
+          "description": "A first name is plenty.",
+          "required": true,
+          "minLength": 2,
+          "maxLength": 80
+        },
+        {
+          "id": "q_segment",
+          "type": "radio",
+          "title": "Which one sounds most like you?",
+          "required": true,
+          "options": [
+            {
+              "id": "new-customer",
+              "label": "This was my first order",
+              "value": "new"
+            },
+            {
+              "id": "returning-customer",
+              "label": "I have ordered before",
+              "value": "returning"
+            },
+            {
+              "id": "business-customer",
+              "label": "I ordered for a school, nursery or club",
+              "value": "business"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "your-experience",
+      "title": "Your Experience",
+      "questions": [
+        {
+          "id": "q_satisfaction",
+          "type": "satisfaction",
+          "title": "Overall, how happy are you with your order?",
+          "required": true
+        },
+        {
+          "id": "q_liked",
+          "type": "checkbox",
+          "title": "What went well?",
+          "description": "Choose between one and three things.",
+          "required": true,
+          "options": [
+            {
+              "id": "choice-of-toys",
+              "label": "The choice of toys and books",
+              "value": "choice"
+            },
+            {
+              "id": "value-for-money",
+              "label": "Value for money",
+              "value": "value"
+            },
+            {
+              "id": "packaging",
+              "label": "The packaging",
+              "value": "packaging"
+            },
+            {
+              "id": "speed-of-delivery",
+              "label": "How quickly it arrived",
+              "value": "speed"
+            },
+            {
+              "id": "help-from-our-team",
+              "label": "Help from our team",
+              "value": "support"
+            }
+          ],
+          "minSelections": 1,
+          "maxSelections": 3
+        },
+        {
+          "id": "q_delivery",
+          "type": "rating",
+          "title": "How would you rate the delivery?",
+          "description": "One star is poor, five stars is excellent.",
+          "scale": {
+            "min": 1,
+            "max": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "supporting-files",
+      "title": "Supporting Files",
+      "description": "Only if you have something to show us. You can skip this page.",
+      "questions": [
+        {
+          "id": "q_evidence",
+          "type": "textarea",
+          "title": "Is there anything you would like to show us?",
+          "description": "Tell us what happened, and add a photo or a receipt if that helps.",
+          "maxLength": 1000,
+          "attachments": {
+            "maxFiles": 3,
+            "acceptedTypes": ["image/png", "image/jpeg", "application/pdf"],
+            "maxSizeBytes": 5242880
+          }
+        }
+      ]
+    },
+    {
+      "id": "final-thoughts",
+      "title": "Final Thoughts",
+      "description": "Two last questions and you are done.",
+      "questions": [
+        {
+          "id": "q_comments",
+          "type": "textarea",
+          "title": "What is the one thing we could do better?",
+          "description": "Say as much or as little as you like.",
+          "maxLength": 2000
+        },
+        {
+          "id": "q_recommend",
+          "type": "radio",
+          "title": "Would you recommend us to another family?",
+          "required": true,
+          "options": [
+            {
+              "id": "recommend-yes",
+              "label": "Yes",
+              "value": "yes"
+            },
+            {
+              "id": "recommend-no",
+              "label": "No",
+              "value": "no"
+            },
+            {
+              "id": "recommend-unsure",
+              "label": "I am not sure yet",
+              "value": "unsure"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

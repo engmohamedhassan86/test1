@@ -1,0 +1,29 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-text {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--sv-space-2) var(--sv-space-3);
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--sv-radius);
+  background: var(--p-content-background);
+  color: var(--p-text-color);
+  font: inherit;
+  /* `box-sizing` keeps the 100% width inside the padding at 375px. */
+  box-sizing: border-box;
+}
+
+.sv-text--multiline {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.sv-text:disabled {
+  background: var(--p-content-border-color);
+  cursor: not-allowed;
+}
+
+.sv-text[aria-invalid='true'] {
+  border-color: var(--sv-brand);
+  border-width: 2px;
+}

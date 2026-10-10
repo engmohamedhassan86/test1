@@ -1,0 +1,31 @@
+@let catalog = state();
+
+@switch (catalog.kind) {
+  @case ('loading') {
+    <h1>Surveys</h1>
+    <p class="sv-catalog__status" role="status">Loading the list of surveys…</p>
+  }
+
+  @case ('ready') {
+    <h1>Surveys</h1>
+    <ul class="sv-catalog__list">
+      @for (entry of catalog.entries; track entry.key) {
+        <li class="sv-catalog__item">
+          <a class="sv-catalog__link" [routerLink]="['/surveys', entry.key]">{{ entry.title }}</a>
+          @if (entry.description !== null) {
+            <p class="sv-catalog__description">{{ entry.description }}</p>
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  @case ('empty') {
+    <h1>Surveys</h1>
+    <p class="sv-catalog__status">{{ emptyMessage }}</p>
+  }
+
+  @case ('configuration-error') {
+    <app-configuration-error [error]="catalog.error" />
+  }
+}

@@ -1,0 +1,14 @@
+<section class="sv-confirmation">
+  <h1>{{ surveyTitle() }}</h1>
+
+  <p class="sv-confirmation__received">Your response has been received. Thank you.</p>
+
+  <p class="sv-confirmation__reference">
+    Your reference:
+    <!-- The reference is the respondent's only handle on this submission, so it is
+         selectable text rather than an image or an abbreviation. -->
+    <code>{{ receipt().submissionId }}</code>
+  </p>
+
+  <p><a routerLink="/">Back to all surveys</a></p>
+</section>

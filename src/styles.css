@@ -42,3 +42,20 @@ body {
   margin: 0 auto;
   padding: var(--sv-space-4);
 }
+
+/*
+ * Visually hidden but available to assistive technology. Used by the shell's two
+ * live regions, which must exist from first render for a later message to be
+ * announced at all.
+ */
+.sv-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

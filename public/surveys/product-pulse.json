@@ -1,0 +1,46 @@
+{
+  "key": "product-pulse",
+  "title": "Product Pulse",
+  "description": "A one-page check-in about the toys and books you bought this month.",
+  "pages": [
+    {
+      "id": "this-week",
+      "title": "This Month",
+      "description": "Three quick questions. It takes about a minute.",
+      "questions": [
+        {
+          "id": "q_pulse_repeat",
+          "type": "rating",
+          "title": "How likely are you to buy from us again?",
+          "description": "0 means not at all likely, 10 means very likely.",
+          "required": true,
+          "scale": {
+            "min": 0,
+            "max": 10
+          }
+        },
+        {
+          "id": "q_pulse_notes",
+          "type": "textarea",
+          "title": "Which toy or book has been played with the most?",
+          "description": "Tell us a little about why it is a favourite.",
+          "required": true,
+          "minLength": 10,
+          "maxLength": 500
+        },
+        {
+          "id": "q_pulse_order",
+          "type": "textbox",
+          "title": "Your order number, if you have it to hand",
+          "description": "You can also attach the order confirmation instead of typing it out.",
+          "maxLength": 60,
+          "attachments": {
+            "maxFiles": 1,
+            "acceptedTypes": [".pdf", "image/png"],
+            "maxSizeBytes": 1048576
+          }
+        }
+      ]
+    }
+  ]
+}

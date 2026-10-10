@@ -1,0 +1,23 @@
+<section class="sv-config-error" role="alert" aria-labelledby="sv-config-error-heading">
+  <h1 id="sv-config-error-heading">This survey is not available</h1>
+
+  <p class="sv-config-error__subject">
+    {{ subject() }}
+    <code>{{ error().subject }}</code>
+    could not be used because its configuration does not satisfy its contract.
+  </p>
+
+  <ul class="sv-config-error__issues">
+    @for (issue of error().issues; track $index) {
+      <li>
+        <span class="sv-config-error__code">{{ issue.code }}</span>
+        @if (issue.path !== '') {
+          <code class="sv-config-error__path">{{ issue.path }}</code>
+        }
+        <span>{{ issue.message }}</span>
+      </li>
+    }
+  </ul>
+
+  <p><a routerLink="/">Back to all surveys</a></p>
+</section>

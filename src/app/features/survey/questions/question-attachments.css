@@ -1,0 +1,102 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-files {
+  margin-top: var(--sv-space-3);
+  padding: var(--sv-space-3);
+  border: 1px dashed var(--p-content-border-color);
+  border-radius: var(--sv-radius);
+}
+
+.sv-files__label {
+  display: block;
+  margin-bottom: var(--sv-space-1);
+  font-weight: 600;
+}
+
+.sv-files__hint,
+.sv-files__counter {
+  margin: 0 0 var(--sv-space-2);
+  color: var(--p-text-muted-color);
+  font-size: 0.875rem;
+}
+
+.sv-files__input {
+  /* Full width so the native button and the file name fit inside 375px. */
+  width: 100%;
+  min-height: 44px;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.sv-files__input:disabled {
+  cursor: not-allowed;
+}
+
+.sv-files__list,
+.sv-files__rejections {
+  margin: var(--sv-space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sv-files__item {
+  /* Wraps rather than overflows: at 375px the name takes the first line on its own and
+     the size and Remove sit beneath it. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sv-space-2);
+  align-items: center;
+  padding: var(--sv-space-2) 0;
+  border-top: 1px solid var(--p-content-border-color);
+}
+
+.sv-files__name {
+  /* Takes the remaining width, so a long name pushes nothing off screen. */
+  flex: 1 1 12rem;
+  overflow-wrap: anywhere;
+}
+
+.sv-files__size {
+  flex: 0 0 auto;
+  color: var(--p-text-muted-color);
+  font-size: 0.875rem;
+}
+
+.sv-files__remove {
+  /* FR-058's 44x44 target, which gate 5 measures in a real browser. */
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
+  padding: var(--sv-space-2) var(--sv-space-3);
+  border: 1px solid var(--sv-brand);
+  border-radius: var(--sv-radius);
+  background: transparent;
+  color: var(--sv-brand);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sv-files__remove:hover:not(:disabled) {
+  background: var(--sv-brand-subtle);
+}
+
+.sv-files__remove:disabled {
+  border-color: var(--p-content-border-color);
+  color: var(--p-text-muted-color);
+  cursor: not-allowed;
+}
+
+.sv-files__input:focus-visible,
+.sv-files__remove:focus-visible {
+  outline: var(--sv-focus-ring-width) solid var(--sv-focus-ring-color);
+  outline-offset: var(--sv-focus-ring-offset);
+}
+
+/* A rejection is carried by weight and a border as well as colour (WCAG 1.4.1). */
+.sv-files__rejection {
+  margin-top: var(--sv-space-2);
+  padding-left: var(--sv-space-2);
+  border-left: var(--sv-space-1) solid var(--sv-brand);
+  color: var(--sv-maroon-800);
+  font-weight: 600;
+}

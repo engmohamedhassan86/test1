@@ -1,0 +1,44 @@
+@let q = question();
+@let current = selected();
+
+<div
+  role="radiogroup"
+  class="sv-scale"
+  [class.sv-scale--stars]="presentation() === 'stars'"
+  [attr.aria-labelledby]="titleId()"
+  [attr.aria-required]="q.required"
+  [attr.aria-invalid]="invalid()"
+  [attr.aria-describedby]="describedBy()"
+>
+  @for (point of points(); track point) {
+    <button
+      type="button"
+      role="radio"
+      class="sv-scale__point"
+      [attr.aria-checked]="current === point"
+      [disabled]="locked()"
+      (click)="choose(point)"
+    >
+      @if (presentation() === 'stars') {
+        <!-- The star is decorative: the accessible name is the number beside it, which is
+             a visible label at every viewport the numeric presentation uses too. -->
+        <span class="sv-scale__star" aria-hidden="true">{{
+          current !== null && point <= current ? '★' : '☆'
+        }}</span>
+        <span class="sv-visually-hidden">{{ point }}</span>
+      } @else {
+        <span class="sv-scale__number">{{ point }}</span>
+      }
+    </button>
+  }
+</div>
+
+<!-- FR-060: Clear returns the question to unanswered, not to the scale's minimum. -->
+<button
+  type="button"
+  class="sv-scale__clear"
+  [disabled]="locked() || current === null"
+  (click)="clear()"
+>
+  Clear rating
+</button>

@@ -1,0 +1,70 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-nav {
+  margin-top: var(--sv-space-5);
+  padding-top: var(--sv-space-4);
+  border-top: 1px solid var(--p-content-border-color);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sv-space-3);
+}
+
+/* From 768px the position and the actions share a row. */
+@media (min-width: 768px) {
+  .sv-nav {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.sv-nav__position {
+  margin: 0;
+  color: var(--p-text-muted-color);
+  font-weight: 600;
+}
+
+.sv-nav__actions {
+  display: flex;
+  gap: var(--sv-space-3);
+}
+
+.sv-nav__button {
+  flex: 1 1 0;
+  min-height: 44px;
+  padding: 0 var(--sv-space-5);
+  border-radius: var(--sv-radius);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .sv-nav__button {
+    flex: 0 0 auto;
+  }
+}
+
+.sv-nav__button--primary {
+  border: 1px solid var(--sv-brand);
+  background: var(--sv-brand);
+  color: var(--sv-on-brand);
+}
+
+.sv-nav__button--primary:hover:not(:disabled) {
+  border-color: var(--sv-brand-hover);
+  background: var(--sv-brand-hover);
+}
+
+.sv-nav__button--secondary {
+  border: 1px solid var(--sv-brand);
+  background: transparent;
+  color: var(--sv-brand);
+}
+
+.sv-nav__button:disabled {
+  border-color: var(--p-content-border-color);
+  background: var(--p-content-border-color);
+  color: var(--p-text-muted-color);
+  cursor: not-allowed;
+}

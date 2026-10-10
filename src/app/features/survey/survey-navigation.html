@@ -1,0 +1,38 @@
+<nav class="sv-nav" aria-label="Survey pages">
+  <!-- FR-032: the position is text, so it is available without colour or shape. -->
+  <p class="sv-nav__position">{{ positionLabel() }}</p>
+
+  <div class="sv-nav__actions">
+    <!-- FR-031: Previous is unavailable on page 1 and never validates. -->
+    <button
+      type="button"
+      class="sv-nav__button sv-nav__button--secondary"
+      [disabled]="isFirstPage() || inputsLocked()"
+      (click)="previous()"
+    >
+      Previous
+    </button>
+
+    <!-- FR-033: exactly one primary action, and Submit only on the last page. -->
+    @if (primaryAction() === 'submit') {
+      <button
+        type="button"
+        class="sv-nav__button sv-nav__button--primary"
+        [disabled]="inputsLocked()"
+        [attr.aria-busy]="inputsLocked()"
+        (click)="submit()"
+      >
+        {{ submitLabel() }}
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="sv-nav__button sv-nav__button--primary"
+        [disabled]="inputsLocked()"
+        (click)="next()"
+      >
+        Next
+      </button>
+    }
+  </div>
+</nav>

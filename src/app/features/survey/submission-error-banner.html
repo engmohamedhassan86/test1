@@ -1,0 +1,23 @@
+@let current = failure();
+
+<!-- FR-045: assertive, so a respondent who pressed Submit and looked away is told the
+     attempt failed rather than left waiting. `role="alert"` is the assertive mapping;
+     `aria-live` is spelled out beside it so the requirement is readable in the DOM. -->
+<div class="sv-submit-error" role="alert" aria-live="assertive">
+  <!-- Contract §4's text for this kind, composed in `core`. Never written here. -->
+  <p class="sv-submit-error__message">{{ current.message }}</p>
+
+  <!-- Contract §4: `details` is non-empty only when `kind` is `rejected`, so this renders
+       nothing for the other six without needing to name them. -->
+  @if (current.details.length > 0) {
+    <ul class="sv-submit-error__details">
+      @for (detail of current.details; track detail.questionId) {
+        <li class="sv-submit-error__detail">{{ detail.reason }}</li>
+      }
+    </ul>
+  }
+
+  <button class="sv-submit-error__retry" type="button" [disabled]="locked()" (click)="tryAgain()">
+    Try again
+  </button>
+</div>

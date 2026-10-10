@@ -1,0 +1,73 @@
+@let q = question();
+@let view_ = view();
+@let currentError = error();
+
+<!-- The id is FR-030's focus target: `survey-page.ts` focuses the first focusable control
+     inside this wrapper, which works for all six types without any of them needing a
+     `tabindex` on a group that is not itself focusable. -->
+<div
+  class="sv-question"
+  [id]="wrapperId()"
+  [class.sv-question--invalid]="currentError !== undefined"
+>
+  <p class="sv-question__title">
+    <span [id]="titleId()">{{ q.title }}</span>
+    @if (q.required) {
+      <!-- FR-005's visible indication. `aria-required` on the control carries it
+           programmatically, so this is hidden to keep the accessible name exactly the
+           title (FR-053). The id is for the one type that cannot take `aria-required` —
+           a checkbox group is a `fieldset`, role `group`, which does not support it — so
+           that group names this span in `aria-describedby` instead. A directly
+           referenced node contributes its text even while `aria-hidden`. -->
+      <span class="sv-question__required" [id]="requiredId()" aria-hidden="true">Required</span>
+    } @else {
+      <span class="sv-question__optional" aria-hidden="true">Optional</span>
+    }
+  </p>
+
+  <!-- FR-073: nothing is rendered in place of an absent description. -->
+  @if (q.description !== null) {
+    <p class="sv-question__description" [id]="descriptionId()">{{ q.description }}</p>
+  }
+
+  @if (view_.kind === 'radio') {
+    <app-radio-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
+  } @else if (view_.kind === 'checkbox') {
+    <app-checkbox-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
+  } @else if (view_.kind === 'text') {
+    <app-text-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
+  } @else if (view_.kind === 'rating') {
+    <app-rating-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
+  } @else {
+    <app-satisfaction-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
+  }
+
+  <!-- T118: rendered for every type, because the contract allows an `attachments` block
+       on any of the six. It renders nothing when the question has no policy. Placed after
+       the control and before the error so the tab order reads control -> file control. -->
+  <app-question-attachments [question]="q" [titleId]="titleId()" />
+
+  @if (currentError !== undefined) {
+    <p class="sv-question__error" [id]="errorId()">{{ currentError.message }}</p>
+  }
+</div>

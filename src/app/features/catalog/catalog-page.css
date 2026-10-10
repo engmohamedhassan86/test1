@@ -1,0 +1,56 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+h1 {
+  margin: 0 0 var(--sv-space-5);
+  color: var(--sv-brand);
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+.sv-catalog__status {
+  margin: 0;
+  color: var(--p-text-muted-color);
+}
+
+.sv-catalog__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--sv-space-4);
+}
+
+.sv-catalog__item {
+  padding: var(--sv-space-4);
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--sv-radius);
+}
+
+/*
+ * 44px minimum target height at every viewport (WCAG 2.5.8 / FR-056). `inline-flex`
+ * rather than a fixed height so a title that wraps at 375px still grows the target
+ * instead of overflowing it.
+ */
+.sv-catalog__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--sv-brand);
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.sv-catalog__link:hover {
+  color: var(--sv-brand-hover);
+}
+
+.sv-catalog__description {
+  margin: var(--sv-space-1) 0 0;
+  color: var(--p-text-muted-color);
+}

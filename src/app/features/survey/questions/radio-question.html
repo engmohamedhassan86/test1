@@ -1,0 +1,24 @@
+@let q = question();
+
+<div
+  role="radiogroup"
+  class="sv-choices"
+  [attr.aria-labelledby]="titleId()"
+  [attr.aria-required]="q.required"
+  [attr.aria-invalid]="invalid()"
+  [attr.aria-describedby]="describedBy()"
+>
+  @for (option of q.options; track option.id) {
+    <label class="sv-choice">
+      <input
+        type="radio"
+        [name]="q.id"
+        [value]="option.value"
+        [checked]="selected() === option.value"
+        [disabled]="locked()"
+        (change)="choose(option.value)"
+      />
+      <span class="sv-choice__label">{{ option.label }}</span>
+    </label>
+  }
+</div>

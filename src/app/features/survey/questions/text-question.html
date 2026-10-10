@@ -1,0 +1,31 @@
+@let q = question();
+
+@if (q.type === 'textarea') {
+  <textarea
+    class="sv-text sv-text--multiline"
+    rows="4"
+    [id]="'sv-q-' + q.id + '-control'"
+    [attr.aria-labelledby]="titleId()"
+    [attr.aria-required]="q.required"
+    [attr.aria-invalid]="invalid()"
+    [attr.aria-describedby]="describedBy()"
+    [attr.maxlength]="maxLength()"
+    [value]="value()"
+    [disabled]="locked()"
+    (input)="write($event)"
+  ></textarea>
+} @else {
+  <input
+    type="text"
+    class="sv-text"
+    [id]="'sv-q-' + q.id + '-control'"
+    [attr.aria-labelledby]="titleId()"
+    [attr.aria-required]="q.required"
+    [attr.aria-invalid]="invalid()"
+    [attr.aria-describedby]="describedBy()"
+    [attr.maxlength]="maxLength()"
+    [value]="value()"
+    [disabled]="locked()"
+    (input)="write($event)"
+  />
+}

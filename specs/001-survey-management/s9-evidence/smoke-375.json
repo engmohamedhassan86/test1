@@ -1,0 +1,186 @@
+{
+  "width": 375,
+  "crash": null,
+  "results": [
+    {
+      "name": "1. catalog lists surveys from survey-manifest.json",
+      "pass": true,
+      "evidence": "Customer Feedback->/surveys/customer-feedback , Product Pulse->/surveys/product-pulse"
+    },
+    {
+      "name": "no horizontal scroll @ catalog",
+      "pass": true,
+      "evidence": "scrollWidth 375 <= clientWidth 375"
+    },
+    {
+      "name": "1. activating the link opens /surveys/:surveyKey at page 1",
+      "pass": true,
+      "evidence": "http://127.0.0.1:4300/surveys/customer-feedback | Page 1 of 4"
+    },
+    {
+      "name": "no horizontal scroll @ survey page 1",
+      "pass": true,
+      "evidence": "scrollWidth 375 <= clientWidth 375"
+    },
+    {
+      "name": "2. held on the page when a required answer is missing",
+      "pass": true,
+      "evidence": "still Page 1 of 4"
+    },
+    {
+      "name": "2. the error is shown in a role=alert live region",
+      "pass": true,
+      "evidence": "What should we call you?Enter an answerWhich one sounds most like you?Choose one option"
+    },
+    {
+      "name": "2. focus lands on the first offending field",
+      "pass": true,
+      "evidence": "activeElement=sv-q-q_name-control"
+    },
+    {
+      "name": "3a. min text length blocks navigation",
+      "pass": true,
+      "evidence": "Page 1 of 4 | What should we call you?Use at least 2 characters"
+    },
+    {
+      "name": "3b. max text length enforced at entry (maxLength 80)",
+      "pass": true,
+      "evidence": "typed 200 chars, field holds 80"
+    },
+    {
+      "name": "4. advanced to page 2 once page 1 is valid",
+      "pass": true,
+      "evidence": "Page 2 of 4"
+    },
+    {
+      "name": "3c. min selections blocks navigation (none checked)",
+      "pass": true,
+      "evidence": "Page 2 of 4 | What went well?Select at least 1 option"
+    },
+    {
+      "name": "3d. max selections refused (at selection time or on Next)",
+      "pass": true,
+      "evidence": "tried 4, 3 checked; page=Page 3 of 4; alert=\"\""
+    },
+    {
+      "name": "3d. (note) the refusal was at selection time, so Next legitimately advanced",
+      "pass": true,
+      "evidence": "returned to Page 2 of 4"
+    },
+    {
+      "name": "4. page 1 answers survive Back",
+      "pass": true,
+      "evidence": "name=\"Mina\" radio=1"
+    },
+    {
+      "name": "4. page 2 answers survive Back/Next",
+      "pass": true,
+      "evidence": "{\"checked\":[\"choice\",\"value\",\"packaging\"],\"scale\":1} vs {\"checked\":[\"choice\",\"value\",\"packaging\"],\"scale\":1}"
+    },
+    {
+      "name": "5. reached the attachment page",
+      "pass": true,
+      "evidence": "Page 3 of 4"
+    },
+    {
+      "name": "5. the attachment-enabled question exposes a file control",
+      "pass": true,
+      "evidence": "count=1"
+    },
+    {
+      "name": "5. three files accepted, limit shown as 3 of 3",
+      "pass": true,
+      "evidence": "3 of 3 files"
+    },
+    {
+      "name": "5. a 4th file is refused at selection time (0-3 limit)",
+      "pass": true,
+      "evidence": " Skip to content You can attach up to 3 files to this question There is 1 answer to fix on this page Customer FeedbackFour short pages about your recent order"
+    },
+    {
+      "name": "5. a disallowed file type is refused at selection time",
+      "pass": true,
+      "evidence": "txt: this file type is not accepted (allowed: PNG, JPEG, PDF) There is 1 answer to fix on this page Customer FeedbackFour short pages about your recent order"
+    },
+    {
+      "name": "5. an oversized file is refused at selection time (5 MB limit)",
+      "pass": true,
+      "evidence": "png: this file is larger than the 5 MB limit There is 1 answer to fix on this page Customer FeedbackFour short pages about your recent order"
+    },
+    {
+      "name": "5. attachments survive Back",
+      "pass": true,
+      "evidence": "3 of 3 files"
+    },
+    {
+      "name": "no horizontal scroll @ attachment page",
+      "pass": true,
+      "evidence": "scrollWidth 375 <= clientWidth 375"
+    },
+    {
+      "name": "6. reached the final page",
+      "pass": true,
+      "evidence": "Page 4 of 4"
+    },
+    {
+      "name": "6. the final page offers Submit instead of Next",
+      "pass": true,
+      "evidence": "submit buttons=1"
+    },
+    {
+      "name": "6. submit is blocked while a required answer on this page is missing",
+      "pass": true,
+      "evidence": "alert=\"Would you recommend us to another family?Choose one option\" | network calls=0"
+    },
+    {
+      "name": "6. no submission request was sent while invalid",
+      "pass": true,
+      "evidence": "observed 0 POSTs to /api/survey-responses"
+    },
+    {
+      "name": "7. completion screen appears after the submission is acknowledged",
+      "pass": true,
+      "evidence": " Skip to content Submitting your response There is 1 answer to fix on this page Customer FeedbackYour response has been received"
+    },
+    {
+      "name": "7. no question is rendered on the completion screen",
+      "pass": true,
+      "evidence": "app-question-host count=0, saw in-flight state=true"
+    },
+    {
+      "name": "no horizontal scroll @ completion screen",
+      "pass": true,
+      "evidence": "scrollWidth 375 <= clientWidth 375"
+    },
+    {
+      "name": "8. an invalid config renders the error screen",
+      "pass": true,
+      "evidence": " Skip to content This survey is not available The survey customer-feedback could not be used because its configuration does not satisfy its contract. F02pages[1].questions[0].optionspages[1].questions[0].options: require"
+    },
+    {
+      "name": "8. no part of the survey renders behind the error (fails closed)",
+      "pass": true,
+      "evidence": "app-question-host=0, page indicator present=false"
+    },
+    {
+      "name": "9. keyboard reaches every control on page 1 including Next",
+      "pass": true,
+      "evidence": "Skip to content -> sv-q-q_name-control -> INPUT -> Next"
+    },
+    {
+      "name": "9. focus is visible at every tab stop",
+      "pass": true,
+      "evidence": "Skip to content:solid 2px | sv-q-q_name-control:solid 2px | INPUT:solid 2px | Next:solid 2px"
+    },
+    {
+      "name": "9. a page can be completed and advanced with the keyboard alone",
+      "pass": true,
+      "evidence": "now Page 2 of 4"
+    },
+    {
+      "name": "9. no interactive element is mouse-only (negative tabindex)",
+      "pass": true,
+      "evidence": "none found"
+    }
+  ]
+}

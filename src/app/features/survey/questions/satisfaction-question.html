@@ -1,0 +1,34 @@
+@let q = question();
+@let current = selected();
+
+<div
+  role="radiogroup"
+  class="sv-scale sv-scale--labelled"
+  [attr.aria-labelledby]="titleId()"
+  [attr.aria-required]="q.required"
+  [attr.aria-invalid]="invalid()"
+  [attr.aria-describedby]="describedBy()"
+>
+  @for (view of points; track view.point) {
+    <button
+      type="button"
+      role="radio"
+      class="sv-scale__point"
+      [attr.aria-checked]="current === view.point"
+      [disabled]="locked()"
+      (click)="choose(view.point)"
+    >
+      {{ view.label }}
+    </button>
+  }
+</div>
+
+<!-- FR-060, allowed on a required question: clearing is not the same as never answering. -->
+<button
+  type="button"
+  class="sv-scale__clear"
+  [disabled]="locked() || current === null"
+  (click)="clear()"
+>
+  Clear answer
+</button>

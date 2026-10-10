@@ -1,0 +1,53 @@
+/*
+ * Shared by the radio and checkbox controls — the two types whose markup is a list of
+ * labelled option inputs. Colours and spacing come from src/styles/tokens.css.
+ */
+
+.sv-choices {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: var(--sv-space-1);
+}
+
+/*
+ * The whole row is the target, not just the 13px input, so the 44px minimum of
+ * WCAG 2.5.8 / FR-058 is met at 375px without enlarging the control itself.
+ */
+.sv-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--sv-space-3);
+  min-height: 44px;
+  padding: 0 var(--sv-space-2);
+  border-radius: var(--sv-radius);
+  cursor: pointer;
+}
+
+.sv-choice:hover {
+  background: var(--sv-brand-subtle);
+}
+
+/* The ring belongs to the row, because the row is what the respondent is aiming at. */
+.sv-choice:focus-within {
+  outline: var(--sv-focus-ring-width) solid var(--sv-focus-ring-color);
+  outline-offset: var(--sv-focus-ring-offset);
+}
+
+.sv-choice input {
+  flex: 0 0 auto;
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--sv-brand);
+}
+
+.sv-choice__label {
+  line-height: 1.4;
+}
+
+.sv-choices__hint {
+  margin: var(--sv-space-1) 0 var(--sv-space-2);
+  color: var(--p-text-muted-color);
+  font-size: 0.9375rem;
+}

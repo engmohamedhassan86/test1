@@ -1,0 +1,28 @@
+/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+
+.sv-confirmation h1 {
+  margin: 0 0 var(--sv-space-3);
+  color: var(--sv-brand);
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+@media (min-width: 768px) {
+  .sv-confirmation h1 {
+    font-size: 2rem;
+  }
+}
+
+.sv-confirmation__received {
+  margin: 0 0 var(--sv-space-4);
+  font-size: 1.0625rem;
+}
+
+.sv-confirmation__reference {
+  margin: 0 0 var(--sv-space-5);
+  padding: var(--sv-space-3) var(--sv-space-4);
+  border-radius: var(--sv-radius);
+  background: var(--sv-brand-subtle);
+  /* The reference can be long, so it wraps rather than overflowing at 375px. */
+  word-break: break-all;
+}

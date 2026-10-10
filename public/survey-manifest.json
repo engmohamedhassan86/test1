@@ -1,0 +1,15 @@
+{
+  "surveys": [
+    {
+      "key": "customer-feedback",
+      "title": "Customer Feedback",
+      "description": "Four short pages about your recent order.",
+      "config": "surveys/customer-feedback.json"
+    },
+    {
+      "key": "product-pulse",
+      "title": "Product Pulse",
+      "config": "surveys/product-pulse.json"
+    }
+  ]
+}
