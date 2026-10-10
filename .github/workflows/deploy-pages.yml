@@ -1,0 +1,77 @@
+name: Deploy to GitHub Pages
+
+# Separate from CI on purpose. CI owns the quality gates on every branch and PR;
+# this workflow only publishes what is already on `main`. It never runs a gate,
+# so it cannot relax or stand in for one.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# The built-in GITHUB_TOKEN is the only credential involved. No external secret.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One Pages deployment at a time, and never cancel one mid-flight — a cancelled
+# deploy can leave the site serving a half-uploaded artifact.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PRIMEUI_LICENSE_KEY: ${{ secrets.PRIMEUI_LICENSE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Version comes from the "packageManager" field in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # `enablement: true` turns the Pages site on through the API with the
+      # built-in token, so no one has to click through the repository settings.
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      # A project site is served from https://<owner>.github.io/<repo>/, so the
+      # base href has to be /<repo>/ or every hashed asset 404s. Derived from
+      # GITHUB_REPOSITORY rather than hard-coded so a rename cannot silently
+      # break the deploy.
+      - name: Build
+        run: pnpm run build --base-href "/${GITHUB_REPOSITORY#*/}/"
+
+      # GitHub Pages has no rewrite rules, so a deep link such as
+      # /surveys/customer-feedback is a filesystem miss and Pages serves
+      # 404.html. Making that a copy of index.html boots the Angular router,
+      # which then reads the path and renders the survey.
+      - name: SPA deep-link fallback
+        run: cp dist/survey-viewer/browser/index.html dist/survey-viewer/browser/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/survey-viewer/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
