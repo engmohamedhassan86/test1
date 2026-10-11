@@ -1,0 +1,23 @@
+@let q = question();
+@let sel = selected();
+
+<p-select
+  [ngModel]="sel"
+  [options]="$any(q.options)"
+  optionLabel="label"
+  optionValue="value"
+  [placeholder]="''"
+  filter="true"
+  filterBy="label,value"
+  [showClear]="!q.required"
+  appendTo="body"
+  [disabled]="locked()"
+  [attr.aria-label]="ariaLabel()"
+  [attr.aria-labelledby]="titleId()"
+  [attr.aria-required]="q.required"
+  [attr.aria-invalid]="invalid()"
+  [attr.aria-describedby]="describedBy()"
+  (onChange)="choose($event.value)"
+  (onClear)="clear()"
+  class="sv-dropdown"
+/>

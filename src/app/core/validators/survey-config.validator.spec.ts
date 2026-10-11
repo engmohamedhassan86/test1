@@ -875,6 +875,23 @@ describe('validateSurveyConfig — one case per rule R03 to R52', () => {
     const result = validateSurveyConfig(testCase.raw, testCase.servedKey ?? SERVED_KEY);
     expectIssue(result, testCase.code, testCase.path);
   });
+
+  it('D-001 — more than 100 options yields F11', () => {
+    const result = validateSurveyConfig(
+      documentWithQuestion({
+        id: 'q_segment',
+        type: 'dropdown',
+        title: 'Choose…',
+        options: Array.from({ length: 101 }, (_, i) => ({
+          id: `opt_${i}`,
+          label: `Option ${i}`,
+          value: `val_${i}`,
+        })),
+      }),
+      SERVED_KEY,
+    );
+    expectIssue(result, 'F11', 'pages[0].questions[0].options');
+  });
 });
 
 describe('the valid mini-pulse config from contract §10.1', () => {

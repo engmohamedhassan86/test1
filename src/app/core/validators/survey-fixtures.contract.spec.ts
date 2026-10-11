@@ -78,6 +78,7 @@ const ID_PATTERN = /^[a-z0-9][a-z0-9-_]{0,63}$/;
 const QUESTION_TYPES = [
   'radio',
   'checkbox',
+  'dropdown',
   'textbox',
   'textarea',
   'rating',
@@ -93,6 +94,7 @@ const COMMON_QUESTION_KEYS = ['id', 'type', 'title', 'description', 'required', 
 const TYPE_SPECIFIC_KEYS: Readonly<Record<QuestionType, readonly string[]>> = {
   radio: ['options'],
   checkbox: ['options', 'minSelections', 'maxSelections'],
+  dropdown: ['options'],
   textbox: ['minLength', 'maxLength'],
   textarea: ['minLength', 'maxLength'],
   rating: ['scale'],
@@ -449,11 +451,12 @@ describe('authored survey content', () => {
       expect(pages[0]?.['description']).toBe('Who we are hearing from.');
     });
 
-    it('has the nine questions of contract §5, in order', () => {
+    it('has the ten questions of contract §5, in order', () => {
       expect(questions.map((question) => [question['id'], question['type']])).toEqual([
         ['q_name', 'textbox'],
         ['q_segment', 'radio'],
         ['q_satisfaction', 'satisfaction'],
+        ['q_product_category', 'dropdown'],
         ['q_liked', 'checkbox'],
         ['q_delivery', 'rating'],
         ['q_evidence', 'textarea'],
@@ -463,7 +466,7 @@ describe('authored survey content', () => {
       ]);
     });
 
-    it('exercises all seven question types', () => {
+    it('exercises all eight question types', () => {
       expect(new Set(questions.map((question) => question['type']))).toEqual(
         new Set(QUESTION_TYPES),
       );
@@ -616,6 +619,7 @@ describe('validated against core/validators', () => {
       'q_name',
       'q_segment',
       'q_satisfaction',
+      'q_product_category',
       'q_liked',
       'q_delivery',
       'q_evidence',

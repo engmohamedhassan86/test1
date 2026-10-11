@@ -240,6 +240,7 @@ async function answerCurrentPage(
         session.setAnswer(question, { kind: 'text', value: 'A sufficiently long answer' });
         break;
       case 'radio':
+      case 'dropdown':
         session.setAnswer(question, { kind: 'option', value: question.options[0].value });
         break;
       case 'checkbox':
@@ -250,6 +251,9 @@ async function answerCurrentPage(
         break;
       case 'satisfaction':
         session.setAnswer(question, { kind: 'point', value: 3 });
+        break;
+      case 'toggle_button':
+        session.setAnswer(question, { kind: 'boolean', value: true });
         break;
     }
   }
@@ -302,13 +306,14 @@ describe('accessibility — axe over the seven SC-009 screens', () => {
     expect(session.currentPageIndex()).toBe(SUBJECT.pages.length - 1);
   });
 
-  it('reaches every one of the seven question types during the viewer sweep', async () => {
+  it('reaches every one of the eight question types during the viewer sweep', async () => {
     // The guard that makes the sweep above mean what T129 says it means. If the fixture
-    // ever stops spreading the seven types over the four pages, this fails here rather
+    // ever stops spreading the eight types over the four pages, this fails here rather
     // than leaving the sweep quietly checking fewer types than it claims.
     const swept = new Set(SUBJECT.pages.flatMap((page) => page.questions.map((q) => q.type)));
     expect([...swept].sort()).toEqual([
       'checkbox',
+      'dropdown',
       'radio',
       'rating',
       'satisfaction',

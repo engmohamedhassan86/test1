@@ -12,6 +12,7 @@ import type { AtLeastTwo, NonEmpty, OptionValue, PageId, QuestionId, SurveyKey }
 export const QUESTION_TYPES = [
   'radio',
   'checkbox',
+  'dropdown',
   'textbox',
   'textarea',
   'rating',
@@ -69,6 +70,11 @@ export interface CheckboxQuestion extends QuestionBase {
   readonly minSelections: number;
   /** Authoring default `options.length`. */
   readonly maxSelections: number;
+}
+
+export interface DropdownQuestion extends QuestionBase {
+  readonly type: 'dropdown';
+  readonly options: AtLeastTwo<SurveyOption>;
 }
 
 export interface TextboxQuestion extends QuestionBase {
@@ -130,14 +136,15 @@ export interface ToggleButtonQuestion extends QuestionBase {
 export type Question =
   | RadioQuestion
   | CheckboxQuestion
+  | DropdownQuestion
   | TextboxQuestion
   | TextareaQuestion
   | RatingQuestion
   | SatisfactionQuestion
   | ToggleButtonQuestion;
 
-/** The two members that own `options`. */
-export type ChoiceQuestion = RadioQuestion | CheckboxQuestion;
+/** The three members that own `options`. */
+export type ChoiceQuestion = RadioQuestion | CheckboxQuestion | DropdownQuestion;
 
 /** The two members that own `minLength`/`maxLength`. */
 export type TextQuestion = TextboxQuestion | TextareaQuestion;

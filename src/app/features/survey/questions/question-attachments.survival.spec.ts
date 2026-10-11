@@ -68,6 +68,39 @@ async function clickNth(harness: Harness, selector: string, index: number): Prom
   await harness.settle();
 }
 
+/** Selects an option from a p-select dropdown by index. */
+async function selectDropdownOption(
+  harness: Harness,
+  dropdownIndex: number,
+  optionIndex: number,
+): Promise<void> {
+  const selects = [...harness.host.querySelectorAll<HTMLElement>('p-select')];
+  const select = selects[dropdownIndex];
+  if (select === undefined) {
+    throw new Error(`expected at least ${dropdownIndex + 1} p-select elements`);
+  }
+  select.click();
+  await harness.settle();
+
+  let options: HTMLElement[] = [];
+  options = [...document.querySelectorAll<HTMLElement>('.p-select-item')];
+  if (options.length === 0) {
+    options = [...document.querySelectorAll<HTMLElement>('[role="option"]')];
+  }
+  if (options.length === 0) {
+    options = [...document.querySelectorAll<HTMLElement>('.p-select-item-label')];
+  }
+
+  const option = options[optionIndex];
+  if (option === undefined) {
+    throw new Error(
+      `expected at least ${optionIndex + 1} dropdown options, found ${options.length}`,
+    );
+  }
+  option.click();
+  await harness.settle();
+}
+
 const next = (harness: Harness): Promise<void> => clickNth(harness, '.sv-nav__button--primary', 0);
 const back = (harness: Harness): Promise<void> =>
   clickNth(harness, '.sv-nav__button--secondary', 0);
@@ -85,6 +118,7 @@ async function walkToEvidencePage(harness: Harness): Promise<void> {
   await next(harness);
 
   await clickNth(harness, '.sv-scale__point', 3); // satisfaction
+  await selectDropdownOption(harness, 0, 0); // dropdown
   await clickNth(harness, 'input[type="checkbox"]', 0);
   await next(harness);
 }

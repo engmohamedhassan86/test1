@@ -1,0 +1,11 @@
+:host ::ng-deep {
+  .sv-dropdown {
+    width: 100%;
+  }
+
+  .sv-dropdown.ng-invalid {
+    .p-dropdown-trigger {
+      border-color: var(--p-form-field-invalid-border-color);
+    }
+  }
+}

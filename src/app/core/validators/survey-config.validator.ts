@@ -74,6 +74,7 @@ const COMMON_QUESTION_KEYS = [
 const TYPE_SPECIFIC_KEYS: Readonly<Record<QuestionType, readonly string[]>> = {
   radio: ['options'],
   checkbox: ['options', 'minSelections', 'maxSelections'],
+  dropdown: ['options'],
   textbox: ['minLength', 'maxLength'],
   textarea: ['minLength', 'maxLength'],
   rating: ['scale'],
@@ -368,7 +369,7 @@ function readOptions(
   log: IssueLog,
   object: JsonObject,
   basePath: string,
-  type: 'radio' | 'checkbox',
+  type: 'radio' | 'checkbox' | 'dropdown',
 ): AtLeastTwo<SurveyOption> | undefined {
   const optionsPath = `${basePath}.options`;
 
@@ -388,6 +389,15 @@ function readOptions(
       'F10',
       optionsPath,
       `${optionsPath}: a ${type} question needs at least 2 options, got ${array.value.length}`,
+    );
+  }
+
+  // D-001 — at most 100.
+  if (array.value.length > 100) {
+    return log.add(
+      'F11',
+      optionsPath,
+      `${optionsPath}: a dropdown question can have at most 100 options, got ${array.value.length}`,
     );
   }
 
@@ -601,6 +611,10 @@ function readQuestion(
     }
     case 'checkbox':
       return readCheckbox(log, object.value, basePath, common);
+    case 'dropdown': {
+      const options = readOptions(log, object.value, basePath, 'dropdown');
+      return options === undefined ? undefined : { ...common, type: 'dropdown', options };
+    }
     case 'textbox':
     case 'textarea':
       return readText(log, object.value, basePath, common, type);
