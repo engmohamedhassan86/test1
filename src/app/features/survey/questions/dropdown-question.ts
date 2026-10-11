@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Select } from 'primeng/select';
 
@@ -13,7 +21,8 @@ import { SurveySessionService } from '../../../core/services/survey-session.serv
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Select, FormsModule],
 })
-export class DropdownQuestionComponent {
+export class DropdownQuestionComponent implements AfterViewInit {
+  @ViewChild(Select) select!: Select;
   private readonly session = inject(SurveySessionService);
 
   readonly question = input.required<DropdownQuestion>();
@@ -31,11 +40,22 @@ export class DropdownQuestionComponent {
     return answer !== undefined && answer.type === 'dropdown' ? answer.value : null;
   });
 
+  protected readonly ariaLabel = computed<string>(() => this.question().title);
+
   protected choose(value: OptionValue): void {
     this.session.setAnswer(this.question(), { kind: 'option', value });
   }
 
   protected clear(): void {
     this.session.clearAnswer(this.question().id);
+  }
+
+  ngAfterViewInit(): void {
+    if (this.select && this.select.el) {
+      const label = this.select.el.nativeElement.querySelector('.p-select-label');
+      if (label) {
+        label.setAttribute('aria-hidden', 'true');
+      }
+    }
   }
 }

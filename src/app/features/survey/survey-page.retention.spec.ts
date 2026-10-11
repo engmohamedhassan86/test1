@@ -103,6 +103,39 @@ async function clickNth(harness: Harness, selector: string, index: number): Prom
   await harness.settle();
 }
 
+/** Selects an option from a p-select dropdown by index. */
+async function selectDropdownOption(
+  harness: Harness,
+  dropdownIndex: number,
+  optionIndex: number,
+): Promise<void> {
+  const selects = [...harness.host.querySelectorAll<HTMLElement>('p-select')];
+  const select = selects[dropdownIndex];
+  if (select === undefined) {
+    throw new Error(`expected at least ${dropdownIndex + 1} p-select elements`);
+  }
+  select.click();
+  await harness.settle();
+
+  let options: HTMLElement[] = [];
+  options = [...document.querySelectorAll<HTMLElement>('.p-select-item')];
+  if (options.length === 0) {
+    options = [...document.querySelectorAll<HTMLElement>('[role="option"]')];
+  }
+  if (options.length === 0) {
+    options = [...document.querySelectorAll<HTMLElement>('.p-select-item-label')];
+  }
+
+  const option = options[optionIndex];
+  if (option === undefined) {
+    throw new Error(
+      `expected at least ${optionIndex + 1} dropdown options, found ${options.length}`,
+    );
+  }
+  option.click();
+  await harness.settle();
+}
+
 /**
  * Narrows a selector to one question's wrapper.
  *
@@ -203,6 +236,7 @@ async function walkToPageThree(harness: Harness): Promise<void> {
   await next(harness);
 
   await clickNth(harness, within('q_satisfaction', '.sv-scale__point'), 3); // 4
+  await selectDropdownOption(harness, 0, 0); // `q_product_category` dropdown
   await clickNth(harness, CHECKBOX_LIKED, 0); // `delivery`
   await clickNth(harness, CHECKBOX_LIKED, 2); // `support`
   await clickNth(harness, within('q_delivery', '.sv-scale__point'), 4); // rating 5

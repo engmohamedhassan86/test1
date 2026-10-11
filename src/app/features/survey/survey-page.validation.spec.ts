@@ -41,7 +41,7 @@ import { SurveyPageComponent } from './survey-page';
 const SUBJECT = customerFeedbackSurvey();
 
 /** `q_liked`, needed by scenario 13, which sets its answer without a control. */
-const Q_LIKED = SUBJECT.pages[1].questions[1] as CheckboxQuestion;
+const Q_LIKED = SUBJECT.pages[1].questions[2] as CheckboxQuestion;
 
 type Harness = ViewerHarness<SurveyPageComponent>;
 
@@ -108,6 +108,39 @@ async function clickNth(harness: Harness, selector: string, index: number): Prom
   await harness.settle();
 }
 
+/** Selects an option from a p-select dropdown by index. */
+async function selectDropdownOption(
+  harness: Harness,
+  dropdownIndex: number,
+  optionIndex: number,
+): Promise<void> {
+  const selects = [...harness.host.querySelectorAll<HTMLElement>('p-select')];
+  const select = selects[dropdownIndex];
+  if (select === undefined) {
+    throw new Error(`expected at least ${dropdownIndex + 1} p-select elements`);
+  }
+  select.click();
+  await harness.settle();
+
+  let options: HTMLElement[] = [];
+  options = [...document.querySelectorAll<HTMLElement>('.p-select-item')];
+  if (options.length === 0) {
+    options = [...document.querySelectorAll<HTMLElement>('[role="option"]')];
+  }
+  if (options.length === 0) {
+    options = [...document.querySelectorAll<HTMLElement>('.p-select-item-label')];
+  }
+
+  const option = options[optionIndex];
+  if (option === undefined) {
+    throw new Error(
+      `expected at least ${optionIndex + 1} dropdown options, found ${options.length}`,
+    );
+  }
+  option.click();
+  await harness.settle();
+}
+
 const next = (harness: Harness): Promise<void> => clickNth(harness, '.sv-nav__button--primary', 0);
 const back = (harness: Harness): Promise<void> =>
   clickNth(harness, '.sv-nav__button--secondary', 0);
@@ -118,9 +151,10 @@ async function answerPage1(harness: Harness): Promise<void> {
   await clickNth(harness, 'input[type="radio"]', 0);
 }
 
-/** Answers page 2 fully — required satisfaction, required checkbox. */
+/** Answers page 2 fully — required satisfaction, required dropdown, required checkbox. */
 async function answerPage2(harness: Harness): Promise<void> {
   await clickNth(harness, '.sv-scale__point', 3);
+  await selectDropdownOption(harness, 0, 0);
   await clickNth(harness, 'input[type="checkbox"]', 0);
 }
 
@@ -179,8 +213,9 @@ describe('SurveyPageComponent — blocked navigation (US2)', () => {
     const harness = await openViewer();
     await goToPage2(harness);
 
-    // Satisfaction answered, so `q_liked` is the first invalid question on page 2.
+    // Satisfaction and dropdown answered, so `q_liked` is the first invalid question on page 2.
     await clickNth(harness, '.sv-scale__point', 3);
+    await selectDropdownOption(harness, 0, 0);
     await next(harness);
 
     expect(position(harness.host)).toBe('Page 2 of 4');
@@ -205,6 +240,8 @@ describe('SurveyPageComponent — blocked navigation (US2)', () => {
     const harness = await openViewer();
     await goToPage2(harness);
 
+    // Answer dropdown so test focuses on satisfaction and checkbox validation
+    await selectDropdownOption(harness, 0, 0);
     await next(harness);
 
     expect(position(harness.host)).toBe('Page 2 of 4');
@@ -229,6 +266,8 @@ describe('SurveyPageComponent — blocked navigation (US2)', () => {
   it("clears one question's error the moment it is answered, without Next (scenario 8)", async () => {
     const harness = await openViewer();
     await goToPage2(harness);
+    // Answer dropdown so test focuses on satisfaction and checkbox validation
+    await selectDropdownOption(harness, 0, 0);
     await next(harness);
 
     expect(errorFor(harness.host, 'q_liked')).toBe('Select at least 1 option');
@@ -294,7 +333,10 @@ describe('SurveyPageComponent — blocked navigation (US2)', () => {
     await goToPage2(harness);
 
     await clickNth(harness, '.sv-scale__point', 3);
-    // FR-070: four values on a `maxSelections: 3` question, set by a route that bypasses
+    await selectDropdownOption(harness, 0, 0);
+    // First answer the checkbox with a valid selection to pass minSelections validation
+    await clickNth(harness, 'input[type="checkbox"]', 0);
+    // FR-070: then set four values on a `maxSelections: 3` question, by a route that bypasses
     // the control entirely — a restored session, or a config whose ceiling was lowered.
     harness.session.setAnswer(Q_LIKED, {
       kind: 'options',

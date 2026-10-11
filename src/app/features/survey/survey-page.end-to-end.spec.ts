@@ -77,15 +77,50 @@ async function clickNth(
   await harness.settle();
 }
 
+/** Selects an option from a p-select dropdown by index. */
+async function selectDropdownOption(
+  harness: ViewerHarness<SurveyPageComponent>,
+  dropdownIndex: number,
+  optionIndex: number,
+): Promise<void> {
+  const selects = [...harness.host.querySelectorAll<HTMLElement>('p-select')];
+  const select = selects[dropdownIndex];
+  if (select === undefined) {
+    throw new Error(`expected at least ${dropdownIndex + 1} p-select elements`);
+  }
+  select.click();
+  await harness.settle();
+
+  // Try multiple selectors for PrimeNG dropdown items
+  let options: HTMLElement[] = [];
+  options = [...document.querySelectorAll<HTMLElement>('.p-select-item')];
+  if (options.length === 0) {
+    options = [...document.querySelectorAll<HTMLElement>('[role="option"]')];
+  }
+  if (options.length === 0) {
+    options = [...document.querySelectorAll<HTMLElement>('.p-select-item-label')];
+  }
+
+  const option = options[optionIndex];
+  if (option === undefined) {
+    throw new Error(
+      `expected at least ${optionIndex + 1} dropdown options, found ${options.length}`,
+    );
+  }
+  option.click();
+  await harness.settle();
+}
+
 /** Answers page 1 — a required textbox and a required radio — through the controls. */
 async function completePage1(harness: ViewerHarness<SurveyPageComponent>): Promise<void> {
   await type(harness, 'input[type="text"]', 'Sam');
   await clickNth(harness, 'input[type="radio"]', 0);
 }
 
-/** Answers page 2 — required satisfaction, required checkbox, optional rating. */
+/** Answers page 2 — required satisfaction, required dropdown, required checkbox, optional rating. */
 async function completePage2(harness: ViewerHarness<SurveyPageComponent>): Promise<void> {
   await clickNth(harness, '.sv-scale__point', 3);
+  await selectDropdownOption(harness, 0, 0);
   await clickNth(harness, 'input[type="checkbox"]', 0);
 }
 
