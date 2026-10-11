@@ -1,0 +1,192 @@
+{
+  "tokens": [
+    {
+      "name": "--ds-color-primary",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-hover",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-active",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-on-primary",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-text",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-surface",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-surface",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-surface-sunken",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-text",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-text-muted",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-text-on-primary",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-border-default",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-border-subtle",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-border-selected",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-focus-ring",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-success",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-success-surface",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-warning",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-warning-surface",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-error",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-error-surface",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-info",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-info-surface",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-progress-track",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-space-2",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-3",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-5",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-radius-lg",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-radius-pill",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-shadow-resting",
+      "category": "elevation"
+    },
+    {
+      "name": "--ds-shadow-raised",
+      "category": "elevation"
+    },
+    {
+      "name": "--ds-motion-duration-instant",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-motion-duration-fast",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-motion-duration-base",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-motion-duration-slow",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-font-weight-semibold",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-font-weight-medium",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-font-weight-regular",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-line-height-tight",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-line-height-snug",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-line-height-normal",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-line-height-relaxed",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-letter-spacing-tight",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-letter-spacing-normal",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-letter-spacing-wide",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-letter-spacing-caps",
+      "category": "typography"
+    }
+  ]
+}
