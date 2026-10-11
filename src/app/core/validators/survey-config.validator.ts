@@ -392,6 +392,15 @@ function readOptions(
     );
   }
 
+  // D-001 — at most 100.
+  if (array.value.length > 100) {
+    return log.add(
+      'F11',
+      optionsPath,
+      `${optionsPath}: a dropdown question can have at most 100 options, got ${array.value.length}`,
+    );
+  }
+
   const parsed: SurveyOption[] = [];
   const seenIds = new Set<string>();
   const seenValues = new Set<string>();
