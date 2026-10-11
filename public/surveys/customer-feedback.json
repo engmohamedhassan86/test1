@@ -53,6 +53,34 @@
           "required": true
         },
         {
+          "id": "q_product_category",
+          "type": "dropdown",
+          "title": "What type of product did you order?",
+          "required": true,
+          "options": [
+            {
+              "id": "cat-toys",
+              "label": "Toys",
+              "value": "toys"
+            },
+            {
+              "id": "cat-books",
+              "label": "Books",
+              "value": "books"
+            },
+            {
+              "id": "cat-games",
+              "label": "Games",
+              "value": "games"
+            },
+            {
+              "id": "cat-activity-kits",
+              "label": "Activity Kits",
+              "value": "activity"
+            }
+          ]
+        },
+        {
           "id": "q_liked",
           "type": "checkbox",
           "title": "What went well?",

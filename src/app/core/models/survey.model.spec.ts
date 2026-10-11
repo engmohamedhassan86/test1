@@ -24,10 +24,11 @@ import {
 } from './__fixtures__/survey-builders';
 
 describe('QUESTION_TYPES', () => {
-  it('holds exactly the seven FR-003 values, in contract order', () => {
+  it('holds exactly the eight FR-003 values, in contract order', () => {
     expect(QUESTION_TYPES).toEqual([
       'radio',
       'checkbox',
+      'dropdown',
       'textbox',
       'textarea',
       'rating',
@@ -36,8 +37,8 @@ describe('QUESTION_TYPES', () => {
     ]);
   });
 
-  it('has no eighth member', () => {
-    expect(QUESTION_TYPES).toHaveLength(7);
+  it('has no ninth member', () => {
+    expect(QUESTION_TYPES).toHaveLength(8);
   });
 });
 

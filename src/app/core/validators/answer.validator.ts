@@ -48,6 +48,7 @@ export function validateAnswer(
 ): ValidationError | null {
   switch (question.type) {
     case 'radio':
+    case 'dropdown':
       // FR-012: answered only when a value is held.
       if (answer === undefined) {
         return question.required ? error(question, 'required-radio', requiredRadioMessage()) : null;

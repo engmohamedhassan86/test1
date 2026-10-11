@@ -40,6 +40,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { assertNever } from '../../../core/models/assert-never';
 import type {
   CheckboxQuestion,
+  DropdownQuestion,
   Question,
   RadioQuestion,
   RatingQuestion,
@@ -49,6 +50,7 @@ import type {
 } from '../../../core/models/survey.model';
 import { SurveySessionService } from '../../../core/services/survey-session.service';
 import { CheckboxQuestionComponent } from './checkbox-question';
+import { DropdownQuestionComponent } from './dropdown-question';
 import { QuestionAttachmentsComponent } from './question-attachments';
 import { RadioQuestionComponent } from './radio-question';
 import { RatingQuestionComponent } from './rating-question';
@@ -69,6 +71,7 @@ export function questionWrapperId(questionId: string): string {
 type QuestionView =
   | { readonly kind: 'radio'; readonly question: RadioQuestion }
   | { readonly kind: 'checkbox'; readonly question: CheckboxQuestion }
+  | { readonly kind: 'dropdown'; readonly question: DropdownQuestion }
   | { readonly kind: 'text'; readonly question: TextQuestion }
   | { readonly kind: 'rating'; readonly question: RatingQuestion }
   | { readonly kind: 'satisfaction'; readonly question: SatisfactionQuestion }
@@ -79,6 +82,7 @@ type QuestionView =
   imports: [
     RadioQuestionComponent,
     CheckboxQuestionComponent,
+    DropdownQuestionComponent,
     TextQuestionComponent,
     RatingQuestionComponent,
     SatisfactionQuestionComponent,
@@ -137,6 +141,8 @@ function viewOf(question: Question): QuestionView {
       return { kind: 'radio', question };
     case 'checkbox':
       return { kind: 'checkbox', question };
+    case 'dropdown':
+      return { kind: 'dropdown', question };
     case 'textbox':
     case 'textarea':
       return { kind: 'text', question };

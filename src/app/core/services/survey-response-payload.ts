@@ -118,6 +118,7 @@ function valueOf(
       // `false` instead of putting a string in a boolean field.
       return value === true;
     case 'radio':
+    case 'dropdown':
     case 'textbox':
     case 'textarea':
     case 'rating':
@@ -143,6 +144,7 @@ function emptyValueFor(question: Question): AnswerEntry['value'] {
     case 'textarea':
       return '';
     case 'radio':
+    case 'dropdown':
       return '';
     case 'checkbox':
       return [];

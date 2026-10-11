@@ -28,6 +28,7 @@ import type {
   AcceptedFileType,
   AttachmentPolicy,
   CheckboxQuestion,
+  DropdownQuestion,
   Question,
   RadioQuestion,
   RatingQuestion,
@@ -139,6 +140,16 @@ export function checkboxQuestion(
     options,
     minSelections: overrides.minSelections ?? 0,
     maxSelections: overrides.maxSelections ?? options.length,
+  };
+}
+
+export function dropdownQuestion(
+  overrides: CommonOverrides & { readonly options?: AtLeastTwo<SurveyOption> } = {},
+): DropdownQuestion {
+  return {
+    ...common(overrides, 'q_dropdown', 'Choose one'),
+    type: 'dropdown',
+    options: overrides.options ?? twoOptions(),
   };
 }
 
@@ -267,6 +278,17 @@ export function customerFeedbackSurvey(): Survey {
           id: 'q_satisfaction',
           title: 'How satisfied were you with your order?',
           required: true,
+        }),
+        dropdownQuestion({
+          id: 'q_product_category',
+          title: 'What type of product did you order?',
+          required: true,
+          options: [
+            option('cat-toys', 'Toys', 'toys'),
+            option('cat-books', 'Books', 'books'),
+            option('cat-games', 'Games', 'games'),
+            option('cat-activity', 'Activity Kits', 'activity'),
+          ],
         }),
         checkboxQuestion({
           id: 'q_liked',

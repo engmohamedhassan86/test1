@@ -731,6 +731,9 @@ function normalise(question: Question, input: AnswerInput): Answer | null {
     case 'radio':
       return input.kind === 'option' ? { type: 'radio', value: input.value } : null;
 
+    case 'dropdown':
+      return input.kind === 'option' ? { type: 'dropdown', value: input.value } : null;
+
     case 'checkbox': {
       if (input.kind !== 'options') {
         return null;

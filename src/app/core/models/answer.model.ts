@@ -12,6 +12,7 @@ import type { Question, SatisfactionPoint } from './survey.model';
 export type Answer =
   | { readonly type: 'radio'; readonly value: OptionValue }
   | { readonly type: 'checkbox'; readonly value: NonEmpty<OptionValue> }
+  | { readonly type: 'dropdown'; readonly value: OptionValue }
   | { readonly type: 'textbox'; readonly value: string }
   | { readonly type: 'textarea'; readonly value: string }
   | { readonly type: 'rating'; readonly value: number }

@@ -42,6 +42,12 @@
       [titleId]="titleId()"
       [describedBy]="describedBy()"
     />
+  } @else if (view_.kind === 'dropdown') {
+    <app-dropdown-question
+      [question]="view_.question"
+      [titleId]="titleId()"
+      [describedBy]="describedBy()"
+    />
   } @else if (view_.kind === 'text') {
     <app-text-question
       [question]="view_.question"
