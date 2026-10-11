@@ -1,0 +1,37 @@
+/**
+ * Feedback/alert component — validation summary, submission result banners.
+ */
+
+.ds-alert {
+  padding: var(--ds-space-4);
+  border-radius: var(--ds-radius-md);
+  border-left: 4px solid;
+}
+
+/* Error state */
+.ds-alert--error {
+  background-color: var(--ds-color-error-surface);
+  border-left-color: var(--ds-color-error);
+  color: var(--ds-color-error);
+}
+
+/* Success state */
+.ds-alert--success {
+  background-color: var(--ds-color-success-surface);
+  border-left-color: var(--ds-color-success);
+  color: var(--ds-color-success);
+}
+
+/* Warning state */
+.ds-alert--warning {
+  background-color: var(--ds-color-warning-surface);
+  border-left-color: var(--ds-color-warning);
+  color: var(--ds-color-warning);
+}
+
+/* Info state */
+.ds-alert--info {
+  background-color: var(--ds-color-info-surface);
+  border-left-color: var(--ds-color-info);
+  color: var(--ds-color-info);
+}

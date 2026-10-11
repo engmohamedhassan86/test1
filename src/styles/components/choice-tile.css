@@ -1,0 +1,61 @@
+/**
+ * Choice tile component — bordered tile wrapping a radio/checkbox with title and description.
+ */
+
+.ds-choice-tile {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-3);
+  min-height: var(--ds-size-control-min);
+  padding: var(--ds-space-4);
+  border: 2px solid var(--ds-color-border-default);
+  border-radius: var(--ds-radius-lg);
+  background-color: var(--ds-color-surface);
+  cursor: pointer;
+  transition: transform var(--ds-motion-duration-fast) var(--ds-motion-easing-standard);
+}
+
+.ds-choice-tile:hover {
+  background-color: var(--ds-color-tertiary-50);
+}
+
+/* Selected state */
+.ds-choice-tile--selected {
+  border-color: var(--ds-color-border-selected);
+  background-color: var(--ds-color-primary-50);
+}
+
+/* Disabled state */
+.ds-choice-tile--disabled {
+  border-color: var(--ds-color-neutral-300);
+  color: var(--ds-color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ds-choice-tile--disabled .ds-choice-tile__title,
+.ds-choice-tile--disabled .ds-choice-tile__description {
+  color: var(--ds-color-text-muted);
+}
+
+/* Control element — positions the native input */
+.ds-choice-tile__control {
+  flex-shrink: 0;
+  width: var(--ds-size-control-min);
+  height: var(--ds-size-control-min);
+  margin: 0;
+}
+
+/* Title — bold option text */
+.ds-choice-tile__title {
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-color-text);
+  margin: 0;
+}
+
+/* Description — muted option helper text */
+.ds-choice-tile__description {
+  font-size: var(--ds-font-size-sm);
+  color: var(--ds-color-text-muted);
+  margin: 0;
+}

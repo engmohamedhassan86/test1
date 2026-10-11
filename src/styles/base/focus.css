@@ -1,0 +1,7 @@
+/**
+ * Keyboard focus ring — visible at every viewport and on every interactive control.
+ */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--ds-size-focus-ring-width) solid var(--ds-color-focus-ring);
+  outline-offset: var(--ds-size-focus-ring-offset);
+}

@@ -1,0 +1,12 @@
+/**
+ * Motion preferences — collapses all motion durations to near-zero for users
+ * who have requested prefers-reduced-motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-motion-duration-instant: 0ms;
+    --ds-motion-duration-fast: 0ms;
+    --ds-motion-duration-base: 0ms;
+    --ds-motion-duration-slow: 0ms;
+  }
+}

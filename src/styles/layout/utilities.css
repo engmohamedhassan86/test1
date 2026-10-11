@@ -1,0 +1,63 @@
+/**
+ * Layout utility classes — container, stack, cluster, skip-link, visually-hidden.
+ */
+
+/* Max-width content container, centred */
+.ds-container {
+  width: 100%;
+  max-width: var(--ds-size-content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--ds-space-4);
+}
+
+/* Vertical flex stack with a token-driven gap */
+.ds-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+}
+
+.ds-stack--sm {
+  gap: var(--ds-space-2);
+}
+
+.ds-stack--lg {
+  gap: var(--ds-space-6);
+}
+
+/* Horizontal cluster layout that wraps */
+.ds-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-3);
+}
+
+/* Visually hidden but accessible to screen readers */
+.ds-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip link — hidden until focused */
+.ds-skip-link {
+  position: absolute;
+  top: calc(var(--ds-space-2) * -1);
+  left: calc(var(--ds-space-2) * -1);
+  padding: var(--ds-space-2) var(--ds-space-3);
+  background-color: var(--ds-color-primary);
+  color: var(--ds-color-on-primary);
+  text-decoration: none;
+  border-radius: var(--ds-radius-sm);
+}
+
+.ds-skip-link:focus {
+  top: var(--ds-space-2);
+  left: var(--ds-space-2);
+}

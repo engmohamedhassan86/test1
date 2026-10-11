@@ -1,0 +1,64 @@
+/**
+ * Default element typography — built from semantic tokens only.
+ */
+body {
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-base);
+  font-weight: var(--ds-font-weight-regular);
+  line-height: var(--ds-line-height-normal);
+  color: var(--ds-color-text);
+  background-color: var(--ds-color-tertiary-surface);
+}
+
+h1 {
+  font-size: var(--ds-font-size-3xl);
+  font-weight: var(--ds-font-weight-bold);
+  line-height: var(--ds-line-height-tight);
+  color: var(--ds-color-text);
+  margin: 0;
+}
+
+h2 {
+  font-size: var(--ds-font-size-2xl);
+  font-weight: var(--ds-font-weight-bold);
+  line-height: var(--ds-line-height-tight);
+  color: var(--ds-color-text);
+  margin: 0;
+}
+
+h3 {
+  font-size: var(--ds-font-size-xl);
+  font-weight: var(--ds-font-weight-semibold);
+  line-height: var(--ds-line-height-snug);
+  color: var(--ds-color-text);
+  margin: 0;
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--ds-font-size-base);
+  font-weight: var(--ds-font-weight-semibold);
+  line-height: var(--ds-line-height-snug);
+  color: var(--ds-color-text);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  font-size: var(--ds-font-size-base);
+  line-height: var(--ds-line-height-normal);
+}
+
+a {
+  color: var(--ds-color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--ds-color-primary-hover);
+}
+
+a:active {
+  color: var(--ds-color-primary-active);
+}
