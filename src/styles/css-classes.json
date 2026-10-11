@@ -1,44 +1,32 @@
 {
   "classes": [
     {
-      "name": ".ds-container",
+      "name": ".ds-alert",
       "kind": "block"
     },
     {
-      "name": ".ds-stack",
-      "kind": "block"
-    },
-    {
-      "name": ".ds-stack--sm",
+      "name": ".ds-alert--error",
       "kind": "modifier"
     },
     {
-      "name": ".ds-stack--lg",
+      "name": ".ds-alert--info",
       "kind": "modifier"
     },
     {
-      "name": ".ds-cluster",
-      "kind": "block"
+      "name": ".ds-alert--success",
+      "kind": "modifier"
     },
     {
-      "name": ".ds-visually-hidden",
-      "kind": "block"
-    },
-    {
-      "name": ".ds-skip-link",
-      "kind": "block"
-    },
-    {
-      "name": ".ds-card",
-      "kind": "block"
-    },
-    {
-      "name": ".ds-card--raised",
+      "name": ".ds-alert--warning",
       "kind": "modifier"
     },
     {
       "name": ".ds-btn",
       "kind": "block"
+    },
+    {
+      "name": ".ds-btn--ghost",
+      "kind": "modifier"
     },
     {
       "name": ".ds-btn--primary",
@@ -49,16 +37,60 @@
       "kind": "modifier"
     },
     {
-      "name": ".ds-btn--ghost",
+      "name": ".ds-btn--disabled",
       "kind": "modifier"
     },
     {
-      "name": ".ds-btn:disabled, .ds-btn[aria-disabled=\"true\"]",
+      "name": ".ds-card",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-card--raised",
       "kind": "modifier"
+    },
+    {
+      "name": ".ds-choice-tile",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-choice-tile--disabled",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-choice-tile--selected",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-choice-tile__control",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-choice-tile__description",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-choice-tile__title",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-cluster",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-container",
+      "kind": "block"
     },
     {
       "name": ".ds-field",
       "kind": "block"
+    },
+    {
+      "name": ".ds-field__error",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-field__hint",
+      "kind": "element"
     },
     {
       "name": ".ds-field__label",
@@ -69,44 +101,12 @@
       "kind": "element"
     },
     {
-      "name": ".ds-field__hint",
-      "kind": "element"
-    },
-    {
-      "name": ".ds-field__error",
-      "kind": "element"
-    },
-    {
       "name": ".ds-input",
       "kind": "block"
     },
     {
       "name": ".ds-input--invalid",
       "kind": "modifier"
-    },
-    {
-      "name": ".ds-choice-tile",
-      "kind": "block"
-    },
-    {
-      "name": ".ds-choice-tile--selected",
-      "kind": "modifier"
-    },
-    {
-      "name": ".ds-choice-tile--disabled",
-      "kind": "modifier"
-    },
-    {
-      "name": ".ds-choice-tile__control",
-      "kind": "element"
-    },
-    {
-      "name": ".ds-choice-tile__title",
-      "kind": "element"
-    },
-    {
-      "name": ".ds-choice-tile__description",
-      "kind": "element"
     },
     {
       "name": ".ds-progress",
@@ -121,24 +121,24 @@
       "kind": "element"
     },
     {
-      "name": ".ds-alert",
+      "name": ".ds-skip-link",
       "kind": "block"
     },
     {
-      "name": ".ds-alert--error",
+      "name": ".ds-stack",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-stack--lg",
       "kind": "modifier"
     },
     {
-      "name": ".ds-alert--success",
+      "name": ".ds-stack--sm",
       "kind": "modifier"
     },
     {
-      "name": ".ds-alert--warning",
-      "kind": "modifier"
-    },
-    {
-      "name": ".ds-alert--info",
-      "kind": "modifier"
+      "name": ".ds-visually-hidden",
+      "kind": "block"
     }
   ]
 }

@@ -23,16 +23,15 @@ semantic token) and may be defined anywhere under `tokens/semantic.css`.
 
 ```ts
 interface DesignToken {
-  name: string;        // '--ds-color-primary-700' — always starts '--ds-'
+  name: string; // '--ds-color-primary-700' — always starts '--ds-'
   tier: TokenTier;
   category: TokenCategory;
-  value: string;        // literal for primitive; a var() expression for semantic
-  scale?: ScaleRef;      // present if this token is one step of an ordered TokenScale
-  usage: string;         // one line: where/why this token is used
+  value: string; // literal for primitive; a var() expression for semantic
+  scale?: ScaleRef; // present if this token is one step of an ordered TokenScale
+  usage: string; // one line: where/why this token is used
 }
 
-type TokenCategory =
-  | 'color' | 'typography' | 'spacing' | 'radius' | 'elevation' | 'motion';
+type TokenCategory = 'color' | 'typography' | 'spacing' | 'radius' | 'elevation' | 'motion';
 ```
 
 Every `DesignToken` in this feature is catalogued as one row of a `contracts/design-tokens.md` table.
@@ -43,9 +42,9 @@ that file" and "in that file but not in CSS" as equally invalid (FR-096d / SC-03
 
 ```ts
 interface ScaleRef {
-  scale: string;    // e.g. 'color-primary', 'spacing', 'radius', 'font-size'
+  scale: string; // e.g. 'color-primary', 'spacing', 'radius', 'font-size'
   step: string | number; // e.g. 700, 'sm', 4
-  sortKey: number;   // numeric value used to check ascending order
+  sortKey: number; // numeric value used to check ascending order
 }
 ```
 
@@ -59,10 +58,10 @@ marked as a non-scalar terminal value are excluded from this check (R4 in `resea
 
 ```ts
 interface ContrastPair {
-  foreground: string;   // a DesignToken name, resolved to its literal colour
-  background: string;   // a DesignToken name, resolved to its literal colour
+  foreground: string; // a DesignToken name, resolved to its literal colour
+  background: string; // a DesignToken name, resolved to its literal colour
   context: 'normal-text' | 'large-text' | 'non-text-ui';
-  minRatio: 4.5 | 3;     // 4.5 for normal-text, 3 for large-text/non-text-ui
+  minRatio: 4.5 | 3; // 4.5 for normal-text, 3 for large-text/non-text-ui
 }
 ```
 
@@ -74,16 +73,15 @@ spec computes the actual ratio from the two tokens' resolved literal colours and
 
 ```ts
 interface ComponentClass {
-  selector: string;        // '.ds-card', '.ds-choice-tile__title', '.ds-btn--primary'
+  selector: string; // '.ds-card', '.ds-choice-tile__title', '.ds-btn--primary'
   family: ClassFamily;
   kind: 'block' | 'element' | 'modifier';
-  purpose: string;          // one line
-  requiredMarkup: string;    // the minimal HTML shape this class expects
-  tokensConsumed: string[];  // DesignToken names this class's rules reference
+  purpose: string; // one line
+  requiredMarkup: string; // the minimal HTML shape this class expects
+  tokensConsumed: string[]; // DesignToken names this class's rules reference
 }
 
-type ClassFamily =
-  | 'layout' | 'card' | 'button' | 'field' | 'choice-tile' | 'progress' | 'feedback';
+type ClassFamily = 'layout' | 'card' | 'button' | 'field' | 'choice-tile' | 'progress' | 'feedback';
 ```
 
 Every `ComponentClass` is one row of `contracts/css-classes.md`. The same 1:1 match rule as
@@ -93,10 +91,10 @@ Every `ComponentClass` is one row of `contracts/css-classes.md`. The same 1:1 ma
 
 ```ts
 interface CompatAlias {
-  legacyName: string;    // '--sv-maroon-700' or '.sv-shell'
+  legacyName: string; // '--sv-maroon-700' or '.sv-shell'
   kind: 'custom-property' | 'class';
-  targetToken?: string;   // the --ds-* name it resolves to, for a custom-property alias
-  targetClass?: string;    // the .ds-* class(es) whose computed styles it reproduces, for a class alias
+  targetToken?: string; // the --ds-* name it resolves to, for a custom-property alias
+  targetClass?: string; // the .ds-* class(es) whose computed styles it reproduces, for a class alias
 }
 ```
 
@@ -112,8 +110,8 @@ being exactly "one legacy name → one new name," never a legacy name computed f
 ```ts
 interface PrimeNgBridgeEntry {
   primeNgVariable: string; // '--p-primary-color'
-  dsToken: string;          // '--ds-color-primary-700'
-  usedBy: string[];          // PrimeNG components this app renders that read this variable
+  dsToken: string; // '--ds-color-primary-700'
+  usedBy: string[]; // PrimeNG components this app renders that read this variable
 }
 ```
 
@@ -133,14 +131,14 @@ PrimeNgBridgeEntry 1───1 DesignToken
 
 ## Validation rules (owned by the contract spec, FR-096)
 
-| Rule | Checked against |
-| --- | --- |
-| No literal colour outside `tokens/primitives.css` | every primitive `DesignToken.value` with `category: 'color'` |
-| No raw spacing length outside `tokens/` | every CSS file's spacing-shaped properties, excluding `tokens/**` |
-| No unresolved `var(--ds-*)` | every `var()` usage vs. every defined `DesignToken.name` |
-| CSS ↔ contract docs match 1:1 | every `DesignToken`/`ComponentClass` in CSS vs. every row in `contracts/*.md` |
-| Scales strictly ascending | every `TokenScale`'s members by `sortKey` |
-| Contrast pairs ≥ AA | every `ContrastPair.minRatio` |
-| Reduced-motion block present | `base/motion.css` defines `@media (prefers-reduced-motion: reduce)` and overrides every motion-duration `DesignToken` |
-| Compositor-only animation | every `transition`/`@keyframes` property list across `src/styles/**` and `src/app/**/*.css` |
-| PrimeNG variables mapped | every `PrimeNgBridgeEntry` present in `integrations/primeng-bridge.css` |
+| Rule                                              | Checked against                                                                                                       |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| No literal colour outside `tokens/primitives.css` | every primitive `DesignToken.value` with `category: 'color'`                                                          |
+| No raw spacing length outside `tokens/`           | every CSS file's spacing-shaped properties, excluding `tokens/**`                                                     |
+| No unresolved `var(--ds-*)`                       | every `var()` usage vs. every defined `DesignToken.name`                                                              |
+| CSS ↔ contract docs match 1:1                     | every `DesignToken`/`ComponentClass` in CSS vs. every row in `contracts/*.md`                                         |
+| Scales strictly ascending                         | every `TokenScale`'s members by `sortKey`                                                                             |
+| Contrast pairs ≥ AA                               | every `ContrastPair.minRatio`                                                                                         |
+| Reduced-motion block present                      | `base/motion.css` defines `@media (prefers-reduced-motion: reduce)` and overrides every motion-duration `DesignToken` |
+| Compositor-only animation                         | every `transition`/`@keyframes` property list across `src/styles/**` and `src/app/**/*.css`                           |
+| PrimeNG variables mapped                          | every `PrimeNgBridgeEntry` present in `integrations/primeng-bridge.css`                                               |

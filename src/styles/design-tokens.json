@@ -1,15 +1,111 @@
 {
   "tokens": [
     {
-      "name": "--ds-color-primary",
+      "name": "--ds-color-border-default",
       "category": "colour"
     },
     {
-      "name": "--ds-color-primary-hover",
+      "name": "--ds-color-border-selected",
       "category": "colour"
     },
     {
-      "name": "--ds-color-primary-active",
+      "name": "--ds-color-border-subtle",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-error",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-error-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-error-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-error-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-error-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-error-surface",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-focus-ring",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-info",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-info-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-info-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-info-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-info-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-info-surface",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-100",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-200",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-300",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-400",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-800",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-900",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-neutral-950",
       "category": "colour"
     },
     {
@@ -17,7 +113,115 @@
       "category": "colour"
     },
     {
+      "name": "--ds-color-primary",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-100",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-200",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-300",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-400",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-800",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-900",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-950",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-active",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-primary-hover",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-progress-fill",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-progress-track",
+      "category": "colour"
+    },
+    {
       "name": "--ds-color-secondary",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-100",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-200",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-300",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-400",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-800",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-900",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-secondary-950",
       "category": "colour"
     },
     {
@@ -25,7 +229,27 @@
       "category": "colour"
     },
     {
-      "name": "--ds-color-tertiary-surface",
+      "name": "--ds-color-success",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-success-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-success-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-success-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-success-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-success-surface",
       "category": "colour"
     },
     {
@@ -34,6 +258,54 @@
     },
     {
       "name": "--ds-color-surface-sunken",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-100",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-200",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-300",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-400",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-800",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-900",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-950",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-tertiary-surface",
       "category": "colour"
     },
     {
@@ -49,31 +321,23 @@
       "category": "colour"
     },
     {
-      "name": "--ds-color-border-default",
-      "category": "colour"
-    },
-    {
-      "name": "--ds-color-border-subtle",
-      "category": "colour"
-    },
-    {
-      "name": "--ds-color-border-selected",
-      "category": "colour"
-    },
-    {
-      "name": "--ds-color-focus-ring",
-      "category": "colour"
-    },
-    {
-      "name": "--ds-color-success",
-      "category": "colour"
-    },
-    {
-      "name": "--ds-color-success-surface",
-      "category": "colour"
-    },
-    {
       "name": "--ds-color-warning",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-warning-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-warning-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-warning-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-warning-700",
       "category": "colour"
     },
     {
@@ -81,71 +345,43 @@
       "category": "colour"
     },
     {
-      "name": "--ds-color-error",
-      "category": "colour"
+      "name": "--ds-font-family",
+      "category": "typography"
     },
     {
-      "name": "--ds-color-error-surface",
-      "category": "colour"
+      "name": "--ds-font-size-2xl",
+      "category": "typography"
     },
     {
-      "name": "--ds-color-info",
-      "category": "colour"
+      "name": "--ds-font-size-3xl",
+      "category": "typography"
     },
     {
-      "name": "--ds-color-info-surface",
-      "category": "colour"
+      "name": "--ds-font-size-base",
+      "category": "typography"
     },
     {
-      "name": "--ds-color-progress-track",
-      "category": "colour"
+      "name": "--ds-font-size-lg",
+      "category": "typography"
     },
     {
-      "name": "--ds-space-2",
-      "category": "spacing"
+      "name": "--ds-font-size-md",
+      "category": "typography"
     },
     {
-      "name": "--ds-space-3",
-      "category": "spacing"
+      "name": "--ds-font-size-sm",
+      "category": "typography"
     },
     {
-      "name": "--ds-space-5",
-      "category": "spacing"
+      "name": "--ds-font-size-xl",
+      "category": "typography"
     },
     {
-      "name": "--ds-radius-lg",
-      "category": "radius"
+      "name": "--ds-font-size-xs",
+      "category": "typography"
     },
     {
-      "name": "--ds-radius-pill",
-      "category": "radius"
-    },
-    {
-      "name": "--ds-shadow-resting",
-      "category": "elevation"
-    },
-    {
-      "name": "--ds-shadow-raised",
-      "category": "elevation"
-    },
-    {
-      "name": "--ds-motion-duration-instant",
-      "category": "motion"
-    },
-    {
-      "name": "--ds-motion-duration-fast",
-      "category": "motion"
-    },
-    {
-      "name": "--ds-motion-duration-base",
-      "category": "motion"
-    },
-    {
-      "name": "--ds-motion-duration-slow",
-      "category": "motion"
-    },
-    {
-      "name": "--ds-font-weight-semibold",
+      "name": "--ds-font-weight-bold",
       "category": "typography"
     },
     {
@@ -157,36 +393,160 @@
       "category": "typography"
     },
     {
-      "name": "--ds-line-height-tight",
-      "category": "typography"
-    },
-    {
-      "name": "--ds-line-height-snug",
-      "category": "typography"
-    },
-    {
-      "name": "--ds-line-height-normal",
-      "category": "typography"
-    },
-    {
-      "name": "--ds-line-height-relaxed",
-      "category": "typography"
-    },
-    {
-      "name": "--ds-letter-spacing-tight",
-      "category": "typography"
-    },
-    {
-      "name": "--ds-letter-spacing-normal",
-      "category": "typography"
-    },
-    {
-      "name": "--ds-letter-spacing-wide",
+      "name": "--ds-font-weight-semibold",
       "category": "typography"
     },
     {
       "name": "--ds-letter-spacing-caps",
-      "category": "typography"
+      "category": "colour"
+    },
+    {
+      "name": "--ds-letter-spacing-normal",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-letter-spacing-tight",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-letter-spacing-wide",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-line-height-normal",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-line-height-relaxed",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-line-height-snug",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-line-height-tight",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-motion-duration-base",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-motion-duration-fast",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-motion-duration-instant",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-motion-duration-slow",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-motion-easing-accelerate",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-motion-easing-decelerate",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-motion-easing-standard",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-radius-full",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-radius-lg",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-radius-md",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-radius-pill",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-radius-sm",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-radius-xl",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-shadow-overlay",
+      "category": "elevation"
+    },
+    {
+      "name": "--ds-shadow-raised",
+      "category": "elevation"
+    },
+    {
+      "name": "--ds-shadow-resting",
+      "category": "elevation"
+    },
+    {
+      "name": "--ds-size-content-max-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-size-control-min",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-size-focus-ring-offset",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-size-focus-ring-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-0",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-1",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-2",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-3",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-4",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-5",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-6",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-7",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-8",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-space-9",
+      "category": "spacing"
     }
   ]
 }

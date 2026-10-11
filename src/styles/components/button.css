@@ -59,7 +59,7 @@
 }
 
 /* Disabled state */
-.ds-btn:disabled,
+.ds-btn--disabled,
 .ds-btn[aria-disabled='true'] {
   opacity: 0.6;
   cursor: not-allowed;

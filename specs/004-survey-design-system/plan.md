@@ -9,14 +9,14 @@ clarifications.
 
 **Phase artifacts**
 
-| Artifact | Phase | Contents |
-| --- | --- | --- |
-| [`research.md`](./research.md) | 0 | Five decisions (R1–R5): palette values and their contrast verification, the PrimeNG variable list, file layout, the remaining primitive scales, and the contract-spec's verification approach |
-| [`data-model.md`](./data-model.md) | 1 | The catalogue's own typed shape: `DesignToken`, `TokenScale`, `ContrastPair`, `ComponentClass`, `CompatAlias`, `PrimeNgBridgeEntry`, and the validation-rule map |
-| [`contracts/design-tokens.md`](./contracts/design-tokens.md) | 1 | The full token catalogue — primitives, semantics, verified contrast pairs, PrimeNG bridge |
-| [`contracts/css-classes.md`](./contracts/css-classes.md) | 1 | The full class catalogue — layout, card, button, field, choice tile, progress, feedback |
-| [`quickstart.md`](./quickstart.md) | 1 | How to prove the feature works, gate by gate |
-| `tasks.md` | 2 | **Not** produced here — `/speckit-tasks` owns it |
+| Artifact                                                     | Phase | Contents                                                                                                                                                                                      |
+| ------------------------------------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`research.md`](./research.md)                               | 0     | Five decisions (R1–R5): palette values and their contrast verification, the PrimeNG variable list, file layout, the remaining primitive scales, and the contract-spec's verification approach |
+| [`data-model.md`](./data-model.md)                           | 1     | The catalogue's own typed shape: `DesignToken`, `TokenScale`, `ContrastPair`, `ComponentClass`, `CompatAlias`, `PrimeNgBridgeEntry`, and the validation-rule map                              |
+| [`contracts/design-tokens.md`](./contracts/design-tokens.md) | 1     | The full token catalogue — primitives, semantics, verified contrast pairs, PrimeNG bridge                                                                                                     |
+| [`contracts/css-classes.md`](./contracts/css-classes.md)     | 1     | The full class catalogue — layout, card, button, field, choice tile, progress, feedback                                                                                                       |
+| [`quickstart.md`](./quickstart.md)                           | 1     | How to prove the feature works, gate by gate                                                                                                                                                  |
+| `tasks.md`                                                   | 2     | **Not** produced here — `/speckit-tasks` owns it                                                                                                                                              |
 
 ## Summary
 
@@ -81,8 +81,8 @@ verified contrast pairs — all enumerated in full in the two contracts.
 
 ## Constitution Check
 
-*Gate: must pass before Phase 0 research. Re-checked after Phase 1 design — still passes, no deviation to
-record.*
+_Gate: must pass before Phase 0 research. Re-checked after Phase 1 design — still passes, no deviation to
+record._
 
 - **Principle I (JSON-driven domain contract)**: not engaged — this feature touches no survey JSON, no
   `core/models`, no `core/validators`. Pass, N/A.
@@ -171,4 +171,4 @@ re-pointed to the new primitives.
 
 ## Complexity Tracking
 
-*No entries — Constitution Check above has no violation to justify.*
+_No entries — Constitution Check above has no violation to justify._

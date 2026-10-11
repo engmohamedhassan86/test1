@@ -38,12 +38,12 @@ a task in this feature).
 A maroon token set and a PrimeNG preset already exist and are **not** being replaced wholesale — they are
 superseded by a larger system that keeps them working:
 
-| What                                   | Where it lives today                            | What happens here                                             |
-| --------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------- |
-| Maroon colour ramp (50–950)             | `src/styles/tokens.css`                           | Becomes the primary primitive ramp, values unchanged, in `tokens/primitives.css` |
-| `--sv-space-*`, `--sv-radius`, `--sv-focus-ring-*` | `src/styles/tokens.css`              | Re-expressed as `--ds-*` semantic tokens; old names survive via `compat.css` |
-| `.sv-shell`, `.sv-skip-link`, `.sv-visually-hidden`, focus-visible rule | `src/styles.css`     | Re-built from `--ds-*` tokens under `layout/` and `base/`; old class names survive via `compat.css` |
-| PrimeNG maroon preset                   | `src/app/theme/survey-viewer-preset.ts`           | Re-pointed to read the same values from `tokens/primitives.css` (single source of truth); its drift-check spec updated to compare against the new file |
+| What                                                                    | Where it lives today                    | What happens here                                                                                                                                      |
+| ----------------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Maroon colour ramp (50–950)                                             | `src/styles/tokens.css`                 | Becomes the primary primitive ramp, values unchanged, in `tokens/primitives.css`                                                                       |
+| `--sv-space-*`, `--sv-radius`, `--sv-focus-ring-*`                      | `src/styles/tokens.css`                 | Re-expressed as `--ds-*` semantic tokens; old names survive via `compat.css`                                                                           |
+| `.sv-shell`, `.sv-skip-link`, `.sv-visually-hidden`, focus-visible rule | `src/styles.css`                        | Re-built from `--ds-*` tokens under `layout/` and `base/`; old class names survive via `compat.css`                                                    |
+| PrimeNG maroon preset                                                   | `src/app/theme/survey-viewer-preset.ts` | Re-pointed to read the same values from `tokens/primitives.css` (single source of truth); its drift-check spec updated to compare against the new file |
 
 If a value here and a value in those files disagree after implementation, the new `tokens/primitives.css`
 wins and the old file is the one to fix or remove.
@@ -52,12 +52,12 @@ wins and the old file is the one to fix or remove.
 
 ### D-001 — Two-tier token system: primitives, then semantics
 
-**Decision**: Every `--ds-*` token is either a *primitive* (a literal value, defined once in
-`tokens/primitives.css`) or a *semantic* token (a role name that references one or more primitives via
+**Decision**: Every `--ds-*` token is either a _primitive_ (a literal value, defined once in
+`tokens/primitives.css`) or a _semantic_ token (a role name that references one or more primitives via
 `var()`, defined in `tokens/semantic.css`). No third "component token" tier exists.
 
-**Why**: Two tiers is the smallest system that separates "what a colour/length *is*" from "what it is
-*for*". A component class consumes semantic tokens directly (`--ds-color-border-default`, not
+**Why**: Two tiers is the smallest system that separates "what a colour/length _is_" from "what it is
+_for_". A component class consumes semantic tokens directly (`--ds-color-border-default`, not
 `--ds-primitive-color-neutral-500`), so a re-brand changes primitives and semantics change nothing in
 `components/`. A third tier (per-component tokens like `--ds-card-shadow`) is not introduced because no
 component in this feature needs a value that isn't already a semantic token — adding one before a second
@@ -80,7 +80,7 @@ verified the same way.
 risk a silent drift between the PrimeNG preset and the token file that `survey-viewer-preset.spec.ts`
 today exists specifically to catch. Gold and cream have no prior art in the repo, so their hex steps are
 an architecture decision, not a restatement of something already decided — the parent issue names the
-*roles* (secondary/gold, tertiary/cream) and where they appear (progress gradient, accents, page/card
+_roles_ (secondary/gold, tertiary/cream) and where they appear (progress gradient, accents, page/card
 background), not hex values.
 
 **Alternative rejected**: deriving gold and cream from the maroon ramp algorithmically (e.g. hue-rotate).
@@ -158,7 +158,7 @@ shouldn't add one).
 
 **Alternative rejected**: adding `postcss` plus an AST walker. Rejected for this feature's checks
 specifically — if a future, more semantic check is needed (e.g. real specificity analysis), that is a
-reason to add `postcss` *then*, not now.
+reason to add `postcss` _then_, not now.
 
 ## User Scenarios & Testing _(mandatory)_
 
@@ -289,7 +289,7 @@ flow unmodified; confirm 100% pass with no test file edited to tolerate a behavi
    this feature's companion implementation lands, **Then** every existing acceptance scenario from specs
    001–003 still holds, unmodified.
 2. **Given** the existing component test files under `src/app/features/survey/**`, **When** `pnpm vitest
-   run` executes, **Then** none of them required a behavioural (non-styling) change to keep passing.
+run` executes, **Then** none of them required a behavioural (non-styling) change to keep passing.
 
 ### Edge Cases
 
@@ -393,8 +393,8 @@ Numbering continues the 001–003 sequence.
 
 ### Key Entities
 
-- **Design Token** — a named `--ds-*` custom property; either a *Primitive* (literal value, lives only in
-  `tokens/primitives.css`) or a *Semantic* token (references one or more primitives). Defined fully in
+- **Design Token** — a named `--ds-*` custom property; either a _Primitive_ (literal value, lives only in
+  `tokens/primitives.css`) or a _Semantic_ token (references one or more primitives). Defined fully in
   `contracts/design-tokens.md`.
 - **Token Scale** — an ordered family of primitives sharing a step axis (colour ramps 50–950, spacing
   steps, radius steps, font sizes); every scale must be strictly ascending by its documented sort key.

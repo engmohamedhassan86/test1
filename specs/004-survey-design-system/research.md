@@ -21,15 +21,15 @@ contrast pairs), which is the set the contract spec actually enforces (FR-096f).
 
 **Result (selected pairs, see contracts for the full table)**:
 
-| Pair | Ratio | AA threshold | Verdict |
-| --- | --- | --- | --- |
-| gold-700 `#8F661C` on white | 5.14:1 | 4.5:1 (normal text) | pass |
-| gold-700 `#8F661C` on cream-200 | 4.67:1 | 4.5:1 | pass |
-| gold-600 `#B07F22` on white | 3.56:1 | 3:1 (large text/UI only) | pass for large/UI, fails normal text |
-| neutral-900 `#2B2320` on white/cream-200 | 15.40:1 / 13.98:1 | 4.5:1 | pass |
-| neutral-600 `#6B6259` (muted text) on white/cream-200 | 5.97:1 / 5.42:1 | 4.5:1 | pass |
-| neutral-500 `#8A8072` (default border) on white/cream-200 | 3.88:1 / 3.52:1 | 3:1 (non-text UI) | pass |
-| success-600/warning-700/error-700/info-700 on white and cream-200 | 4.84:1–6.77:1 | 4.5:1 | pass |
+| Pair                                                              | Ratio             | AA threshold             | Verdict                              |
+| ----------------------------------------------------------------- | ----------------- | ------------------------ | ------------------------------------ |
+| gold-700 `#8F661C` on white                                       | 5.14:1            | 4.5:1 (normal text)      | pass                                 |
+| gold-700 `#8F661C` on cream-200                                   | 4.67:1            | 4.5:1                    | pass                                 |
+| gold-600 `#B07F22` on white                                       | 3.56:1            | 3:1 (large text/UI only) | pass for large/UI, fails normal text |
+| neutral-900 `#2B2320` on white/cream-200                          | 15.40:1 / 13.98:1 | 4.5:1                    | pass                                 |
+| neutral-600 `#6B6259` (muted text) on white/cream-200             | 5.97:1 / 5.42:1   | 4.5:1                    | pass                                 |
+| neutral-500 `#8A8072` (default border) on white/cream-200         | 3.88:1 / 3.52:1   | 3:1 (non-text UI)        | pass                                 |
+| success-600/warning-700/error-700/info-700 on white and cream-200 | 4.84:1–6.77:1     | 4.5:1                    | pass                                 |
 
 **Rejected**: a literal "metallic gold" (`#D4AF37`-class hue) as the text-bearing step. It reads closer to
 2.9:1 against white — below even the large-text threshold — so it is reserved for gold-500/600
@@ -44,7 +44,7 @@ text, border, radius, and focus. The full list is in `contracts/design-tokens.md
 
 **Why an enumerated list, not "all of them"**: PrimeNG's Aura theme exposes several hundred `--p-*`
 variables across every component it ships, most unused by this app. FR-096i only requires that variables
-*this app actually depends on* are mapped — an open-ended "every possible PrimeNG variable" requirement
+_this app actually depends on_ are mapped — an open-ended "every possible PrimeNG variable" requirement
 would be unbounded and untestable. The enumerated list is itself the contract: the automated spec checks
 exactly those names, and extending PrimeNG usage to a new component means extending the list first
 (a one-line addition to the contract, then the bridge).
@@ -125,7 +125,7 @@ PrimeNG animation.
 `__fixtures__`-adjacent location the Angular Engineer picks, named in `tasks.md`), that:
 
 1. Globs every `src/styles/**/*.css` and every `src/app/**/*.css` file as text.
-2. Extracts: every `--ds-*` custom property *definition* (`--ds-foo:`) and *usage* (`var(--ds-foo`); every
+2. Extracts: every `--ds-*` custom property _definition_ (`--ds-foo:`) and _usage_ (`var(--ds-foo`); every
    literal colour (`#[0-9a-f]{3,8}`, `rgb(`, `rgba(`, `hsl(`, `hsla(`, and the CSS named-colour list);
    every raw length on a spacing-shaped property (`margin`, `padding`, `gap`, `inset`, and their
    longhands); every class selector (`\.ds-[a-zA-Z0-9_-]+`); every `transition`/`@keyframes` property

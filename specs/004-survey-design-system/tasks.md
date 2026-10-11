@@ -12,7 +12,7 @@
 
 **Constitution**: [`.specify/memory/constitution.md`](../../.specify/memory/constitution.md) v1.0.0 — binding.
 
-**Tests**: **Required, not optional.** User Story 3 — the automated contract spec — *is* the feature's own
+**Tests**: **Required, not optional.** User Story 3 — the automated contract spec — _is_ the feature's own
 enforcement mechanism (FR-096); it is not a follow-on verification step, it is deliverable work with its
 own phase below. Principle IV's `pnpm vitest run --coverage` gate is unconditional; no test may be skipped
 and no file added to `coverage.exclude` to make it pass.
@@ -28,11 +28,11 @@ and no file added to `coverage.exclude` to make it pass.
 
 One implementing owner; two verifying owners, matching the parent issue's four-way split (PRI-53–PRI-56).
 
-| Owner                | Owns                                                                                                       |
-| --------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Angular Engineer**   | Everything under `src/styles/**`, `src/styles.css`, and `src/app/theme/survey-viewer-preset.ts` (+ its spec). Phases 1–6. |
-| **QA Engineer**        | Runs the gates, the reduced-motion/keyboard scenario (US4), and the 375px/1280px browser smoke test. Phase 7, T030–T034. |
-| **Code Reviewer**      | Reviews after Phase 7 against D-001–D-006 and FR-083–FR-097, and writes no fix (Principle IV: spec, code, review are three different agents). |
+| Owner                | Owns                                                                                                                                          |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Angular Engineer** | Everything under `src/styles/**`, `src/styles.css`, and `src/app/theme/survey-viewer-preset.ts` (+ its spec). Phases 1–6.                     |
+| **QA Engineer**      | Runs the gates, the reduced-motion/keyboard scenario (US4), and the 375px/1280px browser smoke test. Phase 7, T030–T034.                      |
+| **Code Reviewer**    | Reviews after Phase 7 against D-001–D-006 and FR-083–FR-097, and writes no fix (Principle IV: spec, code, review are three different agents). |
 
 The Solution Architect owns no task here: this stage hands the plan over.
 
@@ -48,7 +48,7 @@ Constitution Principle II requires the contract (here: `contracts/design-tokens.
 `contracts/css-classes.md`) to be complete before implementation — already true, since this plan's Phase 1
 output is those two files. Within implementation, every component class in Phase 4 depends on every token
 in Phase 2 existing first, and User Story 1 ("a respondent sees a themed survey") is only true once Phases
-2–6 are *all* done — there is no partial-token version of a themed survey. So this list is organised
+2–6 are _all_ done — there is no partial-token version of a themed survey. So this list is organised
 **layer-first**: Phases 2–3 are the token/base layer every story depends on (no story label, same
 rationale 001 used for its WP1–WP3), Phase 4 is the component layer that makes US1 visibly true, Phase 5
 is the integration layer, Phase 6 is US3's own deliverable (the contract spec), and Phase 7 is where
@@ -61,7 +61,7 @@ US2/US4/US5 are verified against finished, running code.
 - [ ] **T001** Confirm no new runtime or dev dependency is required (`research.md` R5 explicitly rejects
       adding `postcss`). Done when `package.json` is unchanged by this feature.
 
-*(Single confirmation task — there is no scaffolding step beyond what Phase 2 creates directly.)*
+_(Single confirmation task — there is no scaffolding step beyond what Phase 2 creates directly.)_
 
 ---
 
@@ -79,7 +79,7 @@ US2/US4/US5 are verified against finished, running code.
 
 ## Phase 3: Base & Layout
 
-*Depends on Phase 2.*
+_Depends on Phase 2._
 
 - [ ] **T004 [P]** Create `src/styles/base/reset.css` — a minimal modern reset (box-sizing, margin
       removal, media defaults), no `--ds-*` token usage required since a reset has no colour/spacing
@@ -88,13 +88,13 @@ US2/US4/US5 are verified against finished, running code.
 - [ ] **T005 [P]** Create `src/styles/base/typography.css` implementing default element type (`body`,
       `h1`–`h6`, `p`, `a`) from the typography semantic tokens (`contracts/design-tokens.md` §2.3). Done
       when every font-family/size/weight/line-height value in the file is a `var(--ds-font-*|--ds-line-
-      height-*)` reference.
+height-*)` reference.
 - [ ] **T006 [P]** Create `src/styles/base/focus.css` with the `:where(a, button, input, select, textarea,
-      [tabindex]):focus-visible` rule from `src/styles.css`, rebuilt from `--ds-color-focus-ring`,
+[tabindex]):focus-visible` rule from `src/styles.css`, rebuilt from `--ds-color-focus-ring`,
       `--ds-size-focus-ring-width`, `--ds-size-focus-ring-offset`. Done when the old inline rule is
       removed from `src/styles.css` and this file reproduces it token-for-token.
 - [ ] **T007 [P]** Create `src/styles/base/motion.css` with the single `@media (prefers-reduced-motion:
-      reduce)` block (FR-095) that overrides every `--ds-motion-duration-*` token to near-zero at `:root`.
+reduce)` block (FR-095) that overrides every `--ds-motion-duration-*` token to near-zero at `:root`.
       Done when the block exists exactly once in `src/styles/**` and names all four duration tokens.
 - [ ] **T008 [P]** Create `src/styles/layout/utilities.css` implementing `contracts/css-classes.md` §1
       (`.ds-container`, `.ds-stack` + modifiers, `.ds-cluster`, `.ds-visually-hidden`, `.ds-skip-link`).
@@ -113,7 +113,7 @@ minimum targets where required.
 confirm every card, button, choice tile, and the progress bar read from `--ds-*` tokens with the
 maroon/gold/cream palette, at 375px and 1280px.
 
-*Depends on Phase 2 (tokens). Each file below is independent of the others — safe to parallelise.*
+_Depends on Phase 2 (tokens). Each file below is independent of the others — safe to parallelise._
 
 - [ ] **T009 [P] [US1]** Create `src/styles/components/card.css` implementing `contracts/css-classes.md`
       §2 (`.ds-card`, `.ds-card--raised`).
@@ -140,14 +140,14 @@ maroon/gold/cream palette, at 375px and 1280px.
 
 ## Phase 5: Integrations & Compat
 
-*Depends on Phases 2–4 (the bridge and compat layer reference tokens/classes that must already exist).*
+_Depends on Phases 2–4 (the bridge and compat layer reference tokens/classes that must already exist)._
 
 - [ ] **T015 [US1]** Create `src/styles/integrations/primeng-bridge.css` implementing all eleven rows of
       `contracts/design-tokens.md` §4. Done when every `--p-*` variable listed there is set to the
       documented `var(--ds-*)` value, at `:root` scope.
 - [ ] **T016 [US1]** Update `src/app/theme/survey-viewer-preset.ts` so `maroonPalette` is generated from
       (or kept identical to and commented as sourced from) `tokens/primitives.css`'s `--ds-primitive-
-      color-maroon-*` values, replacing its dependency on the now-deleted `src/styles/tokens.css`. Done
+color-maroon-*` values, replacing its dependency on the now-deleted `src/styles/tokens.css`. Done
       when the hex values are unchanged (byte-for-byte) and the file's header comment points at
       `tokens/primitives.css` instead of `tokens.css`.
 - [ ] **T017 [US1]** Update `src/app/theme/survey-viewer-preset.spec.ts`'s drift check to read
@@ -178,7 +178,7 @@ maroon/gold/cream palette, at 375px and 1280px.
 scratch CSS fixture, confirm the spec fails naming the specific rule and location, then remove it and
 confirm green.
 
-*Depends on Phases 2–5 (there must be real, finished CSS to check).*
+_Depends on Phases 2–5 (there must be real, finished CSS to check)._
 
 - [ ] **T021 [US3]** Create `src/styles/design-system.contract.spec.ts` with the shared groundwork: glob
       and read every `src/styles/**/*.css` and `src/app/**/*.css` file as text; parse
@@ -211,13 +211,13 @@ confirm green.
       bridge row with no matching declaration (SC-034). Done when T022–T029 all pass against the real
       shipped CSS from Phases 2–5 with zero manual exclusions, every one of the nine drift classes in
       FR-096 has at least one fixture proving the spec catches it (SC-034), and `pnpm vitest run
-      src/styles --reporter=dot` is green.
+src/styles --reporter=dot` is green.
 
 ---
 
 ## Phase 7: Verification & Polish
 
-*Depends on Phase 6. Owned by QA Engineer (T030–T033) and Code Reviewer (T034).*
+_Depends on Phase 6. Owned by QA Engineer (T030–T033) and Code Reviewer (T034)._
 
 - [ ] **T030 [US5]** Run `pnpm vitest run src/app/features/survey --reporter=dot` and confirm every
       existing 001–003 spec passes unmodified — zero test files edited to tolerate a behavioural change
@@ -231,7 +231,7 @@ confirm green.
 - [ ] **T033** Add/confirm an `axe-core` check against a themed survey page at 375px and 1280px reports
       zero WCAG 2.1 AA violations (SC-040), reusing the pattern already established by 001 (D20).
 - [ ] **T034** Run the full gate sequence and record the output: `pnpm prettier --check .`, `pnpm tsc
-      --noEmit`, `pnpm vitest run --coverage`, `pnpm ng build`, then the 375px/1280px browser smoke test.
+--noEmit`, `pnpm vitest run --coverage`, `pnpm ng build`, then the 375px/1280px browser smoke test.
       Code Reviewer reviews against D-001–D-006 and FR-083–FR-097 once all gates are green.
 
 ---
