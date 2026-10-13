@@ -81,6 +81,9 @@
   --ds-primitive-color-info-600: #2a5ba0;
   --ds-primitive-color-info-700: #1e4578;
 
+  /* Colour — neutral: transparent */
+  --ds-primitive-color-transparent: transparent;
+
   /* Typography */
   --ds-primitive-font-family-base: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --ds-primitive-font-size-xs: 0.75rem;

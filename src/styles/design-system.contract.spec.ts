@@ -455,7 +455,7 @@ function validateContrastPairs(contrastPairs: any[]): string[] {
   const failed: string[] = [];
 
   for (const pair of contrastPairs) {
-    const ratio = calculateRelativeLuminance(pair.foreground, pair.background);
+    const ratio = calculateContrastRatio(pair.foreground, pair.background);
 
     if (ratio < pair.minRatio) {
       failed.push(
@@ -582,30 +582,49 @@ function getAllCssFilePaths(): string[] {
 }
 
 /**
+ * Extracts primitive tokens from primitives.css
+ */
+function extractPrimitiveTokens(): string[] {
+  const content = readFile('src/styles/tokens/primitives.css');
+  if (!content) return [];
+
+  const matches = content.match(/^\s*--ds-primitive-[a-zA-Z0-9-]+(?::[^;]+;)?/gm) || [];
+  return matches.map((m) => m.trim().replace(/:\s*.*$/, ''));
+}
+
+/**
  * Gets all resolved token names
  */
 function getAllResolvedTokens(): string[] {
+  const cssTokens = findAllTokensInCss();
+  const primitiveTokens = extractPrimitiveTokens();
+
   try {
     // Read from the contract JSON file which is the source of truth
     const content = readFile('src/styles/design-tokens.json');
     const json = JSON.parse(content);
-    return json.tokens.map((t: any) => t.name);
+
+    // Include all tokens from JSON, CSS, and primitives.css
+    const jsonTokens = json.tokens.map((t: any) => t.name);
+
+    return Array.from(new Set([...cssTokens, ...jsonTokens, ...primitiveTokens]));
   } catch (e) {
-    // Fallback: extract from CSS files
-    const semanticContent = readFile('src/styles/tokens/semantic.css');
-    const primitivesContent = readFile('src/styles/tokens/primitives.css');
-
-    // Match all property declarations
-    const semanticMatches = semanticContent.match(/--ds-[a-zA-Z0-9-]+\s*:/g) || [];
-    const primitivesMatches = primitivesContent.match(/--ds-[a-zA-Z0-9-]+\s*:/g) || [];
-
-    return Array.from(
-      new Set([
-        ...semanticMatches.map((m) => m.replace(/\s*:$/, '')),
-        ...primitivesMatches.map((m) => m.replace(/\s*:$/, '')),
-      ]),
-    );
+    // If JSON fails, return CSS and primitive tokens
+    return Array.from(new Set([...cssTokens, ...primitiveTokens]));
   }
+}
+
+/**
+ * Calculates contrast ratio between two colors
+ */
+function calculateContrastRatio(foreground: string, background: string): number {
+  const fgLuminance = calculateRelativeLuminance(foreground);
+  const bgLuminance = calculateRelativeLuminance(background);
+
+  const lighter = Math.max(fgLuminance, bgLuminance);
+  const darker = Math.min(fgLuminance, bgLuminance);
+
+  return (lighter + 0.05) / (darker + 0.05);
 }
 
 /**

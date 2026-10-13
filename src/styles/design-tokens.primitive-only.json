@@ -1,0 +1,846 @@
+{
+  "tokens": [
+    {
+      "name": "--ds-primitive-color-maroon-50",
+      "category": "primitive",
+      "value": "#fbf2f2"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-100",
+      "category": "primitive",
+      "value": "#f5dcdc"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-200",
+      "category": "primitive",
+      "value": "#ebb8b8"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-300",
+      "category": "primitive",
+      "value": "#dd8e8e"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-400",
+      "category": "primitive",
+      "value": "#c96161"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-500",
+      "category": "primitive",
+      "value": "#b03c3c"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-600",
+      "category": "primitive",
+      "value": "#96292d"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-700",
+      "category": "primitive",
+      "value": "#800000"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-800",
+      "category": "primitive",
+      "value": "#6a0000"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-900",
+      "category": "primitive",
+      "value": "#560000"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-950",
+      "category": "primitive",
+      "value": "#3b0000"
+    },
+    {
+      "name": "--ds-primitive-color-gold-50",
+      "category": "primitive",
+      "value": "#fdf8ec"
+    },
+    {
+      "name": "--ds-primitive-color-gold-100",
+      "category": "primitive",
+      "value": "#faedc8"
+    },
+    {
+      "name": "--ds-primitive-color-gold-200",
+      "category": "primitive",
+      "value": "#f3db91"
+    },
+    {
+      "name": "--ds-primitive-color-gold-300",
+      "category": "primitive",
+      "value": "#eac665"
+    },
+    {
+      "name": "--ds-primitive-color-gold-400",
+      "category": "primitive",
+      "value": "#dfb13e"
+    },
+    {
+      "name": "--ds-primitive-color-gold-500",
+      "category": "primitive",
+      "value": "#c9972b"
+    },
+    {
+      "name": "--ds-primitive-color-gold-600",
+      "category": "primitive",
+      "value": "#b07f22"
+    },
+    {
+      "name": "--ds-primitive-color-gold-700",
+      "category": "primitive",
+      "value": "#8f661c"
+    },
+    {
+      "name": "--ds-primitive-color-gold-800",
+      "category": "primitive",
+      "value": "#705019"
+    },
+    {
+      "name": "--ds-primitive-color-gold-900",
+      "category": "primitive",
+      "value": "#5a4015"
+    },
+    {
+      "name": "--ds-primitive-color-gold-950",
+      "category": "primitive",
+      "value": "#332408"
+    },
+    {
+      "name": "--ds-primitive-color-cream-50",
+      "category": "primitive",
+      "value": "#fffdfb"
+    },
+    {
+      "name": "--ds-primitive-color-cream-100",
+      "category": "primitive",
+      "value": "#fdf9f2"
+    },
+    {
+      "name": "--ds-primitive-color-cream-200",
+      "category": "primitive",
+      "value": "#faf3ea"
+    },
+    {
+      "name": "--ds-primitive-color-cream-300",
+      "category": "primitive",
+      "value": "#f3e7d8"
+    },
+    {
+      "name": "--ds-primitive-color-cream-400",
+      "category": "primitive",
+      "value": "#e8d6bc"
+    },
+    {
+      "name": "--ds-primitive-color-cream-500",
+      "category": "primitive",
+      "value": "#d9be97"
+    },
+    {
+      "name": "--ds-primitive-color-cream-600",
+      "category": "primitive",
+      "value": "#c4a374"
+    },
+    {
+      "name": "--ds-primitive-color-cream-700",
+      "category": "primitive",
+      "value": "#a3815a"
+    },
+    {
+      "name": "--ds-primitive-color-cream-800",
+      "category": "primitive",
+      "value": "#7c6244"
+    },
+    {
+      "name": "--ds-primitive-color-cream-900",
+      "category": "primitive",
+      "value": "#574531"
+    },
+    {
+      "name": "--ds-primitive-color-cream-950",
+      "category": "primitive",
+      "value": "#332a1d"
+    },
+    {
+      "name": "--ds-primitive-color-white",
+      "category": "primitive",
+      "value": "#ffffff"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-50",
+      "category": "primitive",
+      "value": "#f8f6f3"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-100",
+      "category": "primitive",
+      "value": "#f1ede7"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-200",
+      "category": "primitive",
+      "value": "#e4ded5"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-300",
+      "category": "primitive",
+      "value": "#cfc6b8"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-400",
+      "category": "primitive",
+      "value": "#a99e8e"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-500",
+      "category": "primitive",
+      "value": "#8a8072"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-600",
+      "category": "primitive",
+      "value": "#6b6259"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-700",
+      "category": "primitive",
+      "value": "#52493f"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-800",
+      "category": "primitive",
+      "value": "#39322a"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-900",
+      "category": "primitive",
+      "value": "#2b2320"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-950",
+      "category": "primitive",
+      "value": "#1a1512"
+    },
+    {
+      "name": "--ds-primitive-color-success-50",
+      "category": "primitive",
+      "value": "#eaf7f0"
+    },
+    {
+      "name": "--ds-primitive-color-success-500",
+      "category": "primitive",
+      "value": "#2e9360"
+    },
+    {
+      "name": "--ds-primitive-color-success-600",
+      "category": "primitive",
+      "value": "#1e7a4c"
+    },
+    {
+      "name": "--ds-primitive-color-success-700",
+      "category": "primitive",
+      "value": "#15603a"
+    },
+    {
+      "name": "--ds-primitive-color-warning-50",
+      "category": "primitive",
+      "value": "#fdf1e3"
+    },
+    {
+      "name": "--ds-primitive-color-warning-500",
+      "category": "primitive",
+      "value": "#c27c00"
+    },
+    {
+      "name": "--ds-primitive-color-warning-600",
+      "category": "primitive",
+      "value": "#9a5b00"
+    },
+    {
+      "name": "--ds-primitive-color-warning-700",
+      "category": "primitive",
+      "value": "#7a4700"
+    },
+    {
+      "name": "--ds-primitive-color-error-50",
+      "category": "primitive",
+      "value": "#fbeae9"
+    },
+    {
+      "name": "--ds-primitive-color-error-500",
+      "category": "primitive",
+      "value": "#d33a30"
+    },
+    {
+      "name": "--ds-primitive-color-error-600",
+      "category": "primitive",
+      "value": "#b3261e"
+    },
+    {
+      "name": "--ds-primitive-color-error-700",
+      "category": "primitive",
+      "value": "#8c1d17"
+    },
+    {
+      "name": "--ds-primitive-color-info-50",
+      "category": "primitive",
+      "value": "#eaf1fb"
+    },
+    {
+      "name": "--ds-primitive-color-info-500",
+      "category": "primitive",
+      "value": "#3e74be"
+    },
+    {
+      "name": "--ds-primitive-color-info-600",
+      "category": "primitive",
+      "value": "#2a5ba0"
+    },
+    {
+      "name": "--ds-primitive-color-info-700",
+      "category": "primitive",
+      "value": "#1e4578"
+    },
+    {
+      "name": "--ds-primitive-color-transparent",
+      "category": "primitive",
+      "value": "transparent"
+    },
+    {
+      "name": "--ds-primitive-font-family-base",
+      "category": "primitive",
+      "value": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+    },
+    {
+      "name": "--ds-primitive-font-size-xs",
+      "category": "primitive",
+      "value": "0.75rem"
+    },
+    {
+      "name": "--ds-primitive-font-size-sm",
+      "category": "primitive",
+      "value": "0.875rem"
+    },
+    {
+      "name": "--ds-primitive-font-size-base",
+      "category": "primitive",
+      "value": "1rem"
+    },
+    {
+      "name": "--ds-primitive-font-size-md",
+      "category": "primitive",
+      "value": "1.125rem"
+    },
+    {
+      "name": "--ds-primitive-font-size-lg",
+      "category": "primitive",
+      "value": "1.25rem"
+    },
+    {
+      "name": "--ds-primitive-font-size-xl",
+      "category": "primitive",
+      "value": "1.5rem"
+    },
+    {
+      "name": "--ds-primitive-font-size-2xl",
+      "category": "primitive",
+      "value": "1.875rem"
+    },
+    {
+      "name": "--ds-primitive-font-size-3xl",
+      "category": "primitive",
+      "value": "2.25rem"
+    },
+    {
+      "name": "--ds-primitive-font-weight-regular",
+      "category": "primitive",
+      "value": "400"
+    },
+    {
+      "name": "--ds-primitive-font-weight-medium",
+      "category": "primitive",
+      "value": "500"
+    },
+    {
+      "name": "--ds-primitive-font-weight-semibold",
+      "category": "primitive",
+      "value": "600"
+    },
+    {
+      "name": "--ds-primitive-font-weight-bold",
+      "category": "primitive",
+      "value": "700"
+    },
+    {
+      "name": "--ds-primitive-line-height-tight",
+      "category": "primitive",
+      "value": "1.2"
+    },
+    {
+      "name": "--ds-primitive-line-height-snug",
+      "category": "primitive",
+      "value": "1.35"
+    },
+    {
+      "name": "--ds-primitive-line-height-normal",
+      "category": "primitive",
+      "value": "1.5"
+    },
+    {
+      "name": "--ds-primitive-line-height-relaxed",
+      "category": "primitive",
+      "value": "1.65"
+    },
+    {
+      "name": "--ds-primitive-letter-spacing-tight",
+      "category": "primitive",
+      "value": "-0.01em"
+    },
+    {
+      "name": "--ds-primitive-letter-spacing-normal",
+      "category": "primitive",
+      "value": "0em"
+    },
+    {
+      "name": "--ds-primitive-letter-spacing-wide",
+      "category": "primitive",
+      "value": "0.02em"
+    },
+    {
+      "name": "--ds-primitive-letter-spacing-caps",
+      "category": "primitive",
+      "value": "0.08em"
+    },
+    {
+      "name": "--ds-primitive-space-0",
+      "category": "primitive",
+      "value": "0"
+    },
+    {
+      "name": "--ds-primitive-space-1",
+      "category": "primitive",
+      "value": "0.25rem"
+    },
+    {
+      "name": "--ds-primitive-space-2",
+      "category": "primitive",
+      "value": "0.5rem"
+    },
+    {
+      "name": "--ds-primitive-space-3",
+      "category": "primitive",
+      "value": "0.75rem"
+    },
+    {
+      "name": "--ds-primitive-space-4",
+      "category": "primitive",
+      "value": "1rem"
+    },
+    {
+      "name": "--ds-primitive-space-5",
+      "category": "primitive",
+      "value": "1.5rem"
+    },
+    {
+      "name": "--ds-primitive-space-6",
+      "category": "primitive",
+      "value": "2rem"
+    },
+    {
+      "name": "--ds-primitive-space-7",
+      "category": "primitive",
+      "value": "3rem"
+    },
+    {
+      "name": "--ds-primitive-space-8",
+      "category": "primitive",
+      "value": "4rem"
+    },
+    {
+      "name": "--ds-primitive-space-9",
+      "category": "primitive",
+      "value": "6rem"
+    },
+    {
+      "name": "--ds-primitive-space-touch-min",
+      "category": "primitive",
+      "value": "44px"
+    },
+    {
+      "name": "--ds-primitive-space-content-max-width",
+      "category": "primitive",
+      "value": "56rem"
+    },
+    {
+      "name": "--ds-primitive-space-focus-ring-width",
+      "category": "primitive",
+      "value": "2px"
+    },
+    {
+      "name": "--ds-primitive-space-focus-ring-offset",
+      "category": "primitive",
+      "value": "2px"
+    },
+    {
+      "name": "--ds-primitive-radius-sm",
+      "category": "primitive",
+      "value": "4px"
+    },
+    {
+      "name": "--ds-primitive-radius-md",
+      "category": "primitive",
+      "value": "8px"
+    },
+    {
+      "name": "--ds-primitive-radius-lg",
+      "category": "primitive",
+      "value": "12px"
+    },
+    {
+      "name": "--ds-primitive-radius-xl",
+      "category": "primitive",
+      "value": "16px"
+    },
+    {
+      "name": "--ds-primitive-radius-pill",
+      "category": "primitive",
+      "value": "999px"
+    },
+    {
+      "name": "--ds-primitive-radius-full",
+      "category": "primitive",
+      "value": "50%"
+    },
+    {
+      "name": "--ds-primitive-shadow-resting",
+      "category": "primitive",
+      "value": "0 1px 2px rgba(43, 35, 32, 0.06), 0 1px 3px rgba(43, 35, 32, 0.1)"
+    },
+    {
+      "name": "--ds-primitive-shadow-raised",
+      "category": "primitive",
+      "value": "0 2px 4px rgba(43, 35, 32, 0.08), 0 4px 8px rgba(43, 35, 32, 0.12)"
+    },
+    {
+      "name": "--ds-primitive-shadow-overlay",
+      "category": "primitive",
+      "value": "0 8px 16px rgba(43, 35, 32, 0.12), 0 16px 32px rgba(43, 35, 32, 0.16)"
+    },
+    {
+      "name": "--ds-primitive-motion-duration-instant",
+      "category": "primitive",
+      "value": "0ms"
+    },
+    {
+      "name": "--ds-primitive-motion-duration-fast",
+      "category": "primitive",
+      "value": "120ms"
+    },
+    {
+      "name": "--ds-primitive-motion-duration-base",
+      "category": "primitive",
+      "value": "200ms"
+    },
+    {
+      "name": "--ds-primitive-motion-duration-slow",
+      "category": "primitive",
+      "value": "320ms"
+    },
+    {
+      "name": "--ds-primitive-motion-easing-standard",
+      "category": "primitive",
+      "value": "cubic-bezier(0.2, 0, 0, 1)"
+    },
+    {
+      "name": "--ds-primitive-motion-easing-decelerate",
+      "category": "primitive",
+      "value": "cubic-bezier(0, 0, 0, 1)"
+    },
+    {
+      "name": "--ds-primitive-motion-easing-accelerate",
+      "category": "primitive",
+      "value": "cubic-bezier(0.3, 0, 1, 1)"
+    }
+  ],
+  "contrastPairs": [
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-50",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-50",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-50",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-50",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-50",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-100",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-100",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-100",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-100",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-100",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-200",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-200",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-200",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-200",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-200",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-300",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-300",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-300",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-300",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-300",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-400",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-400",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-400",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-400",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-400",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-500",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-500",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-500",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-500",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-500",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-600",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-600",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-600",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-600",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-600",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-700",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-700",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-700",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-700",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-700",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-800",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-800",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-800",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-800",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-800",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-900",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-900",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-900",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-900",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-900",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-neutral-950",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-900",
+      "background": "--ds-primitive-color-neutral-950",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-neutral-950",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-neutral-950",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-600",
+      "background": "--ds-primitive-color-neutral-950",
+      "minRatio": 3
+    }
+  ]
+}

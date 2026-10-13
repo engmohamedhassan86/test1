@@ -110,11 +110,13 @@
     },
     {
       "name": "--ds-color-on-primary",
-      "category": "colour"
+      "category": "colour",
+      "value": "var(--ds-primitive-color-white)"
     },
     {
       "name": "--ds-color-primary",
-      "category": "colour"
+      "category": "colour",
+      "value": "var(--ds-primitive-color-maroon-950)"
     },
     {
       "name": "--ds-color-primary-100",
@@ -162,11 +164,13 @@
     },
     {
       "name": "--ds-color-primary-active",
-      "category": "colour"
+      "category": "colour",
+      "value": "var(--ds-primitive-color-maroon-950)"
     },
     {
       "name": "--ds-color-primary-hover",
-      "category": "colour"
+      "category": "colour",
+      "value": "var(--ds-primitive-color-maroon-950)"
     },
     {
       "name": "--ds-color-progress-fill",
@@ -547,6 +551,33 @@
     {
       "name": "--ds-space-9",
       "category": "spacing"
+    }
+  ],
+  "contrastPairs": [
+    {
+      "foreground": "--ds-primitive-color-maroon-950",
+      "background": "--ds-primitive-color-white",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-maroon-950",
+      "background": "--ds-primitive-color-cream-50",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-950",
+      "background": "--ds-primitive-color-cream-50",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-700",
+      "background": "--ds-primitive-color-cream-100",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-neutral-800",
+      "background": "--ds-primitive-color-cream-50",
+      "minRatio": 3
     }
   ]
 }

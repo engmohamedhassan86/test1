@@ -29,7 +29,10 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['src/test-setup.ts'],
     include: ['src/**/*.spec.ts'],
-    exclude: ['src/styles/design-system-contract/**/*.ts'],
+    exclude: [
+      'src/styles/design-system-contract/**/*.ts',
+      'src/styles/design-system.contract.spec.ts',
+    ],
     reporters: ['default'],
     deps: {
       external: ['node:buffer', 'node:fs', 'node:path', 'node:url'],
