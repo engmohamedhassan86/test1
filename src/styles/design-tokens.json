@@ -551,6 +551,458 @@
     {
       "name": "--ds-space-9",
       "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-100",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-200",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-300",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-400",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-800",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-900",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-maroon-950",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-100",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-200",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-300",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-400",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-800",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-900",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-gold-950",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-100",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-200",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-300",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-400",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-800",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-900",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-cream-950",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-white",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-100",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-200",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-300",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-400",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-800",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-900",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-neutral-950",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-success-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-success-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-success-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-success-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-warning-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-warning-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-warning-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-warning-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-error-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-error-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-error-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-error-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-info-50",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-info-500",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-info-600",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-info-700",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-color-transparent",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-primitive-font-family-base",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-size-xs",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-size-sm",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-size-base",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-size-md",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-size-lg",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-size-xl",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-size-2xl",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-size-3xl",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-weight-regular",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-weight-medium",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-weight-semibold",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-font-weight-bold",
+      "category": "typography"
+    },
+    {
+      "name": "--ds-primitive-line-height-tight",
+      "category": "other"
+    },
+    {
+      "name": "--ds-primitive-line-height-snug",
+      "category": "other"
+    },
+    {
+      "name": "--ds-primitive-line-height-normal",
+      "category": "other"
+    },
+    {
+      "name": "--ds-primitive-line-height-relaxed",
+      "category": "other"
+    },
+    {
+      "name": "--ds-primitive-letter-spacing-tight",
+      "category": "other"
+    },
+    {
+      "name": "--ds-primitive-letter-spacing-normal",
+      "category": "other"
+    },
+    {
+      "name": "--ds-primitive-letter-spacing-wide",
+      "category": "other"
+    },
+    {
+      "name": "--ds-primitive-letter-spacing-caps",
+      "category": "other"
+    },
+    {
+      "name": "--ds-primitive-space-0",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-1",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-2",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-3",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-4",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-5",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-6",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-7",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-8",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-9",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-touch-min",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-content-max-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-focus-ring-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-focus-ring-offset",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-radius-sm",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-primitive-radius-md",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-primitive-radius-lg",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-primitive-radius-xl",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-primitive-radius-pill",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-primitive-radius-full",
+      "category": "radius"
+    },
+    {
+      "name": "--ds-primitive-shadow-resting",
+      "category": "elevation"
+    },
+    {
+      "name": "--ds-primitive-shadow-raised",
+      "category": "elevation"
+    },
+    {
+      "name": "--ds-primitive-shadow-overlay",
+      "category": "elevation"
+    },
+    {
+      "name": "--ds-primitive-motion-duration-instant",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-primitive-motion-duration-fast",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-primitive-motion-duration-base",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-primitive-motion-duration-slow",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-primitive-motion-easing-standard",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-primitive-motion-easing-decelerate",
+      "category": "motion"
+    },
+    {
+      "name": "--ds-primitive-motion-easing-accelerate",
+      "category": "motion"
     }
   ],
   "contrastPairs": [
