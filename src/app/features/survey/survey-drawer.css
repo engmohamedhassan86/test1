@@ -1,0 +1,87 @@
+/* Colours, sizing, and motion come from the design-token layer in src/styles/tokens. */
+
+.ds-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  visibility: hidden;
+}
+
+.ds-drawer--open {
+  visibility: visible;
+}
+
+@media (min-width: 64rem) {
+  .ds-drawer {
+    /* The toggle that opens this drawer is itself hidden from this breakpoint up
+       (`survey-topbar.css`), so the drawer can never actually open here. */
+    display: none;
+  }
+}
+
+.ds-drawer__scrim {
+  position: absolute;
+  inset: 0;
+  background-color: var(--ds-color-primary-950);
+  opacity: 0;
+  transition: opacity var(--ds-motion-duration-base) var(--ds-motion-easing-standard);
+}
+
+.ds-drawer--open .ds-drawer__scrim {
+  opacity: 0.5;
+}
+
+.ds-drawer__panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--ds-size-drawer-width);
+  overflow-y: auto;
+  background: linear-gradient(
+    180deg,
+    var(--ds-color-dock-surface-start) 0%,
+    var(--ds-color-dock-surface-end) 100%
+  );
+  box-shadow: var(--ds-shadow-overlay);
+  transform: translateX(-100%);
+  transition: transform var(--ds-motion-duration-base) var(--ds-motion-easing-standard);
+}
+
+.ds-drawer--open .ds-drawer__panel {
+  transform: translateX(0);
+}
+
+/* Stretches the dock's own host element to fill the panel below the close button — the
+   component's `.ds-dock` class styles what is inside that host, not the host tag itself. */
+.ds-drawer__panel app-survey-dock {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.ds-drawer__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-size-control-min);
+  height: var(--ds-size-control-min);
+  margin: var(--ds-space-3) var(--ds-space-3) 0 auto;
+  border: none;
+  border-radius: var(--ds-radius-md);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.ds-drawer__close-icon {
+  display: block;
+  width: var(--ds-space-5);
+  height: var(--ds-space-5);
+  background-color: var(--ds-color-dock-text);
+  mask-image: var(--ds-icon-close);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}

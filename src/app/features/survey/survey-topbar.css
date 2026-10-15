@@ -1,0 +1,80 @@
+/* Colours and sizing come from the design-token layer in src/styles/tokens. */
+
+.ds-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: var(--ds-size-topbar-height);
+  background-color: var(--ds-color-surface);
+  border-bottom: 1px solid var(--ds-color-border-subtle);
+}
+
+.ds-topbar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  height: 100%;
+  max-width: var(--ds-size-content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--ds-space-4);
+}
+
+.ds-topbar__toggle {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-size-control-min);
+  height: var(--ds-size-control-min);
+  padding: 0;
+  border: none;
+  border-radius: var(--ds-radius-md);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+@media (min-width: 64rem) {
+  .ds-topbar__toggle {
+    display: none;
+  }
+}
+
+.ds-topbar__toggle-icon {
+  display: block;
+  width: var(--ds-space-5);
+  height: var(--ds-space-5);
+  background-color: var(--ds-color-text);
+  mask-image: var(--ds-icon-menu);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.ds-topbar__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1);
+  min-width: 0;
+}
+
+.ds-topbar__breadcrumb {
+  margin: 0;
+  overflow: hidden;
+  color: var(--ds-color-text-muted);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-semibold);
+  letter-spacing: var(--ds-letter-spacing-caps);
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-topbar__title {
+  margin: 0;
+  overflow: hidden;
+  color: var(--ds-color-text);
+  font-size: var(--ds-font-size-base);
+  font-weight: var(--ds-font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

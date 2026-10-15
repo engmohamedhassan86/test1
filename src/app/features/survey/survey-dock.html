@@ -1,0 +1,22 @@
+<nav class="ds-dock" aria-label="Survey progress">
+  <div class="ds-dock__header">
+    <p class="ds-dock__title">{{ surveyTitle() }}</p>
+  </div>
+
+  <ol class="ds-dock__steps">
+    @for (step of steps(); track step.page.id) {
+      <li
+        class="ds-dock__step"
+        [class]="stepStateClass(step)"
+        [attr.aria-current]="step.state === 'current' ? 'step' : null"
+      >
+        <span class="ds-dock__step-marker" aria-hidden="true">{{ stepMarker(step) }}</span>
+        <span class="ds-dock__step-body">
+          <span class="ds-dock__step-label">{{ step.page.title }}</span>
+          <span class="ds-dock__step-meta">{{ questionCountFor(step) }}</span>
+        </span>
+        <span class="ds-visually-hidden">{{ stepStatus(step) }}</span>
+      </li>
+    }
+  </ol>
+</nav>

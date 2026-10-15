@@ -1,0 +1,17 @@
+<div
+  id="survey-drawer"
+  class="ds-drawer"
+  [class.ds-drawer--open]="open()"
+  [attr.aria-hidden]="!open()"
+>
+  <div class="ds-drawer__scrim" (click)="closeDrawer.emit()"></div>
+
+  <div class="ds-drawer__panel" role="dialog" aria-label="Survey navigation">
+    <button #closeButton type="button" class="ds-drawer__close" (click)="closeDrawer.emit()">
+      <span class="ds-drawer__close-icon" aria-hidden="true"></span>
+      <span class="ds-visually-hidden">Close navigation menu</span>
+    </button>
+
+    <app-survey-dock />
+  </div>
+</div>

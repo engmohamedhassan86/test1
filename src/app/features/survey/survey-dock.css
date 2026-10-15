@@ -1,0 +1,96 @@
+/* Colours and sizing come from the design-token layer in src/styles/tokens. */
+
+.ds-dock {
+  display: flex;
+  flex-direction: column;
+  width: var(--ds-size-dock-width);
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    var(--ds-color-dock-surface-start) 0%,
+    var(--ds-color-dock-surface-end) 100%
+  );
+  color: var(--ds-color-dock-text);
+  overflow-y: auto;
+}
+
+.ds-dock__header {
+  padding: var(--ds-space-5) var(--ds-space-5) var(--ds-space-4);
+}
+
+.ds-dock__title {
+  margin: 0;
+  color: var(--ds-color-dock-text);
+  font-size: var(--ds-font-size-lg);
+  font-weight: var(--ds-font-weight-semibold);
+  line-height: var(--ds-line-height-snug);
+}
+
+.ds-dock__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1);
+  margin: 0;
+  padding: 0 var(--ds-space-3) var(--ds-space-5);
+  list-style: none;
+}
+
+.ds-dock__step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-3);
+  padding: var(--ds-space-3);
+  border-radius: var(--ds-radius-md);
+}
+
+.ds-dock__step--current {
+  background-color: var(--ds-color-dock-surface-start);
+}
+
+.ds-dock__step-marker {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-space-6);
+  height: var(--ds-space-6);
+  border-radius: var(--ds-radius-full);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--ds-color-dock-text-muted);
+  border: var(--ds-size-focus-ring-width) solid var(--ds-color-dock-text-muted);
+}
+
+.ds-dock__step--current .ds-dock__step-marker {
+  color: var(--ds-color-primary-950);
+  background-color: var(--ds-color-accent-decorative);
+  border-color: var(--ds-color-accent-decorative);
+}
+
+.ds-dock__step--complete .ds-dock__step-marker {
+  color: var(--ds-color-dock-text);
+  border-color: var(--ds-color-dock-text);
+}
+
+.ds-dock__step-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1);
+  min-width: 0;
+}
+
+.ds-dock__step-label {
+  color: var(--ds-color-dock-text);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-medium);
+}
+
+.ds-dock__step--upcoming .ds-dock__step-label {
+  color: var(--ds-color-dock-text-muted);
+  font-weight: var(--ds-font-weight-regular);
+}
+
+.ds-dock__step-meta {
+  color: var(--ds-color-dock-text-muted);
+  font-size: var(--ds-font-size-xs);
+}

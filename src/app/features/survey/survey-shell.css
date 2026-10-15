@@ -1,0 +1,38 @@
+/* Colours and sizing come from the design-token layer in src/styles/tokens. */
+
+.ds-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--ds-color-canvas);
+}
+
+.ds-shell__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.ds-shell__dock {
+  display: none;
+  flex-shrink: 0;
+}
+
+@media (min-width: 64rem) {
+  .ds-shell__dock {
+    display: flex;
+  }
+}
+
+/* Stretches the dock's own host element to the body's full height — the component's
+   `.ds-dock` class styles what is inside that host, not the host tag itself. */
+.ds-shell__dock app-survey-dock {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.ds-shell__content {
+  flex: 1;
+  min-width: 0;
+}

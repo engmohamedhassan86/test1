@@ -1,0 +1,15 @@
+<div class="ds-shell">
+  <app-survey-topbar [drawerOpen]="drawerOpen()" (toggleDrawer)="openDrawer()" />
+
+  <div class="ds-shell__body">
+    <div class="ds-shell__dock">
+      <app-survey-dock />
+    </div>
+
+    <main class="ds-shell__content">
+      <ng-content />
+    </main>
+  </div>
+
+  <app-survey-drawer [open]="drawerOpen()" (closeDrawer)="closeDrawer()" />
+</div>

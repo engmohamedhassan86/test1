@@ -1,0 +1,20 @@
+<header class="ds-topbar">
+  <div class="ds-topbar__inner">
+    <button
+      #toggleButton
+      type="button"
+      class="ds-topbar__toggle"
+      [attr.aria-expanded]="drawerOpen()"
+      aria-controls="survey-drawer"
+      (click)="toggleDrawer.emit()"
+    >
+      <span class="ds-topbar__toggle-icon" aria-hidden="true"></span>
+      <span class="ds-visually-hidden">{{ toggleLabel() }}</span>
+    </button>
+
+    <div class="ds-topbar__text">
+      <p class="ds-topbar__breadcrumb">{{ breadcrumb() }}</p>
+      <p class="ds-topbar__title">{{ surveyTitle() }}</p>
+    </div>
+  </div>
+</header>

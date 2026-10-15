@@ -57,7 +57,11 @@ const TIMEOUTS = { fetchMs: 10_000, submitMs: 15_000 };
 export async function mountWithSession<T>(
   component: Type<T>,
   subject: Survey,
-  options: { readonly gateway?: SurveyResponseGateway } = {},
+  options: {
+    readonly gateway?: SurveyResponseGateway;
+    /** Set before the first render, for components with a required `input()`. */
+    readonly inputs?: Readonly<Record<string, unknown>>;
+  } = {},
 ): Promise<SessionHarness<T>> {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
@@ -80,6 +84,9 @@ export async function mountWithSession<T>(
   session.open(subject);
 
   const fixture = TestBed.createComponent(component);
+  for (const [name, value] of Object.entries(options.inputs ?? {})) {
+    fixture.componentRef.setInput(name, value);
+  }
   await fixture.whenStable();
 
   return harnessOf(fixture, session);
