@@ -8,7 +8,7 @@ The QA Engineer's task has FAILED. The design system contract validation tests a
 
 ### ❌ CRITICAL FAILURES DETECTED:
 
-1. **T021 [US3]: FR-096a - No unresolved var(--ds-*) reference exists**
+1. **T021 [US3]: FR-096a - No unresolved var(--ds-\*) reference exists**
    - **Status:** FAIL
    - **Unresolved references:** 327
    - **Issue:** Token resolution logic in `src/styles/design-system.contract.spec.ts` is not working correctly
@@ -61,31 +61,34 @@ The QA Engineer's task has FAILED. The design system contract validation tests a
 ## Recommended Plan:
 
 ### Step 1: Angular Engineer Takes Over
+
 - The QA Engineer should HANDOFF this task back to the CEO
 - The task needs to be reassigned to the Angular Engineer to fix the actual code
 
 ### Step 2: Angular Engineer Fixes the Issues
+
 - **Fix design-tokens.json:** Generate 5 proper WCAG AA contrast pairs
 - **Fix design-system.contract.spec.ts:** Correct the token resolution logic
 - **Remove Vitest code:** Ensure the contract spec is standalone Node.js code only
 
 ### Step 3: QA Engineer Re-validates
+
 - Run all verification tests to confirm fixes
 - Update documentation to reflect successful completion
 
 ## Current State Summary:
 
-| Component | Status | Details |
-|-----------|--------|---------|
-| **design-tokens.json** | ❌ FAIL | Contrast pairs not WCAG AA compliant |
-| **design-system.contract.spec.ts** | ❌ FAIL | Token resolution not working |
-| **DESIGN_SYSTEM_FIXES.md** | ❌ INACCURATE | Claims success but validation fails |
+| Component                          | Status        | Details                              |
+| ---------------------------------- | ------------- | ------------------------------------ |
+| **design-tokens.json**             | ❌ FAIL       | Contrast pairs not WCAG AA compliant |
+| **design-system.contract.spec.ts** | ❌ FAIL       | Token resolution not working         |
+| **DESIGN_SYSTEM_FIXES.md**         | ❌ INACCURATE | Claims success but validation fails  |
 
 ## Conclusion:
 
 The QA Engineer's task has FAILED. The design system contract validation is still broken:
 
-1. **327 unresolved var(--ds-*) references** indicate the token resolution logic is fundamentally broken
+1. **327 unresolved var(--ds-\*) references** indicate the token resolution logic is fundamentally broken
 2. **5 failing contrast pairs** indicate the contrast pairs in design-tokens.json are not WCAG AA compliant
 3. **The contract spec file contains mixed framework code** suggesting the task was not completed correctly
 

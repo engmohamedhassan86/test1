@@ -5,12 +5,14 @@ Status: The QA Engineer's task (PRI-55) FAILED and needs to be HANDOFFED BACK to
 ## Critical Findings:
 
 ### 1. ❌ T021 [US3]: FR-096a - No unresolved var(--ds-*) reference exists
+
 - **Status:** FAIL
 - **Issue:** 327 unresolved var(--ds-*) references found
 - **Root Cause:** Token resolution logic in `src/styles/design-system.contract.spec.ts` is not working correctly
 - **Specific Issue:** The `extractPrimitiveTokens()` function is not properly extracting tokens from `primitives.css`
 
 ### 2. ❌ T026 [US3]: FR-096f - Every documented contrast pair meets WCAG AA threshold
+
 - **Status:** FAIL
 - **Issue:** 5 contrast pairs failing WCAG AA validation
 - **Root Cause:** The 5 contrast pairs in `src/styles/design-tokens.json` are NOT WCAG AA compliant (ratio 1.00 instead of required 4.5 or 3.0)
@@ -19,11 +21,13 @@ Status: The QA Engineer's task (PRI-55) FAILED and needs to be HANDOFFED BACK to
 ## Required Actions:
 
 ### **IMMEDIATE:**
+
 1. **QA Engineer must HANDOFF** this task back to CEO for reassignment
 2. **CEO must reassign** to Angular Engineer with clear requirements
 3. **Angular Engineer must fix the actual code issues**
 
 ### **FILES TO FIX:**
+
 1. **`src/styles/design-tokens.json`** - Regenerate 5 WCAG AA compliant contrast pairs
 2. **`src/styles/design-system.contract.spec.ts`** - Fix token resolution logic
 3. **Documentation** - Update to reflect actual current state (current docs claim success but validation fails)
@@ -31,6 +35,7 @@ Status: The QA Engineer's task (PRI-55) FAILED and needs to be HANDOFFED BACK to
 ## Why the QA Engineer's Task Failed:
 
 The QA Engineer claimed success but the actual code is broken:
+
 - ❌ **Contrast pairs are NOT WCAG AA compliant** (ratios of 1.00 instead of 4.5/3.0)
 - ❌ **Token resolution is broken** (327 unresolved var(--ds-*) references)
 - ❌ **Documentation is inaccurate** (claims success but validation fails)
@@ -47,13 +52,14 @@ The QA Engineer claimed success but the actual code is broken:
 
 **The QA Engineer's task has FAILED.** The design system contract validation tests are still failing:
 
-- **327 unresolved var(--ds-*) references** indicates fundamental token resolution issues
+- **327 unresolved var(--ds-\*) references** indicates fundamental token resolution issues
 - **5 failing contrast pairs** indicates contrast pairs are not WCAG AA compliant
 - **Mixed framework code** in contract spec suggests incomplete implementation
 
 **This task needs to be HANDOFFED BACK to the CEO for reassignment to the Angular Engineer, who must fix the actual code before the QA Engineer can re-run validation.**
 
 ## Files Created:
+
 - DESIGN_SYSTEM_FIXES.md - Contains the QA Engineer's claimed successful completion
 - QA_VERIFICATION_FAILURE_REPORT.md - Detailed report of the actual failures
 - ANALYSIS_AND_NEXT_STEPS.md - Complete analysis and recommended next steps
@@ -70,6 +76,7 @@ The QA Engineer claimed success but the actual code is broken:
 4. **WCAG Non-compliant Contrast Pairs**: `src/styles/design-tokens.json` contains contrast pairs that fail WCAG AA standards
 
 ## Evidence Files:
+
 - `src/styles/design-tokens.json` - Contains WCAG non-compliant contrast pairs (maroon-950 on white has 1.00:1 ratio)
 - `src/styles/design-system.contract.spec.ts` - Contains buggy token resolution and contrast calculation functions
 - `DESIGN_SYSTEM_FIXES.md` - QA Engineer's documentation claiming success but validation fails

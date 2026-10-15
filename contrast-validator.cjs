@@ -27,7 +27,7 @@ function calculateRelativeLuminance(colorToken) {
   if (!hex) return 0;
   const rgb = hexToRgb(hex);
   if (!rgb) return 0;
-  const [r, g, b] = rgb.map(v => {
+  const [r, g, b] = rgb.map((v) => {
     const normalized = v / 255;
     return normalized <= 0.03928 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);
   });
@@ -44,7 +44,7 @@ function getHexFromToken(token) {
 
   const content = readFile('src/styles/design-tokens.json');
   const json = JSON.parse(content);
-  const tokenEntry = json.tokens.find(t => t.name === token);
+  const tokenEntry = json.tokens.find((t) => t.name === token);
   return tokenEntry?.value || null;
 }
 
@@ -71,7 +71,13 @@ function validateContrastPairs(contrastPairs) {
 
     if (ratio < pair.minRatio) {
       failed.push(
-        pair.foreground + ' on ' + pair.background + ': ratio ' + ratio.toFixed(2) + ' < ' + pair.minRatio
+        pair.foreground +
+          ' on ' +
+          pair.background +
+          ': ratio ' +
+          ratio.toFixed(2) +
+          ' < ' +
+          pair.minRatio,
       );
     }
   }

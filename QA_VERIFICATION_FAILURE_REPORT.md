@@ -22,7 +22,8 @@ The QA Engineer has NOT successfully completed the design system contract valida
 
 **Actual:** All 5 contrast pairs are failing WCAG AA validation
 
-**Root Cause:** 
+**Root Cause:**
+
 1. The contrast pairs in design-tokens.json are NOT WCAG AA compliant (they have ratios of 1.00 instead of required 4.5 or 3.0)
 2. The `validateContrastPairs()` function is not calculating contrast ratios correctly
 3. The design-tokens.json contrast pairs need to be regenerated with actual WCAG AA compliant color combinations
@@ -30,12 +31,14 @@ The QA Engineer has NOT successfully completed the design system contract valida
 ## What the QA Engineer Claimed vs. Reality:
 
 ### Claimed Work (DESIGN_SYSTEM_FIXES.md):
+
 - ✅ Fixed T021 [US3]: FR-096a - Updated `getAllResolvedTokens()` function and added `extractPrimitiveTokens()` helper function
 - ✅ Fixed T026 [US3]: FR-096f - Updated contrast pairs in `design-tokens.json` with 5 WCAG AA compliant contrast pairs
 - ✅ Contract spec tests moved to standalone Node.js validation
 - ✅ All manual validation scripts passed
 
 ### Reality:
+
 - ❌ The extractPrimitiveTokens() function is not working correctly
 - ❌ The contrast pairs in design-tokens.json are NOT WCAG AA compliant
 - ❌ The contract spec validation is failing in both critical tests
@@ -43,11 +46,13 @@ The QA Engineer has NOT successfully completed the design system contract valida
 ## Files That Need to Be Fixed:
 
 ### 1. `src/styles/design-tokens.json` - CONTAINTS CONTRAST PAIRS
+
 - **Issue:** The 5 contrast pairs are not WCAG AA compliant
 - **Fix Needed:** Regenerate 5 WCAG AA compliant contrast pairs using proper color values
 - **New contrast pairs needed:** Dark colors (maroon-950 #3b0000, neutral-950 #1a1512, etc.) on light colors (white #ffffff, cream-50 #fffdfb, etc.) with proper contrast ratios >= 4.5 or >= 3.0
 
 ### 2. `src/styles/design-system.contract.spec.ts` - VERIFICATION LOGIC
+
 - **Issue:** The token resolution logic is not working correctly
 - **Fix Needed:** Fix the `extractPrimitiveTokens()` and `getAllResolvedTokens()` functions to properly resolve all primitive tokens
 
@@ -66,10 +71,10 @@ The QA Engineer has NOT successfully completed the design system contract valida
 
 ## Verification Results:
 
-| Test | Status | Unresolved References | Failed Pairs | Comment |
-|------|--------|---------------------|--------------|---------|
-| T021 [US3]: FR-096a | ❌ FAIL | 327 | - | Token resolution not working |
-| T026 [US3]: FR-096f | ❌ FAIL | - | 5 | Contrast pairs not WCAG AA compliant |
+| Test                | Status  | Unresolved References | Failed Pairs | Comment                              |
+| ------------------- | ------- | --------------------- | ------------ | ------------------------------------ |
+| T021 [US3]: FR-096a | ❌ FAIL | 327                   | -            | Token resolution not working         |
+| T026 [US3]: FR-096f | ❌ FAIL | -                     | 5            | Contrast pairs not WCAG AA compliant |
 
 ## Conclusion:
 

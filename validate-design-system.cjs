@@ -24,7 +24,9 @@ function readFile(filePath) {
 function loadDesignTokens() {
   const content = readFile('src/styles/design-tokens.json');
   const json = JSON.parse(content);
-  return json.tokens.map(function(t) { return t.name; });
+  return json.tokens.map(function (t) {
+    return t.name;
+  });
 }
 
 /**
@@ -33,7 +35,9 @@ function loadDesignTokens() {
 function loadCssClasses() {
   const content = readFile('src/styles/css-classes.json');
   const json = JSON.parse(content);
-  return json.classes.map(function(c) { return c.name; });
+  return json.classes.map(function (c) {
+    return c.name;
+  });
 }
 
 /**
@@ -42,7 +46,13 @@ function loadCssClasses() {
 function loadSemanticPropertiesFromImplementation() {
   const content = readFile('src/styles/tokens/semantic.css');
   const matches = content.match(/^\s*--ds-[a-zA-Z0-9-]*:/gm) || [];
-  return Array.from(new Set(matches.map(function(m) { return m.trim().replace(':', ''); })));
+  return Array.from(
+    new Set(
+      matches.map(function (m) {
+        return m.trim().replace(':', '');
+      }),
+    ),
+  );
 }
 
 /**
@@ -127,7 +137,9 @@ function validateWcagContrast() {
         for (var k = 0; k < lines.length; k++) {
           if (lines[k].includes(hex)) {
             wcagErrors.push(
-              'WCAG contrast violation: hex color ' + hex + ' should only exist in primitives.css, not semantic.css'
+              'WCAG contrast violation: hex color ' +
+                hex +
+                ' should only exist in primitives.css, not semantic.css',
             );
             break;
           }
@@ -167,10 +179,10 @@ function validatePrimeNgBridge() {
     '--p-highlight-color',
   ];
 
-  var foundMappings = expectedMappings.filter(function(mapping) {
+  var foundMappings = expectedMappings.filter(function (mapping) {
     return bridgeContent.includes(mapping);
   });
-  var missingMappings = expectedMappings.filter(function(mapping) {
+  var missingMappings = expectedMappings.filter(function (mapping) {
     return !bridgeContent.includes(mapping);
   });
 
@@ -185,13 +197,23 @@ function findUnresolvedVarReferences() {
   var resolvedVars = getAllResolvedTokens();
 
   var varRegex = /var\(--ds-[a-zA-Z0-9_-]+\)/g;
-  var foundVars = Array.from(allCss.matchAll(varRegex), function(m) { return m[0]; });
-
-  var resolvedSet = new Set(resolvedVars.map(function(v) { return v.replace(':', ''); }));
-
-  return foundVars.map(function(v) { return v.replace(':', ''); }).filter(function(v) {
-    return !resolvedSet.has(v);
+  var foundVars = Array.from(allCss.matchAll(varRegex), function (m) {
+    return m[0];
   });
+
+  var resolvedSet = new Set(
+    resolvedVars.map(function (v) {
+      return v.replace(':', '');
+    }),
+  );
+
+  return foundVars
+    .map(function (v) {
+      return v.replace(':', '');
+    })
+    .filter(function (v) {
+      return !resolvedSet.has(v);
+    });
 }
 
 /**
@@ -219,8 +241,12 @@ function findLiteralColorsOutsidePrimitives() {
     'grey',
     'transparent',
   ]
-    .filter(function(color) { return primitivesContent.includes(color); })
-    .map(function(color) { return '--ds-' + color; });
+    .filter(function (color) {
+      return primitivesContent.includes(color);
+    })
+    .map(function (color) {
+      return '--ds-' + color;
+    });
 
   for (var l = 0; l < allCssFiles.length; l++) {
     var filePath = allCssFiles[l];
@@ -336,7 +362,7 @@ function findRawSpacingLengthsOutsideTokens() {
     var lines = content.split('\n');
 
     // Check if file contains accessibility utility classes
-    var hasAccessibilityUtilities = excludePatterns.some(function(pattern) {
+    var hasAccessibilityUtilities = excludePatterns.some(function (pattern) {
       return pattern.test(content);
     });
 
@@ -344,9 +370,12 @@ function findRawSpacingLengthsOutsideTokens() {
       var line = lines[i];
 
       // Skip lines that are part of accessibility utility definitions
-      if (hasAccessibilityUtilities && excludePatterns.some(function(pattern) {
-        return pattern.test(line);
-      })) {
+      if (
+        hasAccessibilityUtilities &&
+        excludePatterns.some(function (pattern) {
+          return pattern.test(line);
+        })
+      ) {
         // Skip the next several lines that are part of the class definition
         for (var j = i; j < Math.min(i + 15, lines.length); j++) {
           if (lines[j].includes('}')) {
@@ -405,7 +434,11 @@ function findAllTokensInCss() {
     var filePath = allCssFiles[l];
     var content = readFile(filePath);
     var tokenMatches = content.match(/^\s*--ds-[a-zA-Z0-9-]*:/gm) || [];
-    tokens.push(...tokenMatches.map(function(t) { return t.trim().replace(':', ''); }));
+    tokens.push(
+      ...tokenMatches.map(function (t) {
+        return t.trim().replace(':', '');
+      }),
+    );
   }
 
   return Array.from(new Set(tokens));
@@ -418,7 +451,9 @@ function getTokensFromContracts() {
   var jsonContent = readFile('src/styles/design-tokens.json');
   var json = JSON.parse(jsonContent);
 
-  return json.tokens.map(function(t) { return t.name; });
+  return json.tokens.map(function (t) {
+    return t.name;
+  });
 }
 
 /**
@@ -428,7 +463,9 @@ function getClassesFromContracts() {
   var jsonContent = readFile('src/styles/css-classes.json');
   var json = JSON.parse(jsonContent);
 
-  return json.classes.map(function(c) { return c.name; });
+  return json.classes.map(function (c) {
+    return c.name;
+  });
 }
 
 /**
@@ -449,25 +486,25 @@ function calculateLuminance(hex) {
   var r = parseInt(normalized.substring(0, 2), 16);
   var g = parseInt(normalized.substring(2, 4), 16);
   var b = parseInt(normalized.substring(4, 6), 16);
-  
+
   r = r / 255;
   g = g / 255;
   b = b / 255;
-  
+
   r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
   g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
   b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
-  
+
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
 function calculateContrastRatio(foreground, background) {
   var fgLuminance = calculateLuminance(foreground);
   var bgLuminance = calculateLuminance(background);
-  
+
   var lighter = Math.max(fgLuminance, bgLuminance);
   var darker = Math.min(fgLuminance, bgLuminance);
-  
+
   return (lighter + 0.05) / (darker + 0.05);
 }
 
@@ -483,7 +520,13 @@ function validateContrastPairs(contrastPairs) {
 
     if (ratio < pair.minRatio) {
       failed.push(
-        pair.foreground + ' on ' + pair.background + ': ratio ' + ratio.toFixed(2) + ' < ' + pair.minRatio
+        pair.foreground +
+          ' on ' +
+          pair.background +
+          ': ratio ' +
+          ratio.toFixed(2) +
+          ' < ' +
+          pair.minRatio,
       );
     }
   }
@@ -497,8 +540,7 @@ function validateContrastPairs(contrastPairs) {
 function countReducedMotionBlocks() {
   var content = readFile('src/styles/base/motion.css');
 
-  var blockMatches =
-    content.match(/@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)/g) || [];
+  var blockMatches = content.match(/@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)/g) || [];
 
   return blockMatches.length;
 }
@@ -588,7 +630,7 @@ function readAllCssFiles() {
  */
 function getAllCssFilePaths() {
   var cssFiles = [];
-  var scanDir = function(dir) {
+  var scanDir = function (dir) {
     var items = fs.readdirSync(dir);
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
@@ -613,7 +655,9 @@ function extractPrimitiveTokens() {
   if (!content) return [];
 
   var matches = content.match(/^\s*--ds-primitive-[a-zA-Z0-9-]+(?::[^;]+;)?/gm) || [];
-  return matches.map(function(m) { return m.trim().replace(/:\s*.*$/, ''); });
+  return matches.map(function (m) {
+    return m.trim().replace(/:\s*.*$/, '');
+  });
 }
 
 /**
@@ -629,7 +673,9 @@ function getAllResolvedTokens() {
     var json = JSON.parse(content);
 
     // Include all tokens from JSON, CSS, and primitives.css
-    var jsonTokens = json.tokens.map(function(t) { return t.name; });
+    var jsonTokens = json.tokens.map(function (t) {
+      return t.name;
+    });
 
     return Array.from(new Set([...cssTokens, ...jsonTokens, ...primitiveTokens]));
   } catch (e) {
@@ -649,88 +695,168 @@ function validateDesignSystem() {
   // T021: FR-096a - No unresolved var(--ds-*) reference exists
   var unresolvedVars = findUnresolvedVarReferences();
   if (unresolvedVars.length === 0) {
-    results.push({ rule: 'T021 [US3]: FR-096a - No unresolved var(--ds-*) reference exists', status: 'PASS', details: [] });
+    results.push({
+      rule: 'T021 [US3]: FR-096a - No unresolved var(--ds-*) reference exists',
+      status: 'PASS',
+      details: [],
+    });
   } else {
-    results.push({ rule: 'T021 [US3]: FR-096a - No unresolved var(--ds-*) reference exists', status: 'FAIL', details: unresolvedVars });
+    results.push({
+      rule: 'T021 [US3]: FR-096a - No unresolved var(--ds-*) reference exists',
+      status: 'FAIL',
+      details: unresolvedVars,
+    });
   }
 
   // T022: FR-096b - No literal colour value (hex/rgb/hsl/named) exists outside tokens/primitives.css
   var literalColors = findLiteralColorsOutsidePrimitives();
   if (literalColors.length === 0) {
-    results.push({ rule: 'T022 [US3]: FR-096b - No literal colour value (hex/rgb/hsl/named) exists outside tokens/primitives.css', status: 'PASS', details: [] });
+    results.push({
+      rule: 'T022 [US3]: FR-096b - No literal colour value (hex/rgb/hsl/named) exists outside tokens/primitives.css',
+      status: 'PASS',
+      details: [],
+    });
   } else {
-    results.push({ rule: 'T022 [US3]: FR-096b - No literal colour value (hex/rgb/hsl/named) exists outside tokens/primitives.css', status: 'FAIL', details: literalColors });
+    results.push({
+      rule: 'T022 [US3]: FR-096b - No literal colour value (hex/rgb/hsl/named) exists outside tokens/primitives.css',
+      status: 'FAIL',
+      details: literalColors,
+    });
   }
 
   // T023: FR-096c - No raw spacing length (px/rem/em on margin, padding, gap, inset) exists outside src/styles/tokens/
   var rawLengths = findRawSpacingLengthsOutsideTokens();
   if (rawLengths.length === 0) {
-    results.push({ rule: 'T023 [US3]: FR-096c - No raw spacing length (px/rem/em on margin, padding, gap, inset) exists outside src/styles/tokens/', status: 'PASS', details: [] });
+    results.push({
+      rule: 'T023 [US3]: FR-096c - No raw spacing length (px/rem/em on margin, padding, gap, inset) exists outside src/styles/tokens/',
+      status: 'PASS',
+      details: [],
+    });
   } else {
-    results.push({ rule: 'T023 [US3]: FR-096c - No raw spacing length (px/rem/em on margin, padding, gap, inset) exists outside src/styles/tokens/', status: 'FAIL', details: rawLengths });
+    results.push({
+      rule: 'T023 [US3]: FR-096c - No raw spacing length (px/rem/em on margin, padding, gap, inset) exists outside src/styles/tokens/',
+      status: 'FAIL',
+      details: rawLengths,
+    });
   }
 
   // T024: FR-096d - Every .ds-* token/class in shipped CSS has a matching row in contracts/*.md
   var classesFromCss = findAllClassesInCss();
   var classesFromContracts = loadCssClasses();
-  var missingInContracts = classesFromCss.filter(function(cls) { return !classesFromContracts.includes(cls); });
+  var missingInContracts = classesFromCss.filter(function (cls) {
+    return !classesFromContracts.includes(cls);
+  });
   if (missingInContracts.length === 0) {
-    results.push({ rule: 'T024 [US3]: FR-096d - Every .ds-* token/class in shipped CSS has a matching row in contracts/*.md', status: 'PASS', details: [] });
+    results.push({
+      rule: 'T024 [US3]: FR-096d - Every .ds-* token/class in shipped CSS has a matching row in contracts/*.md',
+      status: 'PASS',
+      details: [],
+    });
   } else {
-    results.push({ rule: 'T024 [US3]: FR-096d - Every .ds-* token/class in shipped CSS has a matching row in contracts/*.md', status: 'FAIL', details: missingInContracts });
+    results.push({
+      rule: 'T024 [US3]: FR-096d - Every .ds-* token/class in shipped CSS has a matching row in contracts/*.md',
+      status: 'FAIL',
+      details: missingInContracts,
+    });
   }
 
   // T025: FR-096e - Every --ds-* token in contracts/*.md exists in shipped CSS
   var tokensFromContracts = getTokensFromContracts();
   var tokensFromCss = findAllTokensInCss();
-  var missingInCss = tokensFromContracts.filter(function(token) { return !tokensFromCss.includes(token); });
+  var missingInCss = tokensFromContracts.filter(function (token) {
+    return !tokensFromCss.includes(token);
+  });
   if (missingInCss.length === 0) {
-    results.push({ rule: 'T025 [US3]: FR-096e - Every --ds-* token in contracts/*.md exists in shipped CSS', status: 'PASS', details: [] });
+    results.push({
+      rule: 'T025 [US3]: FR-096e - Every --ds-* token in contracts/*.md exists in shipped CSS',
+      status: 'PASS',
+      details: [],
+    });
   } else {
-    results.push({ rule: 'T025 [US3]: FR-096e - Every --ds-* token in contracts/*.md exists in shipped CSS', status: 'FAIL', details: missingInCss });
+    results.push({
+      rule: 'T025 [US3]: FR-096e - Every --ds-* token in contracts/*.md exists in shipped CSS',
+      status: 'FAIL',
+      details: missingInCss,
+    });
   }
 
   // T026: FR-096f - Every documented contrast pair meets WCAG AA threshold (4.5:1 or 3:1)
   var contrastPairs = getContrastPairsFromContracts();
   var failedPairs = validateContrastPairs(contrastPairs);
   if (failedPairs.length === 0) {
-    results.push({ rule: 'T026 [US3]: FR-096f - Every documented contrast pair meets WCAG AA threshold (4.5:1 or 3:1)', status: 'PASS', details: [] });
+    results.push({
+      rule: 'T026 [US3]: FR-096f - Every documented contrast pair meets WCAG AA threshold (4.5:1 or 3:1)',
+      status: 'PASS',
+      details: [],
+    });
   } else {
-    results.push({ rule: 'T026 [US3]: FR-096f - Every documented contrast pair meets WCAG AA threshold (4.5:1 or 3:1)', status: 'FAIL', details: failedPairs });
+    results.push({
+      rule: 'T026 [US3]: FR-096f - Every documented contrast pair meets WCAG AA threshold (4.5:1 or 3:1)',
+      status: 'FAIL',
+      details: failedPairs,
+    });
   }
 
   // T027: FR-096g - Base/motion.css has exactly one @media (prefers-reduced-motion: reduce) block
   var motionBlockCount = countReducedMotionBlocks();
   if (motionBlockCount === 1) {
-    results.push({ rule: 'T027 [US3]: FR-096g - Base/motion.css has exactly one @media (prefers-reduced-motion: reduce) block', status: 'PASS', details: [] });
+    results.push({
+      rule: 'T027 [US3]: FR-096g - Base/motion.css has exactly one @media (prefers-reduced-motion: reduce) block',
+      status: 'PASS',
+      details: [],
+    });
   } else {
-    results.push({ rule: 'T027 [US3]: FR-096g - Base/motion.css has exactly one @media (prefers-reduced-motion: reduce) block', status: 'FAIL', details: ['Expected 1, found ' + motionBlockCount] });
+    results.push({
+      rule: 'T027 [US3]: FR-096g - Base/motion.css has exactly one @media (prefers-reduced-motion: reduce) block',
+      status: 'FAIL',
+      details: ['Expected 1, found ' + motionBlockCount],
+    });
   }
 
   // T028: FR-096h - All transitions/keyframes animate only transform and/or opacity
   var nonCompositorProperties = findNonCompositorProperties();
   if (nonCompositorProperties.length === 0) {
-    results.push({ rule: 'T028 [US3]: FR-096h - All transitions/keyframes animate only transform and/or opacity', status: 'PASS', details: [] });
+    results.push({
+      rule: 'T028 [US3]: FR-096h - All transitions/keyframes animate only transform and/or opacity',
+      status: 'PASS',
+      details: [],
+    });
   } else {
-    results.push({ rule: 'T028 [US3]: FR-096h - All transitions/keyframes animate only transform and/or opacity', status: 'FAIL', details: nonCompositorProperties });
+    results.push({
+      rule: 'T028 [US3]: FR-096h - All transitions/keyframes animate only transform and/or opacity',
+      status: 'FAIL',
+      details: nonCompositorProperties,
+    });
   }
 
   // T029: FR-096i - All PrimeNG bridge entries are present
   var bridge = validatePrimeNgBridge();
   if (bridge.missingMappings.length === 0) {
-    results.push({ rule: 'T029 [US3]: FR-096i - All PrimeNG bridge entries are present', status: 'PASS', details: [] });
+    results.push({
+      rule: 'T029 [US3]: FR-096i - All PrimeNG bridge entries are present',
+      status: 'PASS',
+      details: [],
+    });
   } else {
-    results.push({ rule: 'T029 [US3]: FR-096i - All PrimeNG bridge entries are present', status: 'FAIL', details: bridge.missingMappings });
+    results.push({
+      rule: 'T029 [US3]: FR-096i - All PrimeNG bridge entries are present',
+      status: 'FAIL',
+      details: bridge.missingMappings,
+    });
   }
 
   // Print results
   console.log('📊 Validation Results:');
   console.log('='.repeat(60));
-  
-  var passed = results.filter(function(r) { return r.status === 'PASS'; }).length;
-  var failed = results.filter(function(r) { return r.status === 'FAIL'; }).length;
+
+  var passed = results.filter(function (r) {
+    return r.status === 'PASS';
+  }).length;
+  var failed = results.filter(function (r) {
+    return r.status === 'FAIL';
+  }).length;
   console.log('\nSummary: ' + passed + ' passed, ' + failed + ' failed\n');
-  
+
   for (var i = 0; i < results.length; i++) {
     var result = results[i];
     var statusIcon = result.status === 'PASS' ? '✅' : '❌';

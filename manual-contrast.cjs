@@ -47,7 +47,7 @@ const primitives = {
   '--ds-primitive-color-cream-100': '#fdf9f2',
   '--ds-primitive-color-neutral-950': '#1a1512',
   '--ds-primitive-color-neutral-700': '#52493f',
-  '--ds-primitive-color-neutral-800': '#39322a'
+  '--ds-primitive-color-neutral-800': '#39322a',
 };
 
 const contrastPairs = [
@@ -55,7 +55,7 @@ const contrastPairs = [
   { fg: '--ds-primitive-color-maroon-950', bg: '--ds-primitive-color-cream-50', required: 4.5 },
   { fg: '--ds-primitive-color-neutral-950', bg: '--ds-primitive-color-cream-50', required: 4.5 },
   { fg: '--ds-primitive-color-neutral-700', bg: '--ds-primitive-color-cream-100', required: 3 },
-  { fg: '--ds-primitive-color-neutral-800', bg: '--ds-primitive-color-cream-50', required: 3 }
+  { fg: '--ds-primitive-color-neutral-800', bg: '--ds-primitive-color-cream-50', required: 3 },
 ];
 
 console.log('Primitive tokens:');
@@ -69,13 +69,17 @@ let allPassed = true;
 contrastPairs.forEach((pair, index) => {
   const fgHex = primitives[pair.fg];
   const bgHex = primitives[pair.bg];
-  
-  console.log('Pair', index + 1, ': ' + pair.fg + ' (' + fgHex + ') on ' + pair.bg + ' (' + bgHex + ')');
+
+  console.log(
+    'Pair',
+    index + 1,
+    ': ' + pair.fg + ' (' + fgHex + ') on ' + pair.bg + ' (' + bgHex + ')',
+  );
   console.log('  Required ratio: ' + pair.required);
-  
+
   const ratio = calculateContrastRatio(fgHex, bgHex);
   console.log('  Calculated ratio: ' + ratio.toFixed(2));
-  
+
   if (ratio >= pair.required) {
     console.log('  Status: ✅ PASS (meets WCAG AA requirement)');
   } else {
@@ -88,8 +92,8 @@ contrastPairs.forEach((pair, index) => {
 console.log('=== FINAL VERIFICATION ===');
 if (allPassed) {
   console.log('✅ ALL CONTRAST PAIRS MEET WCAG AA REQUIREMENTS');
-  console.log('The QA Engineer\'s implementation is correct.');
+  console.log("The QA Engineer's implementation is correct.");
 } else {
   console.log('❌ SOME CONTRAST PAIRS FAIL WCAG AA VALIDATION');
-  console.log('The QA Engineer\'s implementation needs to be reviewed.');
+  console.log("The QA Engineer's implementation needs to be reviewed.");
 }

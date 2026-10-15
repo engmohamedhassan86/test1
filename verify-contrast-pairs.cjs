@@ -44,7 +44,7 @@ const contrastPairs = [
   { fg: '--ds-primitive-color-maroon-950', bg: '--ds-primitive-color-cream-50', required: 4.5 },
   { fg: '--ds-primitive-color-neutral-950', bg: '--ds-primitive-color-cream-50', required: 4.5 },
   { fg: '--ds-primitive-color-neutral-700', bg: '--ds-primitive-color-cream-100', required: 3 },
-  { fg: '--ds-primitive-color-neutral-800', bg: '--ds-primitive-color-cream-50', required: 3 }
+  { fg: '--ds-primitive-color-neutral-800', bg: '--ds-primitive-color-cream-50', required: 3 },
 ];
 
 const primitives = {};
@@ -52,7 +52,7 @@ const primitivesContent = fs.readFileSync('src/styles/tokens/primitives.css', 'u
 const tokenMatches = primitivesContent.match(/--(ds-[a-zA-Z0-9-]+)\s*:\s*([^;]+);/g);
 
 if (tokenMatches) {
-  tokenMatches.forEach(match => {
+  tokenMatches.forEach((match) => {
     const tokenMatch = match.match(/--(ds-[a-zA-Z0-9-]+)\s*:\s*([^;]+);/);
     if (tokenMatch) {
       primitives[tokenMatch[1]] = tokenMatch[2];
@@ -67,33 +67,41 @@ let allPassed = true;
 contrastPairs.forEach((pair, index) => {
   const fgHex = primitives[pair.fg];
   const bgHex = primitives[pair.bg];
-  
+
   if (!fgHex || !bgHex) {
-    console.log('Pair', index + 1, ': ' + pair.fg + ' or ' + pair.bg + ' not found in primitives.css');
+    console.log(
+      'Pair',
+      index + 1,
+      ': ' + pair.fg + ' or ' + pair.bg + ' not found in primitives.css',
+    );
     if (!fgHex) console.log('  ' + pair.fg + ' is missing');
     if (!bgHex) console.log('  ' + pair.bg + ' is missing');
     allPassed = false;
     return;
   }
-  
-  console.log('Pair', index + 1, ': ' + pair.fg + ' (' + fgHex + ') on ' + pair.bg + ' (' + bgHex + ')');
+
+  console.log(
+    'Pair',
+    index + 1,
+    ': ' + pair.fg + ' (' + fgHex + ') on ' + pair.bg + ' (' + bgHex + ')',
+  );
   console.log('  Required ratio: ' + pair.required);
-  
+
   const fgRgb = hexToRgb(fgHex);
   const bgRgb = hexToRgb(bgHex);
-  
+
   console.log('  ' + pair.fg + ' RGB: [' + fgRgb.join(', ') + ']');
   console.log('  ' + pair.bg + ' RGB: [' + bgRgb.join(', ') + ']');
-  
+
   const fgLum = calculateRelativeLuminance(fgHex);
   const bgLum = calculateRelativeLuminance(bgHex);
-  
+
   console.log('  ' + pair.fg + ' luminance: ' + fgLum.toFixed(6));
   console.log('  ' + pair.bg + ' luminance: ' + bgLum.toFixed(6));
-  
+
   const ratio = calculateContrastRatio(fgHex, bgHex);
   console.log('  Calculated ratio: ' + ratio.toFixed(2));
-  
+
   if (ratio >= pair.required) {
     console.log('  Status: ✅ PASS (meets WCAG AA requirement)');
   } else {
@@ -106,8 +114,8 @@ contrastPairs.forEach((pair, index) => {
 console.log('=== FINAL VERIFICATION ===');
 if (allPassed) {
   console.log('✅ ALL CONTRAST PAIRS MEET WCAG AA REQUIREMENTS');
-  console.log('The QA Engineer\'s implementation is correct.');
+  console.log("The QA Engineer's implementation is correct.");
 } else {
   console.log('❌ SOME CONTRAST PAIRS FAIL WCAG AA VALIDATION');
-  console.log('The QA Engineer\'s implementation needs to be reviewed.');
+  console.log("The QA Engineer's implementation needs to be reviewed.");
 }

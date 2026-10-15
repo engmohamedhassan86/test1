@@ -11,7 +11,9 @@ function getHexFromToken(token) {
   if (token.startsWith('--ds-primitive-color-')) {
     const content = readFile('src/styles/tokens/primitives.css');
     console.log('Primitives.css contains:', token, '?', content.includes(token));
-    const match = content.match(new RegExp(`${token.replace(/[.*+?^${}()|[\]\\]/g, '\\\\$&')}:\s*([^;]+);`));
+    const match = content.match(
+      new RegExp(`${token.replace(/[.*+?^${}()|[\]\\]/g, '\\\\$&')}:\s*([^;]+);`),
+    );
     if (match) {
       console.log('Found match:', token, '->', match[1]);
     } else {
@@ -22,23 +24,23 @@ function getHexFromToken(token) {
 
   const content = readFile('src/styles/design-tokens.json');
   const json = JSON.parse(content);
-  const tokenEntry = json.tokens.find(t => t.name === token);
+  const tokenEntry = json.tokens.find((t) => t.name === token);
   return tokenEntry?.value || null;
 }
 
 // Test the tokens from the failing contrast pairs
 testTokens = [
   '--ds-primitive-color-maroon-950',
-  '--ds-primitive-color-white', 
+  '--ds-primitive-color-white',
   '--ds-primitive-color-cream-50',
   '--ds-primitive-color-neutral-950',
   '--ds-primitive-color-neutral-700',
   '--ds-primitive-color-cream-100',
-  '--ds-primitive-color-neutral-800'
+  '--ds-primitive-color-neutral-800',
 ];
 
 console.log('=== TESTING TOKEN RESOLUTION ===');
-testTokens.forEach(token => {
+testTokens.forEach((token) => {
   const hex = getHexFromToken(token);
   console.log(token, '->', hex);
 });
@@ -46,7 +48,7 @@ testTokens.forEach(token => {
 console.log('\n=== TESTING CONTRAST CALCULATION ===');
 const pairs = [
   ['--ds-primitive-color-maroon-950', '--ds-primitive-color-white'],
-  ['--ds-primitive-color-maroon-950', '--ds-primitive-color-cream-50']
+  ['--ds-primitive-color-maroon-950', '--ds-primitive-color-cream-50'],
 ];
 
 function calculateRelativeLuminance(colorToken) {
@@ -56,7 +58,7 @@ function calculateRelativeLuminance(colorToken) {
     return 0;
   }
   console.log('Resolved:', colorToken, '->', hex);
-  
+
   const normalized = hex.replace('#', '');
   if (normalized.length === 3) {
     const r = normalized[0] + normalized[0];
@@ -76,12 +78,12 @@ function calculateRelativeLuminance(colorToken) {
 function calculateContrastRatio(foreground, background) {
   const fgLuminance = calculateRelativeLuminance(foreground);
   const bgLuminance = calculateRelativeLuminance(background);
-  
+
   if (!fgLuminance || !bgLuminance) return 0;
-  
+
   const lighter = Math.max(fgLuminance, bgLuminance);
   const darker = Math.min(fgLuminance, bgLuminance);
-  
+
   return (lighter + 0.05) / (darker + 0.05);
 }
 

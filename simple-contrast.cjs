@@ -40,10 +40,10 @@ console.log('Testing the actual contrast pairs from design-tokens.json');
 console.log();
 
 // Manually extract the hex values from primitives.css
-simpleExtract = function() {
+simpleExtract = function () {
   const primitivesContent = fs.readFileSync('src/styles/tokens/primitives.css', 'utf-8');
   const tokens = {};
-  
+
   // Simple line-by-line parsing
   const lines = primitivesContent.split('\n');
   for (let i = 0; i < lines.length; i++) {
@@ -57,9 +57,9 @@ simpleExtract = function() {
       }
     }
   }
-  
+
   return tokens;
-}
+};
 
 const tokens = simpleExtract();
 
@@ -68,11 +68,14 @@ const contrastPairs = [
   { fg: '--ds-primitive-color-maroon-950', bg: '--ds-primitive-color-cream-50', required: 4.5 },
   { fg: '--ds-primitive-color-neutral-950', bg: '--ds-primitive-color-cream-50', required: 4.5 },
   { fg: '--ds-primitive-color-neutral-700', bg: '--ds-primitive-color-cream-100', required: 3 },
-  { fg: '--ds-primitive-color-neutral-800', bg: '--ds-primitive-color-cream-50', required: 3 }
+  { fg: '--ds-primitive-color-neutral-800', bg: '--ds-primitive-color-cream-50', required: 3 },
 ];
 
 console.log('\nTokens found:', Object.keys(tokens).length);
-console.log('Looking for tokens:', contrastPairs.map(p => p.fg + ' and ' + p.bg));
+console.log(
+  'Looking for tokens:',
+  contrastPairs.map((p) => p.fg + ' and ' + p.bg),
+);
 console.log();
 
 let allPassed = true;
@@ -80,7 +83,7 @@ let allPassed = true;
 contrastPairs.forEach((pair, index) => {
   const fgHex = tokens[pair.fg];
   const bgHex = tokens[pair.bg];
-  
+
   if (!fgHex || !bgHex) {
     console.log('Pair', index + 1, ': MISSING TOKENS!');
     console.log('  ' + pair.fg + ': ' + (fgHex || 'NOT FOUND'));
@@ -88,13 +91,17 @@ contrastPairs.forEach((pair, index) => {
     allPassed = false;
     return;
   }
-  
-  console.log('Pair', index + 1, ': ' + pair.fg + ' (' + fgHex + ') on ' + pair.bg + ' (' + bgHex + ')');
+
+  console.log(
+    'Pair',
+    index + 1,
+    ': ' + pair.fg + ' (' + fgHex + ') on ' + pair.bg + ' (' + bgHex + ')',
+  );
   console.log('  Required ratio: ' + pair.required);
-  
+
   const ratio = calculateContrastRatio(fgHex, bgHex);
   console.log('  Calculated ratio: ' + ratio.toFixed(2));
-  
+
   if (ratio >= pair.required) {
     console.log('  Result: ✅ PASS (meets WCAG AA requirement)');
   } else {
@@ -107,8 +114,8 @@ contrastPairs.forEach((pair, index) => {
 console.log('=== FINAL VERIFICATION ===');
 if (allPassed) {
   console.log('✅ ALL CONTRAST PAIRS MEET WCAG AA REQUIREMENTS');
-  console.log('The QA Engineer\'s implementation is correct.');
+  console.log("The QA Engineer's implementation is correct.");
 } else {
   console.log('❌ SOME CONTRAST PAIRS FAIL WCAG AA VALIDATION');
-  console.log('The QA Engineer\'s implementation needs to be reviewed.');
+  console.log("The QA Engineer's implementation needs to be reviewed.");
 }

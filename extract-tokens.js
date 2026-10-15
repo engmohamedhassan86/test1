@@ -1,5 +1,5 @@
 // Helper function to read file content
-system.readFile = function(filePath) {
+system.readFile = function (filePath) {
   if (typeof fs !== 'undefined' && typeof path !== 'undefined') {
     try {
       return fs.readFileSync(path.join(process.cwd(), filePath), 'utf-8');
@@ -18,7 +18,9 @@ function extractPrimitiveTokens() {
   if (!content) return [];
 
   var matches = content.match(/^\s*--ds-primitive-[a-zA-Z0-9-]+(?::[^;]+;)?/gm) || [];
-  return matches.map(function(m) { return m.trim().replace(/:\s*.*$/, ''); });
+  return matches.map(function (m) {
+    return m.trim().replace(/:\s*.*$/, '');
+  });
 }
 
 /**
@@ -34,7 +36,9 @@ function extractAllCssTokens() {
 
     // Extract all --ds-* token definitions
     var tokenMatches = content.match(/^\s*--ds-[a-zA-Z0-9-]*:/gm) || [];
-    var tokens = tokenMatches.map(function(t) { return t.trim().replace(':', ''); });
+    var tokens = tokenMatches.map(function (t) {
+      return t.trim().replace(':', '');
+    });
     allTokens.push(...tokens);
   }
 
@@ -54,7 +58,9 @@ function getAllResolvedTokens() {
     var json = JSON.parse(content);
 
     // Include all tokens from JSON, CSS, and primitives.css
-    var jsonTokens = json.tokens.map(function(t) { return t.name; });
+    var jsonTokens = json.tokens.map(function (t) {
+      return t.name;
+    });
 
     return Array.from(new Set([...cssTokens, ...jsonTokens, ...primitiveTokens]));
   } catch (e) {
