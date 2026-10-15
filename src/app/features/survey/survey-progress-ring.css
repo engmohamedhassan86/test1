@@ -1,0 +1,46 @@
+/* Colours and sizing come from the design-token layer in src/styles/tokens. */
+
+.ds-progress-ring {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-size-progress-ring);
+  height: var(--ds-size-progress-ring);
+}
+
+.ds-progress-ring__svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ds-progress-ring__track {
+  fill: none;
+  stroke: var(--ds-color-dock-text-muted);
+  stroke-width: var(--ds-space-1);
+  opacity: 0.4;
+}
+
+.ds-progress-ring__fill {
+  fill: none;
+  stroke: var(--ds-color-accent-decorative);
+  stroke-width: var(--ds-space-1);
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--ds-motion-duration-base) var(--ds-motion-easing-standard);
+}
+
+.ds-progress-ring__percent {
+  position: absolute;
+  color: var(--ds-color-dock-text);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-progress-ring__step {
+  margin: var(--ds-space-1) 0 0 0;
+  color: var(--ds-color-dock-text-muted);
+  font-size: var(--ds-font-size-xs);
+}

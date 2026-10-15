@@ -20,6 +20,10 @@
   <app-survey-shell>
     <h1 class="ds-survey__title">{{ current.survey.title }}</h1>
 
+    <!-- R3: the visual progress indicator alongside `ds-nav__position`'s existing text
+       label (FR-032) — this adds to that label, it does not replace or duplicate it. -->
+    <app-survey-progress-card />
+
     @if (current.kind === 'validation-error') {
       <!-- FR-030: `validation-error` renders as `editing` **plus** the summary and the
          per-question errors `question-host` draws. Next and Submit stay enabled on

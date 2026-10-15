@@ -5,6 +5,7 @@
  */
 
 import {
+  answeredCountLabel,
   attachmentCounterMessage,
   attachmentErrorMessage,
   attachmentRejectionMessage,
@@ -18,6 +19,10 @@ import {
   minLengthMessage,
   minSelectionsMessage,
   multiplePagesInvalidMessage,
+  pagePositionPillLabel,
+  percentCompletedLabel,
+  progressRingAccessibleLabel,
+  progressRingStepLabel,
   requiredRadioMessage,
   requiredTextMessage,
   requiredToggleMessage,
@@ -300,5 +305,32 @@ describe('the counter, the hint and the announcements', () => {
   it('renders a zero count plainly rather than hiding that half of the badge', () => {
     expect(stepBadgeLabel(0, 1, 0, 4)).toBe('STEP 1 OF 1 · 0 REQUIRED · 4 OPTIONAL');
     expect(stepBadgeLabel(0, 1, 4, 0)).toBe('STEP 1 OF 1 · 4 REQUIRED · 0 OPTIONAL');
+  });
+
+  it('builds the progress card pill from a 0-based page index (PRI-71)', () => {
+    expect(pagePositionPillLabel(0, 3)).toBe('PAGE 1 OF 3');
+    expect(pagePositionPillLabel(2, 3)).toBe('PAGE 3 OF 3');
+  });
+
+  it('states the progress card percent row', () => {
+    expect(percentCompletedLabel(33)).toBe('33% Completed');
+    expect(percentCompletedLabel(0)).toBe('0% Completed');
+  });
+
+  it('states the progress card answered count, including the zero case', () => {
+    expect(answeredCountLabel(0, 8)).toBe('0 of 8 answered');
+    expect(answeredCountLabel(2, 5)).toBe('2 of 5 answered');
+  });
+
+  it('builds the progress ring step text from a 0-based page index (PRI-71)', () => {
+    expect(progressRingStepLabel(0, 3)).toBe('Step 1 of 3');
+    expect(progressRingStepLabel(2, 3)).toBe('Step 3 of 3');
+  });
+
+  it('folds the progress ring percent and step into one accessible label', () => {
+    expect(progressRingAccessibleLabel(0, 0, 3)).toBe('Survey progress: 0% complete, Step 1 of 3');
+    expect(progressRingAccessibleLabel(67, 2, 3)).toBe(
+      'Survey progress: 67% complete, Step 3 of 3',
+    );
   });
 });

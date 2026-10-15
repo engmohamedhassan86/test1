@@ -1,0 +1,13 @@
+<section class="ds-progress-card">
+  <div class="ds-progress-card__row">
+    <span class="ds-badge">{{ pillLabel() }}</span>
+    <span class="ds-progress-card__percent">{{ percentLabel() }}</span>
+  </div>
+
+  <!-- Decorative: the percent above already carries this as text (R3, FR-032 precedent). -->
+  <div class="ds-progress" aria-hidden="true">
+    <div class="ds-progress__bar" [style.--progress-fill-percent]="percent()"></div>
+  </div>
+
+  <p class="ds-progress-card__answered">{{ answeredLabel() }}</p>
+</section>

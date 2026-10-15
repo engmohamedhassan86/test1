@@ -19,4 +19,10 @@
       </li>
     }
   </ol>
+
+  @if (steps().length > 0) {
+    <div class="ds-dock__footer">
+      <app-survey-progress-ring />
+    </div>
+  }
 </nav>

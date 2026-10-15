@@ -90,6 +90,12 @@ describe('SurveyDockComponent', () => {
     }
   });
 
+  it('mounts the progress ring in a footer after the step list (PRI-71)', async () => {
+    const harness = await mountWithSession(SurveyDockComponent, threePageSurvey());
+
+    expect(harness.host.querySelector('.ds-dock__footer app-survey-progress-ring')).not.toBeNull();
+  });
+
   it('renders no steps before a survey is open, rather than throwing', async () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -107,6 +113,8 @@ describe('SurveyDockComponent', () => {
     const fixture = TestBed.createComponent(SurveyDockComponent);
     await fixture.whenStable();
 
-    expect(steps(fixture.nativeElement as HTMLElement)).toHaveLength(0);
+    const host = fixture.nativeElement as HTMLElement;
+    expect(steps(host)).toHaveLength(0);
+    expect(host.querySelector('.ds-dock__footer')).toBeNull();
   });
 });

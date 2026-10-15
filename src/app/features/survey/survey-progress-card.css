@@ -1,0 +1,40 @@
+/* Colours and sizing come from the design-token layer in src/styles/tokens. */
+
+.ds-progress-card {
+  max-width: var(--ds-size-content-max-width);
+  margin-inline: auto;
+  margin-block-end: var(--ds-space-5);
+  padding: var(--ds-space-5);
+  background-color: var(--ds-color-surface);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-resting);
+}
+
+.ds-progress-card__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-3);
+  margin-block-end: var(--ds-space-3);
+}
+
+/*
+ * `--ds-color-accent-decorative` (gold-600) is documented in design-tokens.json as a
+ * 3:1 pair on white — large-text/decorative use only. This row is `--ds-font-size-sm`,
+ * which does not qualify as large text, so it uses `--ds-color-primary` instead: the
+ * same role link/button text already relies on, ~11:1 on `--ds-color-surface`.
+ */
+.ds-progress-card__percent {
+  color: var(--ds-color-primary);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-progress-card__answered {
+  margin: var(--ds-space-3) 0 0 0;
+  color: var(--ds-color-secondary-text);
+  font-size: var(--ds-font-size-sm);
+  font-variant-numeric: tabular-nums;
+}

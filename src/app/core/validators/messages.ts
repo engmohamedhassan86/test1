@@ -304,3 +304,34 @@ export function stepBadgeLabel(
 ): string {
   return `STEP ${pageIndex + 1} OF ${pageCount} · ${requiredCount} REQUIRED · ${optionalCount} OPTIONAL`;
 }
+
+// --- progress card and progress ring (PRI-71) ----------------------------------------
+
+/** The progress card's page pill, e.g. "PAGE 1 OF 3". `pageIndex` is 0-based. */
+export function pagePositionPillLabel(pageIndex: number, pageCount: number): string {
+  return `PAGE ${pageIndex + 1} OF ${pageCount}`;
+}
+
+/** The progress card's percent row, e.g. "33% Completed". */
+export function percentCompletedLabel(percent: number): string {
+  return `${percent}% Completed`;
+}
+
+/** The progress card's per-page answered count, e.g. "0 of 8 answered". */
+export function answeredCountLabel(answered: number, total: number): string {
+  return `${answered} of ${total} answered`;
+}
+
+/** The progress ring's secondary text, e.g. "Step 1 of 3". `pageIndex` is 0-based. */
+export function progressRingStepLabel(pageIndex: number, pageCount: number): string {
+  return `Step ${pageIndex + 1} of ${pageCount}`;
+}
+
+/** The progress ring's accessible name, carrying both numbers the ring draws graphically. */
+export function progressRingAccessibleLabel(
+  percent: number,
+  pageIndex: number,
+  pageCount: number,
+): string {
+  return `Survey progress: ${percent}% complete, ${progressRingStepLabel(pageIndex, pageCount)}`;
+}

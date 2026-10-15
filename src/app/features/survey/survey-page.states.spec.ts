@@ -74,6 +74,10 @@ describe('SurveyPageComponent — states', () => {
     );
     expect(harness.host.querySelector('app-survey-page-body')).not.toBeNull();
     expect(harness.host.querySelector('app-survey-navigation')).not.toBeNull();
+    // PRI-71: the progress card sits above the survey card, alongside — not instead of —
+    // `ds-nav__position`'s existing "Page N of M" text (FR-032).
+    expect(harness.host.querySelector('app-survey-progress-card')).not.toBeNull();
+    expect(harness.host.querySelector('.ds-nav__position')).not.toBeNull();
     expect(harness.session.state().kind).toBe('ready');
   });
 

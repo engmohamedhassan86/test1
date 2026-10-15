@@ -1,0 +1,15 @@
+<div class="ds-progress-ring" role="img" [attr.aria-label]="accessibleLabel()">
+  <svg class="ds-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+    <circle class="ds-progress-ring__track" cx="24" cy="24" [attr.r]="radius" />
+    <circle
+      class="ds-progress-ring__fill"
+      cx="24"
+      cy="24"
+      [attr.r]="radius"
+      [style.stroke-dasharray]="circumference"
+      [style.stroke-dashoffset]="dashOffset()"
+    />
+  </svg>
+  <span class="ds-progress-ring__percent" aria-hidden="true">{{ percentDisplay() }}</span>
+</div>
+<p class="ds-progress-ring__step" aria-hidden="true">{{ stepLabel() }}</p>

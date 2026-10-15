@@ -49,6 +49,7 @@ import { SubmissionConfirmationComponent } from './submission-confirmation';
 import { SubmissionErrorBannerComponent } from './submission-error-banner';
 import { SurveyNavigationComponent } from './survey-navigation';
 import { SurveyPageBodyComponent } from './survey-page-body';
+import { SurveyProgressCardComponent } from './survey-progress-card';
 import { SurveyShellComponent } from './survey-shell';
 import { ValidationSummaryComponent } from './validation-summary';
 
@@ -61,6 +62,7 @@ import { ValidationSummaryComponent } from './validation-summary';
     SubmissionErrorBannerComponent,
     SurveyNavigationComponent,
     SurveyPageBodyComponent,
+    SurveyProgressCardComponent,
     SurveyShellComponent,
     ValidationSummaryComponent,
   ],

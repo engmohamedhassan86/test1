@@ -21,6 +21,7 @@ import {
   questionCountLabel,
   type DockStepState,
 } from '../../core/validators/messages';
+import { SurveyProgressRingComponent } from './survey-progress-ring';
 
 interface DockStep {
   readonly page: SurveyPage;
@@ -37,6 +38,7 @@ function stepStateOf(index: number, currentIndex: number): DockStepState {
 
 @Component({
   selector: 'app-survey-dock',
+  imports: [SurveyProgressRingComponent],
   templateUrl: './survey-dock.html',
   styleUrl: './survey-dock.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

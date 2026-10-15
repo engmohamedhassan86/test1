@@ -73,6 +73,12 @@ import { buildSurveyResponse } from './survey-response-payload';
 import type { EncodedAttachments } from './survey-response-payload';
 import { SURVEY_TIMEOUTS } from './survey-timeouts';
 
+/** The current page's answered/total question count — PRI-71's progress card. */
+export interface PageAnswerSummary {
+  readonly answered: number;
+  readonly total: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SurveySessionService {
   private readonly announcer = inject(AnnouncerService);
@@ -120,6 +126,22 @@ export class SurveySessionService {
   readonly currentPage = computed<SurveyPage | null>(
     () => this.survey()?.pages[this.pageIndex()] ?? null,
   );
+
+  /**
+   * How many of the current page's questions carry an answer — PRI-71's progress card.
+   *
+   * A question counts as answered the same way `setAnswer`/`clearAnswer` decide it: present
+   * in `answerMap` or not. No separate "is this answered" rule is introduced here.
+   */
+  readonly currentPageAnswerSummary = computed<PageAnswerSummary>(() => {
+    const page = this.currentPage();
+    if (page === null) {
+      return { answered: 0, total: 0 };
+    }
+    const answers = this.answerMap();
+    const answered = page.questions.filter((question) => answers.has(question.id)).length;
+    return { answered, total: page.questions.length };
+  });
 
   /** FR-032. One-based for the respondent; `Page 0 of 0` is unreachable while rendering. */
   readonly positionLabel = computed(() => `Page ${this.pageIndex() + 1} of ${this.pageCount()}`);

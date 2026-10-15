@@ -149,6 +149,10 @@
       "kind": "element"
     },
     {
+      "name": ".ds-dock__footer",
+      "kind": "element"
+    },
+    {
       "name": ".ds-drawer",
       "kind": "block"
     },
@@ -266,6 +270,46 @@
     },
     {
       "name": ".ds-progress__label",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-progress-card",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-progress-card__row",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-progress-card__percent",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-progress-card__answered",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-progress-ring",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-progress-ring__svg",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-progress-ring__track",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-progress-ring__fill",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-progress-ring__percent",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-progress-ring__step",
       "kind": "element"
     },
     {

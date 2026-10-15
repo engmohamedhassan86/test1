@@ -1087,5 +1087,56 @@ describe('SurveySessionService', () => {
       expect(session.currentPageErrors().map((error) => error.questionId)).toEqual(['q_pick']);
       expect(session.state().kind).toBe('validation-error');
     });
+
+    it('reports an empty page as 0 of 0 answered (PRI-71)', () => {
+      const session = configure(new AcknowledgingSurveyResponseGateway());
+      session.open(survey([page('p1', 'Empty', [])]));
+
+      expect(session.currentPageAnswerSummary()).toEqual({ answered: 0, total: 0 });
+    });
+
+    it('reports 0 of N answered before any answer is set', () => {
+      const session = configure(new AcknowledgingSurveyResponseGateway());
+      session.open(twoPageSurvey());
+
+      expect(session.currentPageAnswerSummary()).toEqual({ answered: 0, total: 1 });
+    });
+
+    it('counts only the current page’s answered questions, not other pages’ (PRI-71)', () => {
+      const session = configure(new AcknowledgingSurveyResponseGateway());
+      const subject = survey([
+        page('p1', 'First', [
+          textboxQuestion({ id: 'q_name', required: true, minLength: 2 }),
+          radioQuestion({ id: 'q_pick', required: true }),
+        ]),
+        page('p2', 'Second', [radioQuestion({ id: 'q_other', required: true })]),
+      ]);
+      session.open(subject);
+
+      session.setAnswer(questionOn(subject, 0, 0), { kind: 'text', value: 'Dana' });
+      expect(session.currentPageAnswerSummary()).toEqual({ answered: 1, total: 2 });
+
+      session.setAnswer(questionOn(subject, 0, 1), {
+        kind: 'option',
+        value: optionValue('a'),
+      });
+      expect(session.currentPageAnswerSummary()).toEqual({ answered: 2, total: 2 });
+
+      // Page 2's own answer must not be counted while page 1 is current, and vice versa.
+      session.next();
+      expect(session.currentPageAnswerSummary()).toEqual({ answered: 0, total: 1 });
+    });
+
+    it('drops back to 0 answered for that question when an answer is cleared', () => {
+      const session = configure(new AcknowledgingSurveyResponseGateway());
+      const subject = requiredRadioSurvey();
+      session.open(subject);
+
+      session.setAnswer(questionOn(subject, 0, 0), { kind: 'option', value: optionValue('a') });
+      expect(session.currentPageAnswerSummary()).toEqual({ answered: 1, total: 1 });
+
+      session.clearAnswer(questionOn(subject, 0, 0).id);
+      expect(session.currentPageAnswerSummary()).toEqual({ answered: 0, total: 1 });
+    });
   });
 });
