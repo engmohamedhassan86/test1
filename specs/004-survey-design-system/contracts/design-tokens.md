@@ -172,6 +172,21 @@ this `rgba()` literal is only legal here because it lives in `tokens/primitives.
 | `--ds-primitive-motion-easing-decelerate` | `cubic-bezier(0, 0, 0, 1)`   |
 | `--ds-primitive-motion-easing-accelerate` | `cubic-bezier(0.3, 0, 1, 1)` |
 
+### 1.11 Layout — dock/drawer/shell sizing, new (gap #65, dock/brand rebrand)
+
+Named exceptions appended outside the ascending `--ds-primitive-space-{0…9}` scale, same pattern as
+`--ds-primitive-space-touch-min` in §1.7. Values are round, implementation-chosen dimensions (no
+browser-measured reference exists yet — the dock/drawer shell itself is not built in this repo); a
+later task may tune them against a real rendered layout without it being a token-contract break, as
+long as this table and `tokens/primitives.css` are updated together.
+
+| Token                                     | Value   | Note                             |
+| ----------------------------------------- | ------- | -------------------------------- |
+| `--ds-primitive-space-dock-width`         | `320px` | Persistent desktop dock width    |
+| `--ds-primitive-space-rail-width`         | `72px`  | Collapsed dock (icon rail) width |
+| `--ds-primitive-space-topbar-height`      | `64px`  | Mobile/collapsed topbar height   |
+| `--ds-primitive-space-progress-ring-size` | `56px`  | Circular progress-ring diameter  |
+
 ## 2. Semantic tokens (`tokens/semantic.css`)
 
 Every value below is a `var()` expression. Component classes (`contracts/css-classes.md`) consume these,
@@ -187,28 +202,34 @@ never the primitives in §1 directly.
 
 ### 2.2 Colour roles (what components actually reference)
 
-| Token                                                                                  | Value                                                                                        | Usage                                                                                    |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `--ds-color-primary`                                                                   | `var(--ds-color-primary-700)`                                                                | Primary buttons, links, brand accents                                                    |
-| `--ds-color-primary-hover`                                                             | `var(--ds-color-primary-800)`                                                                | Primary button hover/active background                                                   |
-| `--ds-color-primary-active`                                                            | `var(--ds-color-primary-900)`                                                                | Primary button pressed background                                                        |
-| `--ds-color-on-primary`                                                                | `var(--ds-primitive-color-white)`                                                            | Text/icons on a primary-filled surface                                                   |
-| `--ds-color-secondary`                                                                 | `var(--ds-color-secondary-600)`                                                              | Gradient stops, icons, large/bold accent text (≥18.66px) — **not** normal body text (R1) |
-| `--ds-color-secondary-text`                                                            | `var(--ds-color-secondary-700)`                                                              | Gold text at normal body size (AA-verified)                                              |
-| `--ds-color-tertiary-surface`                                                          | `var(--ds-color-tertiary-200)`                                                               | Page background                                                                          |
-| `--ds-color-surface`                                                                   | `var(--ds-primitive-color-white)`                                                            | Card / panel background                                                                  |
-| `--ds-color-surface-sunken`                                                            | `var(--ds-color-tertiary-50)`                                                                | Input background, subtle recessed areas                                                  |
-| `--ds-color-text`                                                                      | `var(--ds-color-neutral-900)`                                                                | Default body/heading text                                                                |
-| `--ds-color-text-muted`                                                                | `var(--ds-color-neutral-600)`                                                                | Secondary/description text                                                               |
-| `--ds-color-text-on-primary`                                                           | `var(--ds-primitive-color-white)`                                                            | Text on primary-filled surfaces                                                          |
-| `--ds-color-border-default`                                                            | `var(--ds-color-neutral-500)`                                                                | Default input/choice-tile border (AA non-text 3:1)                                       |
-| `--ds-color-border-subtle`                                                             | `var(--ds-color-neutral-300)`                                                                | Decorative dividers, card borders (shadow carries the separation)                        |
-| `--ds-color-border-selected`                                                           | `var(--ds-color-primary-700)`                                                                | Selected choice-tile / focused field border                                              |
-| `--ds-color-focus-ring`                                                                | `var(--ds-color-primary-700)`                                                                | Keyboard focus ring (all interactive elements)                                           |
-| `--ds-color-success` / `-warning` / `-error` / `-info`                                 | `var(--ds-color-*-600)`                                                                      | Status text/icon, AA-verified                                                            |
-| `--ds-color-success-surface` / `-warning-surface` / `-error-surface` / `-info-surface` | `var(--ds-color-*-50)`                                                                       | Status banner background                                                                 |
-| `--ds-color-progress-track`                                                            | `var(--ds-color-tertiary-200)`                                                               | Progress bar track                                                                       |
-| `--ds-color-progress-fill`                                                             | `linear-gradient(90deg, var(--ds-color-primary-700) 0%, var(--ds-color-secondary-600) 100%)` | Progress bar fill (maroon→gold)                                                          |
+| Token                                                                                  | Value                                                                                        | Usage                                                                                                 |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `--ds-color-primary`                                                                   | `var(--ds-color-primary-700)`                                                                | Primary buttons, links, brand accents                                                                 |
+| `--ds-color-primary-hover`                                                             | `var(--ds-color-primary-800)`                                                                | Primary button hover/active background                                                                |
+| `--ds-color-primary-active`                                                            | `var(--ds-color-primary-900)`                                                                | Primary button pressed background                                                                     |
+| `--ds-color-on-primary`                                                                | `var(--ds-primitive-color-white)`                                                            | Text/icons on a primary-filled surface                                                                |
+| `--ds-color-secondary`                                                                 | `var(--ds-color-secondary-600)`                                                              | Gradient stops, icons, large/bold accent text (≥18.66px) — **not** normal body text (R1)              |
+| `--ds-color-secondary-text`                                                            | `var(--ds-color-secondary-700)`                                                              | Gold text at normal body size (AA-verified)                                                           |
+| `--ds-color-tertiary-surface`                                                          | `var(--ds-color-tertiary-200)`                                                               | Page background                                                                                       |
+| `--ds-color-surface`                                                                   | `var(--ds-primitive-color-white)`                                                            | Card / panel background                                                                               |
+| `--ds-color-surface-sunken`                                                            | `var(--ds-color-tertiary-50)`                                                                | Input background, subtle recessed areas                                                               |
+| `--ds-color-text`                                                                      | `var(--ds-color-neutral-900)`                                                                | Default body/heading text                                                                             |
+| `--ds-color-text-muted`                                                                | `var(--ds-color-neutral-600)`                                                                | Secondary/description text                                                                            |
+| `--ds-color-text-on-primary`                                                           | `var(--ds-primitive-color-white)`                                                            | Text on primary-filled surfaces                                                                       |
+| `--ds-color-border-default`                                                            | `var(--ds-color-neutral-500)`                                                                | Default input/choice-tile border (AA non-text 3:1)                                                    |
+| `--ds-color-border-subtle`                                                             | `var(--ds-color-neutral-300)`                                                                | Decorative dividers, card borders (shadow carries the separation)                                     |
+| `--ds-color-border-selected`                                                           | `var(--ds-color-primary-700)`                                                                | Selected choice-tile / focused field border                                                           |
+| `--ds-color-focus-ring`                                                                | `var(--ds-color-primary-700)`                                                                | Keyboard focus ring (all interactive elements)                                                        |
+| `--ds-color-success` / `-warning` / `-error` / `-info`                                 | `var(--ds-color-*-600)`                                                                      | Status text/icon, AA-verified                                                                         |
+| `--ds-color-success-surface` / `-warning-surface` / `-error-surface` / `-info-surface` | `var(--ds-color-*-50)`                                                                       | Status banner background                                                                              |
+| `--ds-color-progress-track`                                                            | `var(--ds-color-tertiary-200)`                                                               | Progress bar track                                                                                    |
+| `--ds-color-progress-fill`                                                             | `linear-gradient(90deg, var(--ds-color-primary-700) 0%, var(--ds-color-secondary-600) 100%)` | Progress bar fill (maroon→gold)                                                                       |
+| `--ds-color-canvas`                                                                    | `var(--ds-color-tertiary-50)`                                                                | Dock-shell page canvas — background behind the survey card (gap #65)                                  |
+| `--ds-color-dock-surface-start`                                                        | `var(--ds-color-primary-900)`                                                                | Dock/drawer background gradient, lighter stop (gap #65)                                               |
+| `--ds-color-dock-surface-end`                                                          | `var(--ds-color-primary-950)`                                                                | Dock/drawer background gradient, darker stop (gap #65)                                                |
+| `--ds-color-dock-text`                                                                 | `var(--ds-color-tertiary-300)`                                                               | Readable text on the dock/drawer surface, AA-verified against both gradient stops (gap #65)           |
+| `--ds-color-dock-text-muted`                                                           | `var(--ds-color-secondary-400)`                                                              | Muted, gold-tinted text on the dock/drawer surface, AA-verified against both gradient stops (gap #65) |
+| `--ds-color-accent-decorative`                                                         | `var(--ds-color-secondary-600)`                                                              | Progress-ring stroke / decorative gradient accents on light surfaces (AA non-text 3:1 — gap #65)      |
 
 ### 2.3 Typography roles
 
@@ -222,17 +243,22 @@ never the primitives in §1 directly.
 
 ### 2.4 Spacing, sizing, radius, elevation, motion roles
 
-| Token                                                   | Value                                                 |
-| ------------------------------------------------------- | ----------------------------------------------------- |
-| `--ds-space-{0…9}`                                      | `var(--ds-primitive-space-*)`                         |
-| `--ds-size-control-min`                                 | `var(--ds-primitive-space-touch-min)` (44px — FR-091) |
-| `--ds-size-content-max-width`                           | `var(--ds-primitive-space-content-max-width)`         |
-| `--ds-size-focus-ring-width`                            | `var(--ds-primitive-space-focus-ring-width)`          |
-| `--ds-size-focus-ring-offset`                           | `var(--ds-primitive-space-focus-ring-offset)`         |
-| `--ds-radius-{sm\|md\|lg\|xl\|pill\|full}`              | `var(--ds-primitive-radius-*)`                        |
-| `--ds-shadow-{resting\|raised\|overlay}`                | `var(--ds-primitive-shadow-*)`                        |
-| `--ds-motion-duration-{instant\|fast\|base\|slow}`      | `var(--ds-primitive-motion-duration-*)`               |
-| `--ds-motion-easing-{standard\|decelerate\|accelerate}` | `var(--ds-primitive-motion-easing-*)`                 |
+| Token                                                   | Value                                                                 |
+| ------------------------------------------------------- | --------------------------------------------------------------------- |
+| `--ds-space-{0…9}`                                      | `var(--ds-primitive-space-*)`                                         |
+| `--ds-size-control-min`                                 | `var(--ds-primitive-space-touch-min)` (44px — FR-091)                 |
+| `--ds-size-content-max-width`                           | `var(--ds-primitive-space-content-max-width)`                         |
+| `--ds-size-focus-ring-width`                            | `var(--ds-primitive-space-focus-ring-width)`                          |
+| `--ds-size-focus-ring-offset`                           | `var(--ds-primitive-space-focus-ring-offset)`                         |
+| `--ds-size-dock-width`                                  | `var(--ds-primitive-space-dock-width)` (320px — gap #65)              |
+| `--ds-size-rail-width`                                  | `var(--ds-primitive-space-rail-width)` (72px — gap #65)               |
+| `--ds-size-drawer-width`                                | `var(--ds-primitive-space-dock-width)` (same as dock width — gap #65) |
+| `--ds-size-topbar-height`                               | `var(--ds-primitive-space-topbar-height)` (64px — gap #65)            |
+| `--ds-size-progress-ring`                               | `var(--ds-primitive-space-progress-ring-size)` (56px — gap #65)       |
+| `--ds-radius-{sm\|md\|lg\|xl\|pill\|full}`              | `var(--ds-primitive-radius-*)`                                        |
+| `--ds-shadow-{resting\|raised\|overlay}`                | `var(--ds-primitive-shadow-*)`                                        |
+| `--ds-motion-duration-{instant\|fast\|base\|slow}`      | `var(--ds-primitive-motion-duration-*)`                               |
+| `--ds-motion-easing-{standard\|decelerate\|accelerate}` | `var(--ds-primitive-motion-easing-*)`                                 |
 
 ## 2.5 Icon masks (`tokens/icons.css`, PRI-66)
 
@@ -267,31 +293,42 @@ model value without a lookup table.
 Computed with the WCAG 2.1 relative-luminance formula (`research.md` R1). `minRatio` 4.5 = normal text,
 3 = large text (≥18.66px bold / ≥24px regular) or non-text UI (borders, icons conveying state).
 
-| Foreground                                                       | Background                                | Context     | Ratio   | Min |
-| ---------------------------------------------------------------- | ----------------------------------------- | ----------- | ------- | --- |
-| `--ds-color-text` (`neutral-900`)                                | `--ds-color-surface` (white)              | normal-text | 15.40:1 | 4.5 |
-| `--ds-color-text` (`neutral-900`)                                | `--ds-color-tertiary-surface` (cream-200) | normal-text | 13.98:1 | 4.5 |
-| `--ds-color-text-muted` (`neutral-600`)                          | `--ds-color-surface` (white)              | normal-text | 5.97:1  | 4.5 |
-| `--ds-color-text-muted` (`neutral-600`)                          | `--ds-color-tertiary-surface` (cream-200) | normal-text | 5.42:1  | 4.5 |
-| `--ds-color-on-primary` (white)                                  | `--ds-color-primary` (maroon-700)         | normal-text | 10.95:1 | 4.5 |
-| `--ds-color-secondary-text` (gold-700)                           | `--ds-color-surface` (white)              | normal-text | 5.14:1  | 4.5 |
-| `--ds-color-secondary-text` (gold-700)                           | `--ds-color-tertiary-surface` (cream-200) | normal-text | 4.67:1  | 4.5 |
-| `--ds-color-secondary` (gold-600)                                | `--ds-color-surface` (white)              | large-text  | 3.56:1  | 3   |
-| `--ds-color-border-default` (`neutral-500`)                      | `--ds-color-surface` (white)              | non-text-ui | 3.88:1  | 3   |
-| `--ds-color-border-default` (`neutral-500`)                      | `--ds-color-tertiary-surface` (cream-200) | non-text-ui | 3.52:1  | 3   |
-| `--ds-color-success` (success-600)                               | `--ds-color-surface` (white)              | normal-text | 5.33:1  | 4.5 |
-| `--ds-color-success` (success-600)                               | `--ds-color-tertiary-surface` (cream-200) | normal-text | 4.84:1  | 4.5 |
-| `--ds-color-on-primary` (white)                                  | `--ds-color-success` (success-600)        | normal-text | 5.33:1  | 4.5 |
-| `--ds-color-warning` (warning-600)                               | `--ds-color-surface` (white)              | normal-text | 5.43:1  | 4.5 |
-| `--ds-color-warning` (warning-600)                               | `--ds-color-tertiary-surface` (cream-200) | normal-text | 4.93:1  | 4.5 |
-| `--ds-color-on-primary` (white)                                  | `--ds-color-warning` (warning-600)        | normal-text | 5.43:1  | 4.5 |
-| `--ds-color-error` (error-600)                                   | `--ds-color-surface` (white)              | normal-text | 6.54:1  | 4.5 |
-| `--ds-color-error` (error-600)                                   | `--ds-color-tertiary-surface` (cream-200) | normal-text | 5.94:1  | 4.5 |
-| `--ds-color-on-primary` (white)                                  | `--ds-color-error` (error-600)            | normal-text | 6.54:1  | 4.5 |
-| `--ds-color-info` (info-600)                                     | `--ds-color-surface` (white)              | normal-text | 6.77:1  | 4.5 |
-| `--ds-color-info` (info-600)                                     | `--ds-color-tertiary-surface` (cream-200) | normal-text | 6.15:1  | 4.5 |
-| `--ds-color-on-primary` (white)                                  | `--ds-color-info` (info-600)              | normal-text | 6.77:1  | 4.5 |
-| `--ds-color-tertiary-300` (cream-300, sidebar/dark-surface text) | `--ds-color-primary-950` (maroon-950)     | normal-text | 14.53:1 | 4.5 |
+| Foreground                                                       | Background                                                                     | Context     | Ratio   | Min |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------- | ------- | --- |
+| `--ds-color-text` (`neutral-900`)                                | `--ds-color-surface` (white)                                                   | normal-text | 15.40:1 | 4.5 |
+| `--ds-color-text` (`neutral-900`)                                | `--ds-color-tertiary-surface` (cream-200)                                      | normal-text | 13.98:1 | 4.5 |
+| `--ds-color-text-muted` (`neutral-600`)                          | `--ds-color-surface` (white)                                                   | normal-text | 5.97:1  | 4.5 |
+| `--ds-color-text-muted` (`neutral-600`)                          | `--ds-color-tertiary-surface` (cream-200)                                      | normal-text | 5.42:1  | 4.5 |
+| `--ds-color-on-primary` (white)                                  | `--ds-color-primary` (maroon-700)                                              | normal-text | 10.95:1 | 4.5 |
+| `--ds-color-secondary-text` (gold-700)                           | `--ds-color-surface` (white)                                                   | normal-text | 5.14:1  | 4.5 |
+| `--ds-color-secondary-text` (gold-700)                           | `--ds-color-tertiary-surface` (cream-200)                                      | normal-text | 4.67:1  | 4.5 |
+| `--ds-color-secondary` (gold-600)                                | `--ds-color-surface` (white)                                                   | large-text  | 3.56:1  | 3   |
+| `--ds-color-border-default` (`neutral-500`)                      | `--ds-color-surface` (white)                                                   | non-text-ui | 3.88:1  | 3   |
+| `--ds-color-border-default` (`neutral-500`)                      | `--ds-color-tertiary-surface` (cream-200)                                      | non-text-ui | 3.52:1  | 3   |
+| `--ds-color-success` (success-600)                               | `--ds-color-surface` (white)                                                   | normal-text | 5.33:1  | 4.5 |
+| `--ds-color-success` (success-600)                               | `--ds-color-tertiary-surface` (cream-200)                                      | normal-text | 4.84:1  | 4.5 |
+| `--ds-color-on-primary` (white)                                  | `--ds-color-success` (success-600)                                             | normal-text | 5.33:1  | 4.5 |
+| `--ds-color-warning` (warning-600)                               | `--ds-color-surface` (white)                                                   | normal-text | 5.43:1  | 4.5 |
+| `--ds-color-warning` (warning-600)                               | `--ds-color-tertiary-surface` (cream-200)                                      | normal-text | 4.93:1  | 4.5 |
+| `--ds-color-on-primary` (white)                                  | `--ds-color-warning` (warning-600)                                             | normal-text | 5.43:1  | 4.5 |
+| `--ds-color-error` (error-600)                                   | `--ds-color-surface` (white)                                                   | normal-text | 6.54:1  | 4.5 |
+| `--ds-color-error` (error-600)                                   | `--ds-color-tertiary-surface` (cream-200)                                      | normal-text | 5.94:1  | 4.5 |
+| `--ds-color-on-primary` (white)                                  | `--ds-color-error` (error-600)                                                 | normal-text | 6.54:1  | 4.5 |
+| `--ds-color-info` (info-600)                                     | `--ds-color-surface` (white)                                                   | normal-text | 6.77:1  | 4.5 |
+| `--ds-color-info` (info-600)                                     | `--ds-color-tertiary-surface` (cream-200)                                      | normal-text | 6.15:1  | 4.5 |
+| `--ds-color-on-primary` (white)                                  | `--ds-color-info` (info-600)                                                   | normal-text | 6.77:1  | 4.5 |
+| `--ds-color-tertiary-300` (cream-300, sidebar/dark-surface text) | `--ds-color-primary-950` (maroon-950)                                          | normal-text | 14.53:1 | 4.5 |
+| `--ds-color-dock-text` (cream-300)                               | `--ds-color-dock-surface-start` (maroon-900, lighter/worst-case gradient stop) | normal-text | 12.34:1 | 4.5 |
+| `--ds-color-dock-text-muted` (gold-400)                          | `--ds-color-dock-surface-start` (maroon-900, lighter/worst-case gradient stop) | normal-text | 7.52:1  | 4.5 |
+| `--ds-color-accent-decorative` (gold-600)                        | `--ds-color-surface` (white)                                                   | non-text-ui | 3.56:1  | 3   |
+| `--ds-color-accent-decorative` (gold-600)                        | `--ds-color-tertiary-surface` (cream-200)                                      | non-text-ui | 3.23:1  | 3   |
+
+Dock-surface text pairs are checked against `--ds-color-dock-surface-start` (the lighter of the two
+gradient stops) because it is the lower-contrast case — both roles also pass, with higher margin,
+against the darker `--ds-color-dock-surface-end` stop. `--ds-color-accent-decorative` meets the
+non-text 3:1 minimum on both white and cream-200 (as computed above) but clears it by a small margin
+on cream-200 (3.23:1) — treat it as decorative/non-text only (progress-ring stroke, gradient accent),
+never as a text colour, on either surface.
 
 A token pair not listed here is not yet covered by the contract spec's contrast check. A new pairing
 (foreground token + background token actually used together for text or a meaningful UI boundary) must be

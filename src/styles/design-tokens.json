@@ -1133,6 +1133,11 @@
       "foreground": "--ds-primitive-color-gold-600",
       "background": "--ds-primitive-color-white",
       "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-gold-600",
+      "background": "--ds-primitive-color-cream-200",
+      "minRatio": 3
     }
   ]
 }

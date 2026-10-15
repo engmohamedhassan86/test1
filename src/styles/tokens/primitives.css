@@ -122,6 +122,10 @@
   --ds-primitive-space-content-max-width: 56rem;
   --ds-primitive-space-focus-ring-width: 2px;
   --ds-primitive-space-focus-ring-offset: 2px;
+  --ds-primitive-space-dock-width: 320px;
+  --ds-primitive-space-rail-width: 72px;
+  --ds-primitive-space-topbar-height: 64px;
+  --ds-primitive-space-progress-ring-size: 56px;
 
   /* Radius */
   --ds-primitive-radius-sm: 4px;

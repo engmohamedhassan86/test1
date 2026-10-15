@@ -104,6 +104,14 @@
     var(--ds-color-secondary-600) 100%
   );
 
+  /* Colour roles — dock/brand shell (consumed by the dock/drawer navigation feature) */
+  --ds-color-canvas: var(--ds-color-tertiary-50);
+  --ds-color-dock-surface-start: var(--ds-color-primary-900);
+  --ds-color-dock-surface-end: var(--ds-color-primary-950);
+  --ds-color-dock-text: var(--ds-color-tertiary-300);
+  --ds-color-dock-text-muted: var(--ds-color-secondary-400);
+  --ds-color-accent-decorative: var(--ds-color-secondary-600);
+
   /* Typography roles */
   --ds-font-family: var(--ds-primitive-font-family-base);
   --ds-font-size-xs: var(--ds-primitive-font-size-xs);
@@ -142,6 +150,11 @@
   --ds-size-content-max-width: var(--ds-primitive-space-content-max-width);
   --ds-size-focus-ring-width: var(--ds-primitive-space-focus-ring-width);
   --ds-size-focus-ring-offset: var(--ds-primitive-space-focus-ring-offset);
+  --ds-size-dock-width: var(--ds-primitive-space-dock-width);
+  --ds-size-rail-width: var(--ds-primitive-space-rail-width);
+  --ds-size-drawer-width: var(--ds-primitive-space-dock-width);
+  --ds-size-topbar-height: var(--ds-primitive-space-topbar-height);
+  --ds-size-progress-ring: var(--ds-primitive-space-progress-ring-size);
   --ds-radius-sm: var(--ds-primitive-radius-sm);
   --ds-radius-md: var(--ds-primitive-radius-md);
   --ds-radius-lg: var(--ds-primitive-radius-lg);
