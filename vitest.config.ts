@@ -26,13 +26,10 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'node',
+    environment: 'jsdom',
     setupFiles: ['src/test-setup.ts'],
     include: ['src/**/*.spec.ts'],
-    exclude: [
-      'src/styles/design-system-contract/**/*.ts',
-      'src/styles/design-system.contract.spec.ts',
-    ],
+    exclude: [],
     reporters: ['default'],
     deps: {
       external: ['node:buffer', 'node:fs', 'node:path', 'node:url'],

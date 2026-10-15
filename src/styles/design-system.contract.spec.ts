@@ -64,9 +64,15 @@ function findUnresolvedVarReferences(): string[] {
   const varRegex = /var\(--ds-[a-zA-Z0-9_-]+\)/g;
   const foundVars = Array.from(allCss.matchAll(varRegex), (m) => m[0]);
 
-  const resolvedSet = new Set(resolvedVars.map((v) => v.replace(':', '')));
+  const resolvedSet = new Set(resolvedVars);
 
-  return foundVars.map((v) => v.replace(':', '')).filter((v) => !resolvedSet.has(v));
+  return foundVars
+    .map((v) => {
+      const match = v.match(/--ds-[a-zA-Z0-9_-]+/);
+      return match ? match[0] : null;
+    })
+    .filter((token): token is string => token !== null)
+    .filter((v) => !resolvedSet.has(v));
 }
 
 /**
@@ -533,7 +539,7 @@ function getHexFromToken(token: string): string | null {
     const match = content.match(
       new RegExp(`${token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}:\s*([^;]+);`),
     );
-    return match ? match[1] : null;
+    return match ? match[1].trim() : null;
   }
 
   const content = readFile('src/styles/design-tokens.json');
