@@ -29,6 +29,7 @@ import type {
   AttachmentPolicy,
   CheckboxQuestion,
   DropdownQuestion,
+  PageIcon,
   Question,
   RadioQuestion,
   RatingQuestion,
@@ -214,8 +215,16 @@ export function page(
   title: string,
   questions: readonly Question[],
   description: string | null = null,
+  overrides: { readonly icon?: PageIcon | null; readonly estimatedMinutes?: number | null } = {},
 ): SurveyPage {
-  return { id: brand<PageId>(id), title, description, questions };
+  return {
+    id: brand<PageId>(id),
+    title,
+    description,
+    questions,
+    icon: overrides.icon ?? null,
+    estimatedMinutes: overrides.estimatedMinutes ?? null,
+  };
 }
 
 export function survey(
@@ -224,6 +233,7 @@ export function survey(
     readonly key?: string;
     readonly title?: string;
     readonly description?: string | null;
+    readonly estimatedMinutes?: number | null;
   } = {},
 ): Survey {
   return {
@@ -231,6 +241,7 @@ export function survey(
     title: overrides.title ?? 'Mini Pulse',
     description: overrides.description ?? null,
     pages,
+    estimatedMinutes: overrides.estimatedMinutes ?? null,
   };
 }
 

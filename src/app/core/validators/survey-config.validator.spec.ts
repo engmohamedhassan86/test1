@@ -932,12 +932,18 @@ describe('the valid mini-pulse config from contract §10.1', () => {
       key: 'mini-pulse',
       title: 'Mini Pulse',
       description: 'Two questions about today.',
+      // absent -> null
+      estimatedMinutes: null,
       pages: [
         {
           id: 'p1',
           title: 'Today',
           // absent -> null
           description: null,
+          // absent -> null
+          icon: null,
+          // absent -> null
+          estimatedMinutes: null,
           questions: [
             {
               id: 'q_mood',
@@ -1397,6 +1403,147 @@ describe('toggle_button (feature 002)', () => {
         ),
       )['attachments'],
     ).toEqual({ maxFiles: 1, acceptedTypes: ['image/png'], maxSizeBytes: 1024 });
+  });
+});
+
+describe('page icon and estimatedMinutes (design-system schema addition, PRI-67)', () => {
+  function validSurvey(raw: unknown): SurveyValidation & { outcome: 'valid' } {
+    const result = validateSurveyConfig(raw, SERVED_KEY);
+    expect(result.outcome).toBe('valid');
+    if (result.outcome !== 'valid') {
+      throw new Error('expected a valid config');
+    }
+    return result;
+  }
+
+  it('regression: absent icon and estimatedMinutes normalise to null on both page and survey', () => {
+    const survey = validSurvey(validDocument()).survey;
+    expect(survey.estimatedMinutes).toBeNull();
+    expect(survey.pages[0].icon).toBeNull();
+    expect(survey.pages[0].estimatedMinutes).toBeNull();
+  });
+
+  it('carries a recognised icon and a valid estimatedMinutes through on the page', () => {
+    const survey = validSurvey({
+      ...validDocument(),
+      pages: [
+        {
+          id: 'p1',
+          title: 'Today',
+          icon: 'clipboard',
+          estimatedMinutes: 4,
+          questions: [{ id: 'q_mood', type: 'satisfaction', title: 'How was today?' }],
+        },
+      ],
+    }).survey;
+    expect(survey.pages[0].icon).toBe('clipboard');
+    expect(survey.pages[0].estimatedMinutes).toBe(4);
+  });
+
+  it('carries a valid survey-level estimatedMinutes through (the dock summary total)', () => {
+    const survey = validSurvey({ ...validDocument(), estimatedMinutes: 12 }).survey;
+    expect(survey.estimatedMinutes).toBe(12);
+  });
+
+  it('normalises an unrecognised icon string to null rather than a config error', () => {
+    const survey = validSurvey({
+      ...validDocument(),
+      pages: [
+        {
+          id: 'p1',
+          title: 'Today',
+          icon: 'rocket-ship',
+          questions: [{ id: 'q_mood', type: 'satisfaction', title: 'How was today?' }],
+        },
+      ],
+    }).survey;
+    expect(survey.pages[0].icon).toBeNull();
+  });
+
+  it('normalises a non-string icon value to null rather than a config error', () => {
+    const survey = validSurvey({
+      ...validDocument(),
+      pages: [
+        {
+          id: 'p1',
+          title: 'Today',
+          icon: 7,
+          questions: [{ id: 'q_mood', type: 'satisfaction', title: 'How was today?' }],
+        },
+      ],
+    }).survey;
+    expect(survey.pages[0].icon).toBeNull();
+  });
+
+  it('rejects a non-integer page estimatedMinutes as F13', () => {
+    expectIssue(
+      validateSurveyConfig(
+        {
+          ...validDocument(),
+          pages: [
+            {
+              id: 'p1',
+              title: 'Today',
+              estimatedMinutes: 4.5,
+              questions: [{ id: 'q_mood', type: 'satisfaction', title: 'How was today?' }],
+            },
+          ],
+        },
+        SERVED_KEY,
+      ),
+      'F06',
+      'pages[0].estimatedMinutes',
+    );
+  });
+
+  it('rejects a non-positive page estimatedMinutes as F13', () => {
+    expectIssue(
+      validateSurveyConfig(
+        {
+          ...validDocument(),
+          pages: [
+            {
+              id: 'p1',
+              title: 'Today',
+              estimatedMinutes: 0,
+              questions: [{ id: 'q_mood', type: 'satisfaction', title: 'How was today?' }],
+            },
+          ],
+        },
+        SERVED_KEY,
+      ),
+      'F13',
+      'pages[0].estimatedMinutes',
+    );
+  });
+
+  it('rejects a page estimatedMinutes above the ceiling as F13', () => {
+    expectIssue(
+      validateSurveyConfig(
+        {
+          ...validDocument(),
+          pages: [
+            {
+              id: 'p1',
+              title: 'Today',
+              estimatedMinutes: 181,
+              questions: [{ id: 'q_mood', type: 'satisfaction', title: 'How was today?' }],
+            },
+          ],
+        },
+        SERVED_KEY,
+      ),
+      'F13',
+      'pages[0].estimatedMinutes',
+    );
+  });
+
+  it('rejects a survey-level estimatedMinutes above the ceiling as F13', () => {
+    expectIssue(
+      validateSurveyConfig({ ...validDocument(), estimatedMinutes: 181 }, SERVED_KEY),
+      'F13',
+      'estimatedMinutes',
+    );
   });
 });
 

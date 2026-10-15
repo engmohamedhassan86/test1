@@ -152,12 +152,23 @@ export type TextQuestion = TextboxQuestion | TextareaQuestion;
 /** The two members answered with an integer on a scale. */
 export type ScaleQuestion = RatingQuestion | SatisfactionQuestion;
 
+/** The decorative page-icon badges the design system ships. Presentational only. */
+export const PAGE_ICONS = ['id-card', 'file-shield', 'laptop-file', 'clipboard'] as const;
+export type PageIcon = (typeof PAGE_ICONS)[number];
+
 export interface SurveyPage {
   readonly id: PageId;
   readonly title: string;
   readonly description: string | null;
   /** May be empty: a page with zero questions is valid and always validates. */
   readonly questions: readonly Question[];
+  /**
+   * `null` = default icon. An unrecognised raw value also normalises to `null` — never a
+   * validation failure, since this field is presentational-only.
+   */
+  readonly icon: PageIcon | null;
+  /** `null` = no time-estimate pill shown for this page. */
+  readonly estimatedMinutes: number | null;
 }
 
 export interface Survey {
@@ -166,6 +177,13 @@ export interface Survey {
   readonly description: string | null;
   /** FR-001, F11: at least one page, in display order. */
   readonly pages: NonEmpty<SurveyPage>;
+  /**
+   * The survey-level total shown on the dock summary card (e.g. "3 sections • ~4 min").
+   * The same field and normalisation as `SurveyPage.estimatedMinutes`, reused at this
+   * level rather than invented as a second name, because the two are the same quantity at
+   * a different scope. `null` = no time-estimate pill shown.
+   */
+  readonly estimatedMinutes: number | null;
 }
 
 /** The authoring defaults for a toggle's two labels. Visible text, never a colour alone. */

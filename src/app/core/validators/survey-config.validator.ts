@@ -26,10 +26,11 @@ import type {
   QuestionId,
   SurveyKey,
 } from '../models/branded';
-import { QUESTION_TYPES, TOGGLE_LABEL_DEFAULTS } from '../models/survey.model';
+import { PAGE_ICONS, QUESTION_TYPES, TOGGLE_LABEL_DEFAULTS } from '../models/survey.model';
 import type {
   AcceptedFileType,
   AttachmentPolicy,
+  PageIcon,
   Question,
   QuestionType,
   Survey,
@@ -59,8 +60,8 @@ import type { JsonObject } from './json-reader';
 export const SURVEY_KEY_PATTERN = /^[a-z0-9][a-z0-9-]{1,63}$/;
 export const ID_PATTERN = /^[a-z0-9][a-z0-9-_]{0,63}$/;
 
-const DOCUMENT_KEYS = ['key', 'title', 'description', 'pages'] as const;
-const PAGE_KEYS = ['id', 'title', 'description', 'questions'] as const;
+const DOCUMENT_KEYS = ['key', 'title', 'description', 'pages', 'estimatedMinutes'] as const;
+const PAGE_KEYS = ['id', 'title', 'description', 'questions', 'icon', 'estimatedMinutes'] as const;
 const COMMON_QUESTION_KEYS = [
   'id',
   'type',
@@ -105,6 +106,8 @@ const MAX_LENGTH_CEILING: Readonly<Record<'textbox' | 'textarea', number>> = {
 };
 
 const MAX_SIZE_BYTES_CEILING = 10_485_760;
+/** A time-estimate pill past this many minutes stops reading as a "quick survey" claim. */
+const ESTIMATED_MINUTES_CEILING = 180;
 const ACCEPTED_TYPE_PATTERN =
   /^([a-z0-9][a-z0-9!#$&^_.+-]*\/[a-z0-9][a-z0-9!#$&^_.+-]*|\.[a-z0-9]+)$/;
 
@@ -236,6 +239,45 @@ function readOptionalInt(
     return log.add('F13', path, `${path}: must be at least ${minimum}, got ${read.value}`);
   }
   return read.value;
+}
+
+/**
+ * `estimatedMinutes` on a page or on the survey itself: absent stays `null` (no pill
+ * shown); present must be a positive integer up to `ESTIMATED_MINUTES_CEILING`, same
+ * F06/F13 split as every other bounded integer (e.g. R42's `maxLength` ceiling).
+ */
+function readEstimatedMinutes(
+  log: IssueLog,
+  object: JsonObject,
+  path: string,
+): number | null | undefined {
+  const minutes = readOptionalInt(log, object, path, 'estimatedMinutes', 1);
+  if (minutes === undefined || minutes === null) {
+    return minutes;
+  }
+  if (minutes > ESTIMATED_MINUTES_CEILING) {
+    return log.add(
+      'F13',
+      path,
+      `${path}: must be at most ${ESTIMATED_MINUTES_CEILING}, got ${minutes}`,
+    );
+  }
+  return minutes;
+}
+
+/**
+ * `icon` on a page — the one field in this file that fails *open* rather than closed. It
+ * is decorative-only, so a present-but-unrecognised value (or a value of the wrong JSON
+ * type) normalises to the default icon (`null`) instead of becoming a configuration
+ * error. Do not "fix" this to F05/F06 on a future pass: the open-fail here is a
+ * deliberate exception to this codebase's fail-closed convention, not an oversight.
+ */
+function readPageIcon(object: JsonObject, key: string): PageIcon | null {
+  const raw = object[key];
+  if (typeof raw !== 'string') {
+    return null;
+  }
+  return (PAGE_ICONS as readonly string[]).includes(raw) ? (raw as PageIcon) : null;
 }
 
 // --- R46 to R52: the attachment policy ----------------------------------------------
@@ -956,10 +998,28 @@ function readPage(
     parsed.push(question);
   }
 
-  if (title === undefined || description === undefined || anyQuestionFailed) {
+  // `icon` and `estimatedMinutes` — additive design-system fields, not yet in the R03 to
+  // R52 contract table. `icon` cannot fail (it fails open to `null`); `estimatedMinutes`
+  // can, same as any other bounded integer.
+  const icon = readPageIcon(object.value, 'icon');
+  const estimatedMinutes = readEstimatedMinutes(log, object.value, `${basePath}.estimatedMinutes`);
+
+  if (
+    title === undefined ||
+    description === undefined ||
+    estimatedMinutes === undefined ||
+    anyQuestionFailed
+  ) {
     return undefined;
   }
-  return { id: brand<PageId>(id), title, description, questions: parsed };
+  return {
+    id: brand<PageId>(id),
+    title,
+    description,
+    questions: parsed,
+    icon,
+    estimatedMinutes,
+  };
 }
 
 // --- R03 to R10: the document --------------------------------------------------------
@@ -1039,6 +1099,9 @@ export function validateSurveyConfig(raw: unknown, servedKey: string): SurveyVal
     DESCRIPTION_MAX,
   );
 
+  // The dock summary card's survey-level total — additive, not yet in R03 to R52.
+  const estimatedMinutes = readEstimatedMinutes(log, object.value, 'estimatedMinutes');
+
   // R10 — `pages` is an array with at least one element.
   const pages = requireArray(object.value['pages']);
   if (!pages.ok) {
@@ -1066,6 +1129,7 @@ export function validateSurveyConfig(raw: unknown, servedKey: string): SurveyVal
   if (
     title === undefined ||
     description === undefined ||
+    estimatedMinutes === undefined ||
     anyPageFailed ||
     !isNonEmpty(parsedPages)
   ) {
@@ -1077,6 +1141,7 @@ export function validateSurveyConfig(raw: unknown, servedKey: string): SurveyVal
     title,
     description,
     pages: parsedPages,
+    estimatedMinutes,
   };
   return { outcome: 'valid', survey };
 }
