@@ -1,6 +1,10 @@
 {
   "tokens": [
     {
+      "name": "--ds-color-accent-decorative",
+      "category": "colour"
+    },
+    {
       "name": "--ds-color-border-default",
       "category": "colour"
     },
@@ -10,6 +14,26 @@
     },
     {
       "name": "--ds-color-border-subtle",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-canvas",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-dock-surface-end",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-dock-surface-start",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-dock-text",
+      "category": "colour"
+    },
+    {
+      "name": "--ds-color-dock-text-muted",
       "category": "colour"
     },
     {
@@ -401,6 +425,34 @@
       "category": "typography"
     },
     {
+      "name": "--ds-icon-clipboard",
+      "category": "icon"
+    },
+    {
+      "name": "--ds-icon-close",
+      "category": "icon"
+    },
+    {
+      "name": "--ds-icon-clock",
+      "category": "icon"
+    },
+    {
+      "name": "--ds-icon-file-shield",
+      "category": "icon"
+    },
+    {
+      "name": "--ds-icon-id-card",
+      "category": "icon"
+    },
+    {
+      "name": "--ds-icon-laptop-file",
+      "category": "icon"
+    },
+    {
+      "name": "--ds-icon-menu",
+      "category": "icon"
+    },
+    {
       "name": "--ds-letter-spacing-caps",
       "category": "colour"
     },
@@ -510,6 +562,26 @@
     },
     {
       "name": "--ds-size-focus-ring-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-size-dock-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-size-rail-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-size-drawer-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-size-topbar-height",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-size-progress-ring",
       "category": "spacing"
     },
     {
@@ -941,6 +1013,22 @@
       "category": "spacing"
     },
     {
+      "name": "--ds-primitive-space-dock-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-rail-width",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-topbar-height",
+      "category": "spacing"
+    },
+    {
+      "name": "--ds-primitive-space-progress-ring-size",
+      "category": "spacing"
+    },
+    {
       "name": "--ds-primitive-radius-sm",
       "category": "radius"
     },
@@ -1029,6 +1117,21 @@
     {
       "foreground": "--ds-primitive-color-neutral-800",
       "background": "--ds-primitive-color-cream-50",
+      "minRatio": 3
+    },
+    {
+      "foreground": "--ds-primitive-color-cream-300",
+      "background": "--ds-primitive-color-maroon-900",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-gold-400",
+      "background": "--ds-primitive-color-maroon-900",
+      "minRatio": 4.5
+    },
+    {
+      "foreground": "--ds-primitive-color-gold-600",
+      "background": "--ds-primitive-color-white",
       "minRatio": 3
     }
   ]

@@ -234,6 +234,34 @@ never the primitives in §1 directly.
 | `--ds-motion-duration-{instant\|fast\|base\|slow}`      | `var(--ds-primitive-motion-duration-*)`               |
 | `--ds-motion-easing-{standard\|decelerate\|accelerate}` | `var(--ds-primitive-motion-easing-*)`                 |
 
+## 2.5 Icon masks (`tokens/icons.css`, PRI-66)
+
+A third tier alongside primitive/semantic: each `--ds-icon-*` token is a single-piece value — a
+percent-encoded `url("data:image/svg+xml,...")` of a black-geometry glyph on a transparent
+background. There is no primitive/semantic split for icons: the value itself carries no colour
+decision to alias, only a shape. (The glyph's own `#000000` fill/stroke is percent-encoded to
+`%23000000` by the data-URI encoding, so no raw `#`/named-colour text exists in the file — this is
+not an exception to the FR-096b colour-token rule, the literal hex is simply not present as text.)
+
+Consumers apply the token as `mask-image` (`-webkit-mask-image` for Safari), not `background-image`
+— the element's own `background-color`, set to a semantic colour role, supplies the tint through the
+mask. Never consumed as a literal colour; never rendered without adjacent text or an `aria-*` cue at
+the call site (consuming tasks' responsibility, not this layer's).
+
+| Token                   | Glyph                                     | Scoped use                                                            |
+| ----------------------- | ----------------------------------------- | --------------------------------------------------------------------- |
+| `--ds-icon-clipboard`   | Clipboard with two rule lines             | Default page-icon badge (`SurveyPage.icon = null`) and the brand mark |
+| `--ds-icon-id-card`     | ID card with a photo circle and two lines | Page-icon badge, `PageIcon` enum value `'id-card'`                    |
+| `--ds-icon-file-shield` | Shield outline                            | Page-icon badge, `PageIcon` enum value `'file-shield'`                |
+| `--ds-icon-laptop-file` | Laptop with a document tray               | Page-icon badge, `PageIcon` enum value `'laptop-file'`                |
+| `--ds-icon-menu`        | Three horizontal bars                     | Mobile drawer open toggle                                             |
+| `--ds-icon-close`       | X (two crossed lines)                     | Mobile drawer close control                                           |
+| `--ds-icon-clock`       | Clock face with hands                     | Time-estimate pill (`estimatedMinutes`)                               |
+
+`PageIcon`'s four enum values (`id-card`, `file-shield`, `laptop-file`, `clipboard` — `clipboard` is
+the default/fallback) map 1:1 to `--ds-icon-${icon}`, so a consumer can key the mask straight off the
+model value without a lookup table.
+
 ## 3. Verified contrast pairs (checked by the contract spec, FR-096f)
 
 Computed with the WCAG 2.1 relative-luminance formula (`research.md` R1). `minRatio` 4.5 = normal text,

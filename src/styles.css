@@ -1,6 +1,7 @@
 @import 'primeflex/primeflex.css';
 @import './styles/tokens/primitives.css';
 @import './styles/tokens/semantic.css';
+@import './styles/tokens/icons.css';
 @import './styles/base/reset.css';
 @import './styles/base/typography.css';
 @import './styles/base/focus.css';
