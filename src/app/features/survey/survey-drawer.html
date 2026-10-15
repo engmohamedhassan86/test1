@@ -3,6 +3,7 @@
   class="ds-drawer"
   [class.ds-drawer--open]="open()"
   [attr.aria-hidden]="!open()"
+  (keydown.escape)="closeDrawer.emit()"
 >
   <div class="ds-drawer__scrim" (click)="closeDrawer.emit()"></div>
 

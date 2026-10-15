@@ -1,6 +1,6 @@
 /**
  * PRI-68 R2 — the drawer is hidden by default, opens as an overlay with a scrim, closes
- * from either the scrim or the explicit close button, and exposes `focusClose()` for
+ * from the scrim, the explicit close button, or Escape, and exposes `focusClose()` for
  * `survey-shell`'s open-focus move. It renders the same `survey-dock` the desktop sidebar
  * does, so R1's step list is never a second, divergent copy.
  */
@@ -83,6 +83,22 @@ describe('SurveyDrawerComponent', () => {
     });
 
     harness.host.querySelector<HTMLElement>('.ds-drawer__scrim')?.click();
+
+    expect(emitted).toBe(1);
+  });
+
+  it('emits closeDrawer on Escape', async () => {
+    const harness = await mountWithSession(SurveyDrawerComponent, onePageSurvey(), {
+      inputs: { open: true },
+    });
+    let emitted = 0;
+    (harness.fixture.componentInstance as SurveyDrawerComponent).closeDrawer.subscribe(() => {
+      emitted += 1;
+    });
+
+    harness.host
+      .querySelector('.ds-drawer')
+      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
 
     expect(emitted).toBe(1);
   });
