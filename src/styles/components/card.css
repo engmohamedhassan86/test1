@@ -1,0 +1,14 @@
+/**
+ * Card component — white surface with shadow and rounded corners.
+ */
+
+.ds-card {
+  background-color: var(--ds-color-surface);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-resting);
+  padding: var(--ds-space-5);
+}
+
+.ds-card--raised {
+  box-shadow: var(--ds-shadow-raised);
+}

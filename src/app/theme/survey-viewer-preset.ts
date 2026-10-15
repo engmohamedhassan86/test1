@@ -4,8 +4,8 @@ import Aura from '@primeuix/themes/aura';
 /**
  * Maroon brand ramp for the PrimeNG theme.
  *
- * `src/styles/tokens.css` is the source of truth for these values; the
- * `--sv-maroon-*` custom properties there MUST stay in step with this map.
+ * `src/styles/tokens/primitives.css` is the source of truth for these values; the
+ * `--ds-primitive-color-maroon-*` custom properties there MUST stay in step with this map.
  * `survey-viewer-preset.spec.ts` fails the build if the two drift apart.
  */
 export const maroonPalette = {

@@ -1,0 +1,18 @@
+/**
+ * PrimeNG CSS variable bridge — maps PrimeNG's Aura theme variables onto --ds-* tokens
+ * so unstyled PrimeNG components inherit the design system.
+ */
+:root {
+  --p-content-background: var(--ds-color-surface);
+  --p-content-border-color: var(--ds-color-border-subtle);
+  --p-text-color: var(--ds-color-text);
+  --p-text-muted-color: var(--ds-color-text-muted);
+  --p-border-radius: var(--ds-radius-md);
+  --p-focus-ring-color: var(--ds-color-focus-ring);
+  --p-focus-ring-width: var(--ds-size-focus-ring-width);
+  --p-form-field-border-color: var(--ds-color-border-default);
+  --p-form-field-hover-border-color: var(--ds-color-primary-400);
+  --p-form-field-focus-border-color: var(--ds-color-border-selected);
+  --p-highlight-background: var(--ds-color-primary-50);
+  --p-highlight-color: var(--ds-color-primary-800);
+}

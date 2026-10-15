@@ -1,0 +1,148 @@
+/**
+ * Primitive design tokens — the only file allowed to contain literal colour,
+ * length, duration, or easing values. All other CSS files reference these
+ * via var() expressions.
+ */
+:root {
+  /* Colour — primary (maroon) */
+  --ds-primitive-color-maroon-50: #fbf2f2;
+  --ds-primitive-color-maroon-100: #f5dcdc;
+  --ds-primitive-color-maroon-200: #ebb8b8;
+  --ds-primitive-color-maroon-300: #dd8e8e;
+  --ds-primitive-color-maroon-400: #c96161;
+  --ds-primitive-color-maroon-500: #b03c3c;
+  --ds-primitive-color-maroon-600: #96292d;
+  --ds-primitive-color-maroon-700: #800000;
+  --ds-primitive-color-maroon-800: #6a0000;
+  --ds-primitive-color-maroon-900: #560000;
+  --ds-primitive-color-maroon-950: #3b0000;
+
+  /* Colour — secondary (metallic gold) */
+  --ds-primitive-color-gold-50: #fdf8ec;
+  --ds-primitive-color-gold-100: #faedc8;
+  --ds-primitive-color-gold-200: #f3db91;
+  --ds-primitive-color-gold-300: #eac665;
+  --ds-primitive-color-gold-400: #dfb13e;
+  --ds-primitive-color-gold-500: #c9972b;
+  --ds-primitive-color-gold-600: #b07f22;
+  --ds-primitive-color-gold-700: #8f661c;
+  --ds-primitive-color-gold-800: #705019;
+  --ds-primitive-color-gold-900: #5a4015;
+  --ds-primitive-color-gold-950: #332408;
+
+  /* Colour — tertiary (warm cream) */
+  --ds-primitive-color-cream-50: #fffdfb;
+  --ds-primitive-color-cream-100: #fdf9f2;
+  --ds-primitive-color-cream-200: #faf3ea;
+  --ds-primitive-color-cream-300: #f3e7d8;
+  --ds-primitive-color-cream-400: #e8d6bc;
+  --ds-primitive-color-cream-500: #d9be97;
+  --ds-primitive-color-cream-600: #c4a374;
+  --ds-primitive-color-cream-700: #a3815a;
+  --ds-primitive-color-cream-800: #7c6244;
+  --ds-primitive-color-cream-900: #574531;
+  --ds-primitive-color-cream-950: #332a1d;
+
+  /* Colour — neutral (warm-tinted gray) */
+  --ds-primitive-color-white: #ffffff;
+  --ds-primitive-color-neutral-50: #f8f6f3;
+  --ds-primitive-color-neutral-100: #f1ede7;
+  --ds-primitive-color-neutral-200: #e4ded5;
+  --ds-primitive-color-neutral-300: #cfc6b8;
+  --ds-primitive-color-neutral-400: #a99e8e;
+  --ds-primitive-color-neutral-500: #8a8072;
+  --ds-primitive-color-neutral-600: #6b6259;
+  --ds-primitive-color-neutral-700: #52493f;
+  --ds-primitive-color-neutral-800: #39322a;
+  --ds-primitive-color-neutral-900: #2b2320;
+  --ds-primitive-color-neutral-950: #1a1512;
+
+  /* Colour — status: success */
+  --ds-primitive-color-success-50: #eaf7f0;
+  --ds-primitive-color-success-500: #2e9360;
+  --ds-primitive-color-success-600: #1e7a4c;
+  --ds-primitive-color-success-700: #15603a;
+
+  /* Colour — status: warning */
+  --ds-primitive-color-warning-50: #fdf1e3;
+  --ds-primitive-color-warning-500: #c27c00;
+  --ds-primitive-color-warning-600: #9a5b00;
+  --ds-primitive-color-warning-700: #7a4700;
+
+  /* Colour — status: error */
+  --ds-primitive-color-error-50: #fbeae9;
+  --ds-primitive-color-error-500: #d33a30;
+  --ds-primitive-color-error-600: #b3261e;
+  --ds-primitive-color-error-700: #8c1d17;
+
+  /* Colour — status: info */
+  --ds-primitive-color-info-50: #eaf1fb;
+  --ds-primitive-color-info-500: #3e74be;
+  --ds-primitive-color-info-600: #2a5ba0;
+  --ds-primitive-color-info-700: #1e4578;
+
+  /* Colour — neutral: transparent */
+  --ds-primitive-color-transparent: transparent;
+
+  /* Typography */
+  --ds-primitive-font-family-base: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ds-primitive-font-size-xs: 0.75rem;
+  --ds-primitive-font-size-sm: 0.875rem;
+  --ds-primitive-font-size-base: 1rem;
+  --ds-primitive-font-size-md: 1.125rem;
+  --ds-primitive-font-size-lg: 1.25rem;
+  --ds-primitive-font-size-xl: 1.5rem;
+  --ds-primitive-font-size-2xl: 1.875rem;
+  --ds-primitive-font-size-3xl: 2.25rem;
+  --ds-primitive-font-weight-regular: 400;
+  --ds-primitive-font-weight-medium: 500;
+  --ds-primitive-font-weight-semibold: 600;
+  --ds-primitive-font-weight-bold: 700;
+  --ds-primitive-line-height-tight: 1.2;
+  --ds-primitive-line-height-snug: 1.35;
+  --ds-primitive-line-height-normal: 1.5;
+  --ds-primitive-line-height-relaxed: 1.65;
+  --ds-primitive-letter-spacing-tight: -0.01em;
+  --ds-primitive-letter-spacing-normal: 0em;
+  --ds-primitive-letter-spacing-wide: 0.02em;
+  --ds-primitive-letter-spacing-caps: 0.08em;
+
+  /* Spacing */
+  --ds-primitive-space-0: 0;
+  --ds-primitive-space-1: 0.25rem;
+  --ds-primitive-space-2: 0.5rem;
+  --ds-primitive-space-3: 0.75rem;
+  --ds-primitive-space-4: 1rem;
+  --ds-primitive-space-5: 1.5rem;
+  --ds-primitive-space-6: 2rem;
+  --ds-primitive-space-7: 3rem;
+  --ds-primitive-space-8: 4rem;
+  --ds-primitive-space-9: 6rem;
+  --ds-primitive-space-touch-min: 44px;
+  --ds-primitive-space-content-max-width: 56rem;
+  --ds-primitive-space-focus-ring-width: 2px;
+  --ds-primitive-space-focus-ring-offset: 2px;
+
+  /* Radius */
+  --ds-primitive-radius-sm: 4px;
+  --ds-primitive-radius-md: 8px;
+  --ds-primitive-radius-lg: 12px;
+  --ds-primitive-radius-xl: 16px;
+  --ds-primitive-radius-pill: 999px;
+  --ds-primitive-radius-full: 50%;
+
+  /* Elevation */
+  --ds-primitive-shadow-resting: 0 1px 2px rgba(43, 35, 32, 0.06), 0 1px 3px rgba(43, 35, 32, 0.1);
+  --ds-primitive-shadow-raised: 0 2px 4px rgba(43, 35, 32, 0.08), 0 4px 8px rgba(43, 35, 32, 0.12);
+  --ds-primitive-shadow-overlay:
+    0 8px 16px rgba(43, 35, 32, 0.12), 0 16px 32px rgba(43, 35, 32, 0.16);
+
+  /* Motion */
+  --ds-primitive-motion-duration-instant: 0ms;
+  --ds-primitive-motion-duration-fast: 120ms;
+  --ds-primitive-motion-duration-base: 200ms;
+  --ds-primitive-motion-duration-slow: 320ms;
+  --ds-primitive-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ds-primitive-motion-easing-decelerate: cubic-bezier(0, 0, 0, 1);
+  --ds-primitive-motion-easing-accelerate: cubic-bezier(0.3, 0, 1, 1);
+}

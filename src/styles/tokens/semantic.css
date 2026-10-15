@@ -1,0 +1,161 @@
+/**
+ * Semantic design tokens — role-based aliases that reference primitives via var().
+ * Component classes consume these, never the primitives directly.
+ */
+:root {
+  /* Colour ramps by role */
+  --ds-color-primary-50: var(--ds-primitive-color-maroon-50);
+  --ds-color-primary-100: var(--ds-primitive-color-maroon-100);
+  --ds-color-primary-200: var(--ds-primitive-color-maroon-200);
+  --ds-color-primary-300: var(--ds-primitive-color-maroon-300);
+  --ds-color-primary-400: var(--ds-primitive-color-maroon-400);
+  --ds-color-primary-500: var(--ds-primitive-color-maroon-500);
+  --ds-color-primary-600: var(--ds-primitive-color-maroon-600);
+  --ds-color-primary-700: var(--ds-primitive-color-maroon-700);
+  --ds-color-primary-800: var(--ds-primitive-color-maroon-800);
+  --ds-color-primary-900: var(--ds-primitive-color-maroon-900);
+  --ds-color-primary-950: var(--ds-primitive-color-maroon-950);
+
+  --ds-color-secondary-50: var(--ds-primitive-color-gold-50);
+  --ds-color-secondary-100: var(--ds-primitive-color-gold-100);
+  --ds-color-secondary-200: var(--ds-primitive-color-gold-200);
+  --ds-color-secondary-300: var(--ds-primitive-color-gold-300);
+  --ds-color-secondary-400: var(--ds-primitive-color-gold-400);
+  --ds-color-secondary-500: var(--ds-primitive-color-gold-500);
+  --ds-color-secondary-600: var(--ds-primitive-color-gold-600);
+  --ds-color-secondary-700: var(--ds-primitive-color-gold-700);
+  --ds-color-secondary-800: var(--ds-primitive-color-gold-800);
+  --ds-color-secondary-900: var(--ds-primitive-color-gold-900);
+  --ds-color-secondary-950: var(--ds-primitive-color-gold-950);
+
+  --ds-color-tertiary-50: var(--ds-primitive-color-cream-50);
+  --ds-color-tertiary-100: var(--ds-primitive-color-cream-100);
+  --ds-color-tertiary-200: var(--ds-primitive-color-cream-200);
+  --ds-color-tertiary-300: var(--ds-primitive-color-cream-300);
+  --ds-color-tertiary-400: var(--ds-primitive-color-cream-400);
+  --ds-color-tertiary-500: var(--ds-primitive-color-cream-500);
+  --ds-color-tertiary-600: var(--ds-primitive-color-cream-600);
+  --ds-color-tertiary-700: var(--ds-primitive-color-cream-700);
+  --ds-color-tertiary-800: var(--ds-primitive-color-cream-800);
+  --ds-color-tertiary-900: var(--ds-primitive-color-cream-900);
+  --ds-color-tertiary-950: var(--ds-primitive-color-cream-950);
+
+  --ds-color-neutral-50: var(--ds-primitive-color-neutral-50);
+  --ds-color-neutral-100: var(--ds-primitive-color-neutral-100);
+  --ds-color-neutral-200: var(--ds-primitive-color-neutral-200);
+  --ds-color-neutral-300: var(--ds-primitive-color-neutral-300);
+  --ds-color-neutral-400: var(--ds-primitive-color-neutral-400);
+  --ds-color-neutral-500: var(--ds-primitive-color-neutral-500);
+  --ds-color-neutral-600: var(--ds-primitive-color-neutral-600);
+  --ds-color-neutral-700: var(--ds-primitive-color-neutral-700);
+  --ds-color-neutral-800: var(--ds-primitive-color-neutral-800);
+  --ds-color-neutral-900: var(--ds-primitive-color-neutral-900);
+  --ds-color-neutral-950: var(--ds-primitive-color-neutral-950);
+
+  --ds-color-success-50: var(--ds-primitive-color-success-50);
+  --ds-color-success-500: var(--ds-primitive-color-success-500);
+  --ds-color-success-600: var(--ds-primitive-color-success-600);
+  --ds-color-success-700: var(--ds-primitive-color-success-700);
+
+  --ds-color-warning-50: var(--ds-primitive-color-warning-50);
+  --ds-color-warning-500: var(--ds-primitive-color-warning-500);
+  --ds-color-warning-600: var(--ds-primitive-color-warning-600);
+  --ds-color-warning-700: var(--ds-primitive-color-warning-700);
+
+  --ds-color-error-50: var(--ds-primitive-color-error-50);
+  --ds-color-error-500: var(--ds-primitive-color-error-500);
+  --ds-color-error-600: var(--ds-primitive-color-error-600);
+  --ds-color-error-700: var(--ds-primitive-color-error-700);
+
+  --ds-color-info-50: var(--ds-primitive-color-info-50);
+  --ds-color-info-500: var(--ds-primitive-color-info-500);
+  --ds-color-info-600: var(--ds-primitive-color-info-600);
+  --ds-color-info-700: var(--ds-primitive-color-info-700);
+
+  /* Colour roles (what components actually reference) */
+  --ds-color-primary: var(--ds-color-primary-700);
+  --ds-color-primary-hover: var(--ds-color-primary-800);
+  --ds-color-primary-active: var(--ds-color-primary-900);
+  --ds-color-on-primary: var(--ds-primitive-color-white);
+  --ds-color-secondary: var(--ds-color-secondary-600);
+  --ds-color-secondary-text: var(--ds-color-secondary-700);
+  --ds-color-tertiary-surface: var(--ds-color-tertiary-200);
+  --ds-color-surface: var(--ds-primitive-color-white);
+  --ds-color-surface-sunken: var(--ds-color-tertiary-50);
+  --ds-color-text: var(--ds-color-neutral-900);
+  --ds-color-text-muted: var(--ds-color-neutral-600);
+  --ds-color-text-on-primary: var(--ds-primitive-color-white);
+  --ds-color-border-default: var(--ds-color-neutral-500);
+  --ds-color-border-subtle: var(--ds-color-neutral-300);
+  --ds-color-border-selected: var(--ds-color-primary-700);
+  --ds-color-focus-ring: var(--ds-color-primary-700);
+  --ds-color-success: var(--ds-color-success-600);
+  --ds-color-success-surface: var(--ds-color-success-50);
+  --ds-color-warning: var(--ds-color-warning-600);
+  --ds-color-warning-surface: var(--ds-color-warning-50);
+  --ds-color-error: var(--ds-color-error-600);
+  --ds-color-error-surface: var(--ds-color-error-50);
+  --ds-color-info: var(--ds-color-info-600);
+  --ds-color-info-surface: var(--ds-color-info-50);
+  --ds-color-progress-track: var(--ds-color-tertiary-200);
+  --ds-color-progress-fill: linear-gradient(
+    90deg,
+    var(--ds-color-primary-700) 0%,
+    var(--ds-color-secondary-600) 100%
+  );
+
+  /* Typography roles */
+  --ds-font-family: var(--ds-primitive-font-family-base);
+  --ds-font-size-xs: var(--ds-primitive-font-size-xs);
+  --ds-font-size-sm: var(--ds-primitive-font-size-sm);
+  --ds-font-size-base: var(--ds-primitive-font-size-base);
+  --ds-font-size-md: var(--ds-primitive-font-size-md);
+  --ds-font-size-lg: var(--ds-primitive-font-size-lg);
+  --ds-font-size-xl: var(--ds-primitive-font-size-xl);
+  --ds-font-size-2xl: var(--ds-primitive-font-size-2xl);
+  --ds-font-size-3xl: var(--ds-primitive-font-size-3xl);
+  --ds-font-weight-regular: var(--ds-primitive-font-weight-regular);
+  --ds-font-weight-medium: var(--ds-primitive-font-weight-medium);
+  --ds-font-weight-semibold: var(--ds-primitive-font-weight-semibold);
+  --ds-font-weight-bold: var(--ds-primitive-font-weight-bold);
+  --ds-line-height-tight: var(--ds-primitive-line-height-tight);
+  --ds-line-height-snug: var(--ds-primitive-line-height-snug);
+  --ds-line-height-normal: var(--ds-primitive-line-height-normal);
+  --ds-line-height-relaxed: var(--ds-primitive-line-height-relaxed);
+  --ds-letter-spacing-tight: var(--ds-primitive-letter-spacing-tight);
+  --ds-letter-spacing-normal: var(--ds-primitive-letter-spacing-normal);
+  --ds-letter-spacing-wide: var(--ds-primitive-letter-spacing-wide);
+  --ds-letter-spacing-caps: var(--ds-primitive-letter-spacing-caps);
+
+  /* Spacing, sizing, radius, elevation, motion roles */
+  --ds-space-0: var(--ds-primitive-space-0);
+  --ds-space-1: var(--ds-primitive-space-1);
+  --ds-space-2: var(--ds-primitive-space-2);
+  --ds-space-3: var(--ds-primitive-space-3);
+  --ds-space-4: var(--ds-primitive-space-4);
+  --ds-space-5: var(--ds-primitive-space-5);
+  --ds-space-6: var(--ds-primitive-space-6);
+  --ds-space-7: var(--ds-primitive-space-7);
+  --ds-space-8: var(--ds-primitive-space-8);
+  --ds-space-9: var(--ds-primitive-space-9);
+  --ds-size-control-min: var(--ds-primitive-space-touch-min);
+  --ds-size-content-max-width: var(--ds-primitive-space-content-max-width);
+  --ds-size-focus-ring-width: var(--ds-primitive-space-focus-ring-width);
+  --ds-size-focus-ring-offset: var(--ds-primitive-space-focus-ring-offset);
+  --ds-radius-sm: var(--ds-primitive-radius-sm);
+  --ds-radius-md: var(--ds-primitive-radius-md);
+  --ds-radius-lg: var(--ds-primitive-radius-lg);
+  --ds-radius-xl: var(--ds-primitive-radius-xl);
+  --ds-radius-pill: var(--ds-primitive-radius-pill);
+  --ds-radius-full: var(--ds-primitive-radius-full);
+  --ds-shadow-resting: var(--ds-primitive-shadow-resting);
+  --ds-shadow-raised: var(--ds-primitive-shadow-raised);
+  --ds-shadow-overlay: var(--ds-primitive-shadow-overlay);
+  --ds-motion-duration-instant: var(--ds-primitive-motion-duration-instant);
+  --ds-motion-duration-fast: var(--ds-primitive-motion-duration-fast);
+  --ds-motion-duration-base: var(--ds-primitive-motion-duration-base);
+  --ds-motion-duration-slow: var(--ds-primitive-motion-duration-slow);
+  --ds-motion-easing-standard: var(--ds-primitive-motion-easing-standard);
+  --ds-motion-easing-decelerate: var(--ds-primitive-motion-easing-decelerate);
+  --ds-motion-easing-accelerate: var(--ds-primitive-motion-easing-accelerate);
+}

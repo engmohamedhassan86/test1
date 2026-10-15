@@ -1,0 +1,66 @@
+/**
+ * Button component — base styles and modifiers for primary, secondary, ghost buttons.
+ */
+
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ds-size-control-min);
+  min-height: var(--ds-size-control-min);
+  padding: var(--ds-space-3) var(--ds-space-5);
+  border: none;
+  border-radius: var(--ds-radius-pill);
+  font-weight: var(--ds-font-weight-semibold);
+  cursor: pointer;
+  transition:
+    transform var(--ds-motion-duration-fast) var(--ds-motion-easing-standard),
+    opacity var(--ds-motion-duration-fast) var(--ds-motion-easing-standard);
+  text-decoration: none;
+}
+
+.ds-btn:active:not(:disabled):not([aria-disabled='true']) {
+  transform: scale(0.98);
+}
+
+/* Primary button — solid maroon pill with white text */
+.ds-btn--primary {
+  background-color: var(--ds-color-primary);
+  color: var(--ds-color-on-primary);
+}
+
+.ds-btn--primary:hover:not(:disabled):not([aria-disabled='true']) {
+  background-color: var(--ds-color-primary-hover);
+}
+
+.ds-btn--primary:active:not(:disabled):not([aria-disabled='true']) {
+  background-color: var(--ds-color-primary-active);
+}
+
+/* Secondary button — gold-bordered or subtly-filled */
+.ds-btn--secondary {
+  border: 2px solid var(--ds-color-secondary-700);
+  background-color: var(--ds-color-surface);
+  color: var(--ds-color-secondary-700);
+}
+
+.ds-btn--secondary:hover:not(:disabled):not([aria-disabled='true']) {
+  background-color: var(--ds-color-secondary-50);
+}
+
+/* Ghost button — transparent with maroon text */
+.ds-btn--ghost {
+  background-color: transparent;
+  color: var(--ds-color-primary);
+}
+
+.ds-btn--ghost:hover:not(:disabled):not([aria-disabled='true']) {
+  background-color: var(--ds-color-primary-50);
+}
+
+/* Disabled state */
+.ds-btn--disabled,
+.ds-btn[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

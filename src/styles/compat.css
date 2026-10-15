@@ -1,0 +1,81 @@
+/**
+ * Compatibility layer — re-declares every old --sv-* custom property and
+ * .sv-* class as an alias to its new --ds-* equivalent, keeping existing
+ * code working unchanged after the design system migration.
+ */
+:root {
+  /* Colour — maroon (primary) */
+  --sv-maroon-50: var(--ds-primitive-color-maroon-50);
+  --sv-maroon-100: var(--ds-primitive-color-maroon-100);
+  --sv-maroon-200: var(--ds-primitive-color-maroon-200);
+  --sv-maroon-300: var(--ds-primitive-color-maroon-300);
+  --sv-maroon-400: var(--ds-primitive-color-maroon-400);
+  --sv-maroon-500: var(--ds-primitive-color-maroon-500);
+  --sv-maroon-600: var(--ds-primitive-color-maroon-600);
+  --sv-maroon-700: var(--ds-primitive-color-maroon-700);
+  --sv-maroon-800: var(--ds-primitive-color-maroon-800);
+  --sv-maroon-900: var(--ds-primitive-color-maroon-900);
+  --sv-maroon-950: var(--ds-primitive-color-maroon-950);
+
+  /* Semantic brand aliases */
+  --sv-brand: var(--ds-color-primary);
+  --sv-brand-hover: var(--ds-color-primary-hover);
+  --sv-brand-active: var(--ds-color-primary-active);
+  --sv-brand-subtle: var(--ds-color-primary-50);
+  --sv-on-brand: var(--ds-color-on-primary);
+
+  /* Spacing scale */
+  --sv-space-0: var(--ds-space-0);
+  --sv-space-1: var(--ds-space-1);
+  --sv-space-2: var(--ds-space-2);
+  --sv-space-3: var(--ds-space-3);
+  --sv-space-4: var(--ds-space-4);
+  --sv-space-5: var(--ds-space-5);
+  --sv-space-6: var(--ds-space-6);
+  --sv-space-7: var(--ds-space-7);
+
+  /* Focus ring */
+  --sv-focus-ring-width: var(--ds-size-focus-ring-width);
+  --sv-focus-ring-offset: var(--ds-size-focus-ring-offset);
+  --sv-focus-ring-color: var(--ds-color-focus-ring);
+
+  /* Layout */
+  --sv-content-max-width: var(--ds-size-content-max-width);
+  --sv-radius: var(--ds-radius-md);
+}
+
+/* Class aliases */
+.sv-shell {
+  width: 100%;
+  max-width: var(--ds-size-content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--ds-space-4);
+}
+
+.sv-skip-link {
+  position: absolute;
+  top: calc(var(--ds-space-2) * -1);
+  left: calc(var(--ds-space-2) * -1);
+  padding: var(--ds-space-2) var(--ds-space-3);
+  background-color: var(--ds-color-primary);
+  color: var(--ds-color-on-primary);
+  text-decoration: none;
+  border-radius: var(--ds-radius-sm);
+}
+
+.sv-skip-link:focus {
+  top: var(--ds-space-2);
+  left: var(--ds-space-2);
+}
+
+.sv-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

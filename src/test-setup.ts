@@ -2,6 +2,8 @@ import '@angular/compiler';
 import { NgModule, provideZonelessChangeDetection } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
+import { readFileSync, existsSync, readdirSync } from 'fs';
+import { join, resolve } from 'path';
 
 // Mock matchMedia for jsdom (used by PrimeNG components like p-select)
 Object.defineProperty(window, 'matchMedia', {
@@ -31,3 +33,11 @@ getTestBed().initTestEnvironment(
     errorOnUnknownProperties: true,
   },
 );
+
+export const fs = {
+  existsSync,
+  readFileSync,
+  readdirSync,
+  join,
+  resolve,
+};
