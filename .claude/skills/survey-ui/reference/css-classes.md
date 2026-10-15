@@ -205,4 +205,3 @@ design-system equivalents. New markup MUST use the `ds-` classes instead.
 | `.completion-summary`, `.completion-eyebrow`, `.completion-percentage`                             | Complete-state card                                                                  |
 | `.eyebrow`, `.description`                                                                         | `.ds-eyebrow`, `.ds-support`                                                         |
 | `p-select`, `p-togglebutton`                                                                       | `integrations/primeng.css` maps the library's `--p-*` variables onto `--ds-*` tokens |
-

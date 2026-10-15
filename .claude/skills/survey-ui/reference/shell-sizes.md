@@ -60,4 +60,3 @@ a live ruler). Drift vs. shipped CSS: 0 px on every cell.
 - The automated check asserts the _tokens_ (existence, documentation, and use on the
   shell selectors) and the _drawer-cap formula_; the ruler values above are verified by
   the quickstart review pass, exactly as in 005.
-

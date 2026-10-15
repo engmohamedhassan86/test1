@@ -192,4 +192,3 @@ carries a persistent text or numeric label with at least 12:1 contrast, and the 
 `aria-checked`), which the automated check enforces. Controls whose border is the only
 affordance (inputs, buttons, the step rail) use `--ds-color-border-interactive` at 3.23:1 or
 stronger.
-

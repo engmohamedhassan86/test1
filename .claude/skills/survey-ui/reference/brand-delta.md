@@ -192,4 +192,3 @@ Rules: unknown `icon` keys MUST fall back to the default page icon (never error 
 forward-compatible); out-of-range `estimatedMinutes` and empty/oversize
 `description`/`icon` MUST fail validation exactly like any other config error
 (user-visible error, no partial render).
-
