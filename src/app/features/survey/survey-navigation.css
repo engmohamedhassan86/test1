@@ -1,70 +1,70 @@
-/* Colours and spacing come from the token layer in src/styles/tokens.css. */
+/* Colours, spacing, and sizing come from the design-token layer in src/styles/tokens.
+   The nav itself no longer draws its own top divider — it now sits inside the survey
+   card's `.ds-card__footer`, which already owns that separation. */
 
-.sv-nav {
-  margin-top: var(--sv-space-5);
-  padding-top: var(--sv-space-4);
-  border-top: 1px solid var(--p-content-border-color);
+.ds-nav {
   display: flex;
   flex-direction: column;
-  gap: var(--sv-space-3);
+  gap: var(--ds-space-3);
 }
 
 /* From 768px the position and the actions share a row. */
 @media (min-width: 768px) {
-  .sv-nav {
+  .ds-nav {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
 }
 
-.sv-nav__position {
+.ds-nav__position {
   margin: 0;
-  color: var(--p-text-muted-color);
-  font-weight: 600;
+  color: var(--ds-color-text-muted);
+  font-weight: var(--ds-font-weight-semibold);
 }
 
-.sv-nav__actions {
+.ds-nav__actions {
   display: flex;
-  gap: var(--sv-space-3);
+  flex-wrap: wrap;
+  gap: var(--ds-space-3);
 }
 
-.sv-nav__button {
+.ds-nav__button {
   flex: 1 1 0;
-  min-height: 44px;
-  padding: 0 var(--sv-space-5);
-  border-radius: var(--sv-radius);
+  min-height: var(--ds-size-control-min);
+  padding: 0 var(--ds-space-5);
+  border-radius: var(--ds-radius-md);
   font: inherit;
-  font-weight: 600;
+  font-weight: var(--ds-font-weight-semibold);
   cursor: pointer;
 }
 
 @media (min-width: 768px) {
-  .sv-nav__button {
+  .ds-nav__button {
     flex: 0 0 auto;
   }
 }
 
-.sv-nav__button--primary {
-  border: 1px solid var(--sv-brand);
-  background: var(--sv-brand);
-  color: var(--sv-on-brand);
+.ds-nav__button--primary {
+  border: 1px solid var(--ds-color-primary);
+  background: var(--ds-color-primary);
+  color: var(--ds-color-on-primary);
 }
 
-.sv-nav__button--primary:hover:not(:disabled) {
-  border-color: var(--sv-brand-hover);
-  background: var(--sv-brand-hover);
+.ds-nav__button--primary:hover:not(:disabled) {
+  border-color: var(--ds-color-primary-hover);
+  background: var(--ds-color-primary-hover);
 }
 
-.sv-nav__button--secondary {
-  border: 1px solid var(--sv-brand);
+.ds-nav__button--secondary {
+  border: 1px solid var(--ds-color-primary);
   background: transparent;
-  color: var(--sv-brand);
+  color: var(--ds-color-primary);
 }
 
-.sv-nav__button:disabled {
-  border-color: var(--p-content-border-color);
-  background: var(--p-content-border-color);
-  color: var(--p-text-muted-color);
+.ds-nav__button:disabled {
+  border-color: var(--ds-color-border-subtle);
+  background: var(--ds-color-border-subtle);
+  color: var(--ds-color-text-muted);
   cursor: not-allowed;
 }

@@ -116,7 +116,7 @@ async function clickNth(harness: Harness, selector: string, index: number): Prom
 }
 
 /** Next on pages before the last, Submit on the last — the same primary control. */
-const next = (harness: Harness): Promise<void> => clickNth(harness, '.sv-nav__button--primary', 0);
+const next = (harness: Harness): Promise<void> => clickNth(harness, '.ds-nav__button--primary', 0);
 
 /**
  * Advances off page 1, answers page 2, attaches `files` to page 1's question, then Submits.
@@ -138,7 +138,7 @@ async function moveOnThenAttachAndSubmit(harness: Harness, files: readonly File[
 }
 
 function position(harness: Harness): string {
-  return harness.host.querySelector('.sv-nav__position')?.textContent?.trim() ?? '';
+  return harness.host.querySelector('.ds-nav__position')?.textContent?.trim() ?? '';
 }
 
 function errorFor(harness: Harness, questionId: string): string | null {

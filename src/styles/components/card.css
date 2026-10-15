@@ -12,3 +12,87 @@
 .ds-card--raised {
   box-shadow: var(--ds-shadow-raised);
 }
+
+/**
+ * Panel variant — the survey card's chrome (PRI-70, R4). Header/body/footer own their
+ * own padding so the header's gradient and the footer's divider can run edge to edge
+ * inside the panel's rounded corners.
+ */
+.ds-card--panel {
+  max-width: var(--ds-size-content-max-width);
+  margin-inline: auto;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--ds-radius-xl);
+  box-shadow: var(--ds-shadow-raised);
+}
+
+.ds-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-3);
+  padding: var(--ds-space-5);
+  background: linear-gradient(to bottom, var(--ds-color-tertiary-50), var(--ds-color-surface));
+  border-bottom: 1px solid var(--ds-color-border-subtle);
+}
+
+.ds-card__body {
+  padding: var(--ds-space-5);
+}
+
+.ds-card__footer {
+  padding: var(--ds-space-5);
+  border-top: 1px solid var(--ds-color-border-subtle);
+}
+
+/**
+ * Page-icon badge (PRI-70, R5) — rendered from `SurveyPage.icon` (PRI-67). Absent or
+ * unrecognised normalises to the default clipboard glyph upstream (`pageIconClass`),
+ * never a render failure. Decorative only: `aria-hidden` in markup.
+ */
+.ds-page-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-space-7);
+  height: var(--ds-space-7);
+  border-radius: var(--ds-radius-full);
+  background-color: var(--ds-color-tertiary-surface);
+}
+
+.ds-page-icon::before {
+  content: '';
+  display: block;
+  width: var(--ds-space-5);
+  height: var(--ds-space-5);
+  background-color: var(--ds-color-primary);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.ds-page-icon--id-card::before {
+  mask-image: var(--ds-icon-id-card);
+  -webkit-mask-image: var(--ds-icon-id-card);
+}
+
+.ds-page-icon--file-shield::before {
+  mask-image: var(--ds-icon-file-shield);
+  -webkit-mask-image: var(--ds-icon-file-shield);
+}
+
+.ds-page-icon--laptop-file::before {
+  mask-image: var(--ds-icon-laptop-file);
+  -webkit-mask-image: var(--ds-icon-laptop-file);
+}
+
+.ds-page-icon--clipboard::before {
+  mask-image: var(--ds-icon-clipboard);
+  -webkit-mask-image: var(--ds-icon-clipboard);
+}

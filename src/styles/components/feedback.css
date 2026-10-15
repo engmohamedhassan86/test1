@@ -35,3 +35,20 @@
   border-left-color: var(--ds-color-info);
   color: var(--ds-color-info);
 }
+
+/**
+ * Status pill — the survey card's step badge (PRI-70, R4), e.g.
+ * "STEP 1 OF 3 · 2 REQUIRED · 1 OPTIONAL".
+ */
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--ds-space-1) var(--ds-space-3);
+  border-radius: var(--ds-radius-pill);
+  background-color: var(--ds-color-tertiary-surface);
+  color: var(--ds-color-secondary-text);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-semibold);
+  letter-spacing: var(--ds-letter-spacing-caps);
+  text-transform: uppercase;
+}

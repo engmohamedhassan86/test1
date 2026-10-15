@@ -58,7 +58,7 @@ async function openViewer(
 // --- reading the rendered page --------------------------------------------------------
 
 function position(host: HTMLElement): string {
-  return host.querySelector('.sv-nav__position')?.textContent?.trim() ?? '';
+  return host.querySelector('.ds-nav__position')?.textContent?.trim() ?? '';
 }
 
 /** The error text rendered under one question, or `null` when none is. */
@@ -141,9 +141,9 @@ async function selectDropdownOption(
   await harness.settle();
 }
 
-const next = (harness: Harness): Promise<void> => clickNth(harness, '.sv-nav__button--primary', 0);
+const next = (harness: Harness): Promise<void> => clickNth(harness, '.ds-nav__button--primary', 0);
 const back = (harness: Harness): Promise<void> =>
-  clickNth(harness, '.sv-nav__button--secondary', 0);
+  clickNth(harness, '.ds-nav__button--secondary', 0);
 
 /** Answers page 1 fully — required textbox, required radio — through the controls. */
 async function answerPage1(harness: Harness): Promise<void> {
@@ -288,7 +288,7 @@ describe('SurveyPageComponent — blocked navigation (US2)', () => {
 
     expect(harness.session.state().kind).toBe('validation-error');
     const previousButton = harness.host.querySelector<HTMLButtonElement>(
-      '.sv-nav__button--secondary',
+      '.ds-nav__button--secondary',
     );
     expect(previousButton?.disabled).toBe(false);
 
@@ -446,7 +446,7 @@ describe('SurveyPageComponent — blocked navigation (US2)', () => {
     await next(harness);
 
     // A disabled Next would make the FR-030 re-announcement above unreachable.
-    const primary = harness.host.querySelector<HTMLButtonElement>('.sv-nav__button--primary');
+    const primary = harness.host.querySelector<HTMLButtonElement>('.ds-nav__button--primary');
     expect(primary?.disabled).toBe(false);
     expect(primary?.textContent?.trim()).toBe('Next');
   });

@@ -245,3 +245,62 @@ export function submitButtonLabel(inputsLocked: boolean): string {
 export function configurationErrorSubject(scope: 'manifest' | 'survey'): string {
   return scope === 'manifest' ? 'The survey catalog' : 'The survey';
 }
+
+// --- dock/topbar/drawer shell (PRI-68) -----------------------------------------------
+
+/** The dock/drawer step's question count, e.g. "3 questions". Singular at exactly 1. */
+export function questionCountLabel(count: number): string {
+  return count === 1 ? '1 question' : `${count} questions`;
+}
+
+/** The topbar breadcrumb, e.g. "SURVEY / STEP 2 — Delivery Details". */
+export function breadcrumbLabel(stepNumber: number, pageTitle: string): string {
+  return `SURVEY / STEP ${stepNumber} — ${pageTitle}`;
+}
+
+/** Announced politely once the mobile drawer finishes opening. */
+export function navigationMenuOpenedAnnouncement(): string {
+  return 'Navigation menu opened';
+}
+
+/** Announced politely once the mobile drawer finishes closing. */
+export function navigationMenuClosedAnnouncement(): string {
+  return 'Navigation menu closed';
+}
+
+/** The topbar hamburger's accessible name, which names the action, not the current state. */
+export function navigationToggleLabel(open: boolean): string {
+  return open ? 'Close navigation menu' : 'Open navigation menu';
+}
+
+/** The three dock-step states the visually-hidden per-step text carries (never colour alone). */
+export type DockStepState = 'current' | 'complete' | 'upcoming';
+
+export function dockStepStatusLabel(state: DockStepState): string {
+  switch (state) {
+    case 'current':
+      return 'Current step.';
+    case 'complete':
+      return 'Completed.';
+    case 'upcoming':
+      return 'Not yet reached.';
+  }
+  return assertNever(state);
+}
+
+/**
+ * The survey card's step badge (PRI-70): page position plus a question-count-by-
+ * requiredness breakdown, e.g. `STEP 1 OF 3 · 2 REQUIRED · 1 OPTIONAL`.
+ *
+ * `pageIndex` is 0-based, like `SurveySessionService.currentPageIndex`. The required/
+ * optional counts are the caller's to derive from `currentPage.questions` — this function
+ * only owns the wording.
+ */
+export function stepBadgeLabel(
+  pageIndex: number,
+  pageCount: number,
+  requiredCount: number,
+  optionalCount: number,
+): string {
+  return `STEP ${pageIndex + 1} OF ${pageCount} · ${requiredCount} REQUIRED · ${optionalCount} OPTIONAL`;
+}

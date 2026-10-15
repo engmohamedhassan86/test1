@@ -69,7 +69,7 @@ describe('SurveyPageComponent — states', () => {
       validation: valid(),
     });
 
-    expect(harness.host.querySelector('.sv-survey__title')?.textContent?.trim()).toBe(
+    expect(harness.host.querySelector('.ds-survey__title')?.textContent?.trim()).toBe(
       'Customer Feedback',
     );
     expect(harness.host.querySelector('app-survey-page-body')).not.toBeNull();
@@ -99,18 +99,18 @@ describe('SurveyPageComponent — states', () => {
       resolveAfter: gate,
     });
 
-    const status = harness.host.querySelector('.sv-survey__status');
+    const status = harness.host.querySelector('.ds-survey__status');
     expect(status?.getAttribute('role')).toBe('status');
     expect(status?.textContent).toContain('Loading');
 
     // No question, no control, no error — the state carries no `Survey` to render.
     expect(controls(harness.host)).toHaveLength(0);
-    expect(harness.host.querySelector('.sv-survey__title')).toBeNull();
+    expect(harness.host.querySelector('.ds-survey__title')).toBeNull();
     expect(harness.host.querySelector('app-survey-navigation')).toBeNull();
 
     release();
     await harness.settle();
-    expect(harness.host.querySelector('.sv-survey__status')).toBeNull();
+    expect(harness.host.querySelector('.ds-survey__status')).toBeNull();
   });
 
   it('renders the configuration-error screen and none of the survey when the config is invalid (FR-042)', async () => {
@@ -210,7 +210,7 @@ describe('SurveyPageComponent — states', () => {
     await harness.settle();
 
     expect(harness.session.state().kind).toBe('submitting');
-    const submit = harness.host.querySelector('.sv-nav__button--primary');
+    const submit = harness.host.querySelector('.ds-nav__button--primary');
     expect(submit?.getAttribute('aria-busy')).toBe('true');
     // No confirmation yet — nothing has been acknowledged.
     expect(harness.host.querySelector('app-submission-confirmation')).toBeNull();

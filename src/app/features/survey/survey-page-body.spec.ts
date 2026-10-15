@@ -30,7 +30,7 @@ describe('SurveyPageBodyComponent', () => {
       survey([page('p1', 'About your delivery', [radioQuestion({ id: 'q1' })])]),
     );
 
-    expect(harness.host.querySelector('.sv-page__title')?.textContent?.trim()).toBe(
+    expect(harness.host.querySelector('.ds-page__title')?.textContent?.trim()).toBe(
       'About your delivery',
     );
   });
@@ -43,10 +43,10 @@ describe('SurveyPageBodyComponent', () => {
       }),
     );
 
-    expect(harness.host.querySelector('.sv-page__survey-description')?.textContent?.trim()).toBe(
+    expect(harness.host.querySelector('.ds-page__survey-description')?.textContent?.trim()).toBe(
       'Survey blurb.',
     );
-    expect(harness.host.querySelector('.sv-page__description')?.textContent?.trim()).toBe(
+    expect(harness.host.querySelector('.ds-page__description')?.textContent?.trim()).toBe(
       'Page blurb.',
     );
 
@@ -55,14 +55,14 @@ describe('SurveyPageBodyComponent', () => {
     // happily with the survey blurb below the page title.
     const order = [
       ...harness.host.querySelectorAll(
-        '.sv-page__survey-description, .sv-page__title, .sv-page__description',
+        '.ds-page__survey-description, .ds-page__title, .ds-page__description',
       ),
     ].map((element) => element.className);
 
     expect(order).toEqual([
-      'sv-page__survey-description',
-      'sv-page__title',
-      'sv-page__description',
+      'ds-page__survey-description',
+      'ds-page__title',
+      'ds-page__description',
     ]);
   });
 
@@ -73,8 +73,8 @@ describe('SurveyPageBodyComponent', () => {
     );
 
     // Absent, not empty — an empty paragraph still reserves a line.
-    expect(harness.host.querySelector('.sv-page__survey-description')).toBeNull();
-    expect(harness.host.querySelector('.sv-page__description')).not.toBeNull();
+    expect(harness.host.querySelector('.ds-page__survey-description')).toBeNull();
+    expect(harness.host.querySelector('.ds-page__description')).not.toBeNull();
   });
 
   it('leaves no element behind for an absent page description (US1 scenario 7)', async () => {
@@ -85,8 +85,8 @@ describe('SurveyPageBodyComponent', () => {
       }),
     );
 
-    expect(harness.host.querySelector('.sv-page__description')).toBeNull();
-    expect(harness.host.querySelector('.sv-page__survey-description')).not.toBeNull();
+    expect(harness.host.querySelector('.ds-page__description')).toBeNull();
+    expect(harness.host.querySelector('.ds-page__survey-description')).not.toBeNull();
   });
 
   it('renders one question host per question on the current page, in order', async () => {
@@ -119,7 +119,7 @@ describe('SurveyPageBodyComponent', () => {
     harness.session.next();
     await harness.settle();
 
-    expect(harness.host.querySelector('.sv-page__title')?.textContent?.trim()).toBe('Second');
+    expect(harness.host.querySelector('.ds-page__title')?.textContent?.trim()).toBe('Second');
     expect(harness.host.querySelectorAll('app-question-host')).toHaveLength(1);
   });
 
@@ -130,9 +130,9 @@ describe('SurveyPageBodyComponent', () => {
     );
 
     // A page with zero questions is valid configuration.
-    expect(harness.host.querySelector('.sv-page__title')?.textContent?.trim()).toBe('Introduction');
+    expect(harness.host.querySelector('.ds-page__title')?.textContent?.trim()).toBe('Introduction');
     expect(harness.host.querySelectorAll('app-question-host')).toHaveLength(0);
-    expect(harness.host.querySelector('.sv-page__description')?.textContent?.trim()).toBe(
+    expect(harness.host.querySelector('.ds-page__description')?.textContent?.trim()).toBe(
       'Read this first.',
     );
   });
@@ -144,7 +144,7 @@ describe('SurveyPageBodyComponent', () => {
     );
 
     // Without tabindex the heading cannot receive the post-Next focus move at all.
-    expect(harness.host.querySelector('.sv-page__title')?.getAttribute('tabindex')).toBe('-1');
+    expect(harness.host.querySelector('.ds-page__title')?.getAttribute('tabindex')).toBe('-1');
   });
 
   it("moves focus to the new page's heading after a successful Next (FR-029)", async () => {
@@ -159,7 +159,7 @@ describe('SurveyPageBodyComponent', () => {
     harness.session.next();
     await harness.settle();
 
-    const heading = harness.host.querySelector('.sv-page__title');
+    const heading = harness.host.querySelector('.ds-page__title');
     expect(heading?.textContent?.trim()).toBe('Second');
     expect(document.activeElement).toBe(heading);
   });
@@ -173,13 +173,13 @@ describe('SurveyPageBodyComponent', () => {
       ]),
     );
 
-    harness.host.querySelector<HTMLElement>('.sv-page__title')?.blur();
+    harness.host.querySelector<HTMLElement>('.ds-page__title')?.blur();
     harness.session.next();
     await harness.settle();
 
     // A refused Next requests focus on the offending *question*, which belongs to
     // `survey-page.ts`. The heading must not steal it.
-    expect(harness.host.querySelector('.sv-page__title')?.textContent?.trim()).toBe('First');
-    expect(document.activeElement).not.toBe(harness.host.querySelector('.sv-page__title'));
+    expect(harness.host.querySelector('.ds-page__title')?.textContent?.trim()).toBe('First');
+    expect(document.activeElement).not.toBe(harness.host.querySelector('.ds-page__title'));
   });
 });

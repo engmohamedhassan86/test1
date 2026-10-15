@@ -78,7 +78,7 @@ async function openViewer(gateway: AcknowledgingSurveyResponseGateway): Promise<
 }
 
 function position(harness: Harness): string {
-  return harness.host.querySelector('.sv-nav__position')?.textContent?.trim() ?? '';
+  return harness.host.querySelector('.ds-nav__position')?.textContent?.trim() ?? '';
 }
 
 function summaryMessages(harness: Harness): readonly string[] {

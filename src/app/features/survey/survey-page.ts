@@ -38,16 +38,18 @@ import {
 
 import { AnnouncerService } from '../../core/services/announcer.service';
 import { DocumentTitleService } from '../../core/services/document-title.service';
+import { pageIconClass } from '../../core/models/display-format';
 import { SurveyCatalogService } from '../../core/services/survey-catalog.service';
 import { SurveyLoaderService } from '../../core/services/survey-loader.service';
 import { SurveySessionService } from '../../core/services/survey-session.service';
-import { loadingAnnouncement } from '../../core/validators/messages';
+import { loadingAnnouncement, stepBadgeLabel } from '../../core/validators/messages';
 import { ConfigurationErrorComponent } from '../../shared/configuration-error';
 import { NotFoundPageComponent } from '../../shared/not-found-page';
 import { SubmissionConfirmationComponent } from './submission-confirmation';
 import { SubmissionErrorBannerComponent } from './submission-error-banner';
 import { SurveyNavigationComponent } from './survey-navigation';
 import { SurveyPageBodyComponent } from './survey-page-body';
+import { SurveyShellComponent } from './survey-shell';
 import { ValidationSummaryComponent } from './validation-summary';
 
 @Component({
@@ -59,6 +61,7 @@ import { ValidationSummaryComponent } from './validation-summary';
     SubmissionErrorBannerComponent,
     SurveyNavigationComponent,
     SurveyPageBodyComponent,
+    SurveyShellComponent,
     ValidationSummaryComponent,
   ],
   templateUrl: './survey-page.html',
@@ -91,6 +94,31 @@ export class SurveyPageComponent {
   protected readonly currentPageErrors = this.session.currentPageErrors;
 
   protected readonly surveyTitle = computed(() => this.session.survey()?.title ?? '');
+
+  /**
+   * R4's step badge, e.g. `STEP 1 OF 3 · 2 REQUIRED · 1 OPTIONAL`, in the survey card's
+   * header strip. The required/optional split is derived from `currentPage.questions`
+   * here rather than stored — PRI-70 adds no session state for it.
+   */
+  protected readonly pageStepBadge = computed(() => {
+    const page = this.currentPage();
+    if (page === null) {
+      return '';
+    }
+    const requiredCount = page.questions.filter((question) => question.required).length;
+    const optionalCount = page.questions.length - requiredCount;
+    return stepBadgeLabel(
+      this.session.currentPageIndex(),
+      this.session.pageCount(),
+      requiredCount,
+      optionalCount,
+    );
+  });
+
+  /** R5's page-icon badge modifier class, fail-open to the default clipboard glyph. */
+  protected readonly pageIconModifier = computed(() =>
+    pageIconClass(this.currentPage()?.icon ?? null),
+  );
 
   /**
    * Which load is allowed to write. Incremented when a load starts **and** on destroy, so

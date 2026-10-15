@@ -154,14 +154,14 @@ const RADIO_SEGMENT = within('q_segment', 'input[type="radio"]');
 const CHECKBOX_LIKED = within('q_liked', 'input[type="checkbox"]');
 const TEXTAREA_EVIDENCE = within('q_evidence', 'textarea');
 
-const next = (harness: Harness): Promise<void> => clickNth(harness, '.sv-nav__button--primary', 0);
+const next = (harness: Harness): Promise<void> => clickNth(harness, '.ds-nav__button--primary', 0);
 const back = (harness: Harness): Promise<void> =>
-  clickNth(harness, '.sv-nav__button--secondary', 0);
+  clickNth(harness, '.ds-nav__button--secondary', 0);
 
 // --- reading it back ------------------------------------------------------------------
 
 function position(harness: Harness): string {
-  return harness.host.querySelector('.sv-nav__position')?.textContent?.trim() ?? '';
+  return harness.host.querySelector('.ds-nav__position')?.textContent?.trim() ?? '';
 }
 
 /** The value a field currently renders, or `null` when the field is not on the page. */

@@ -216,7 +216,7 @@ describe('SurveyPageComponent — a stale load (S10 HIGH-2)', () => {
     // answers and the viewer renders Survey A at `/surveys/survey-b`.
     expect(harness.session.survey()?.title).toBe('Survey B');
     expect(harness.session.answers().size).toBe(1);
-    expect(harness.host.querySelector('.sv-survey__title')?.textContent?.trim()).toBe('Survey B');
+    expect(harness.host.querySelector('.ds-survey__title')?.textContent?.trim()).toBe('Survey B');
     expect(harness.host.querySelector<HTMLInputElement>('input')?.value).toBe(
       'Everything was fine',
     );
@@ -274,7 +274,7 @@ describe('SurveyPageComponent — a stale load (S10 HIGH-2)', () => {
     // FR-045's screen is not a session state, so a late `notFoundKey.set` would hide a
     // perfectly good survey behind "no such survey" without touching the session at all.
     expect(harness.host.querySelector('app-not-found-page')).toBeNull();
-    expect(harness.host.querySelector('.sv-survey__title')?.textContent?.trim()).toBe('Survey B');
+    expect(harness.host.querySelector('.ds-survey__title')?.textContent?.trim()).toBe('Survey B');
   });
 
   it('writes nothing once the viewer is destroyed', async () => {

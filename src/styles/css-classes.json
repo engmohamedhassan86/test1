@@ -21,6 +21,10 @@
       "kind": "modifier"
     },
     {
+      "name": ".ds-badge",
+      "kind": "block"
+    },
+    {
       "name": ".ds-btn",
       "kind": "block"
     },
@@ -45,8 +49,24 @@
       "kind": "block"
     },
     {
+      "name": ".ds-card--panel",
+      "kind": "modifier"
+    },
+    {
       "name": ".ds-card--raised",
       "kind": "modifier"
+    },
+    {
+      "name": ".ds-card__body",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-card__footer",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-card__header",
+      "kind": "element"
     },
     {
       "name": ".ds-choice-tile",
@@ -81,6 +101,78 @@
       "kind": "block"
     },
     {
+      "name": ".ds-dock",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-dock__header",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-dock__title",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-dock__steps",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-dock__step",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-dock__step--current",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-dock__step--complete",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-dock__step--upcoming",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-dock__step-marker",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-dock__step-body",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-dock__step-label",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-dock__step-meta",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-drawer",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-drawer--open",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-drawer__scrim",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-drawer__panel",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-drawer__close",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-drawer__close-icon",
+      "kind": "element"
+    },
+    {
       "name": ".ds-field",
       "kind": "block"
     },
@@ -109,6 +201,62 @@
       "kind": "modifier"
     },
     {
+      "name": ".ds-nav",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-nav__actions",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-nav__button",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-nav__button--primary",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-nav__button--secondary",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-nav__position",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-page-icon",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-page-icon--clipboard",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-page-icon--file-shield",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-page-icon--id-card",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-page-icon--laptop-file",
+      "kind": "modifier"
+    },
+    {
+      "name": ".ds-page__description",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-page__survey-description",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-page__title",
+      "kind": "element"
+    },
+    {
       "name": ".ds-progress",
       "kind": "block"
     },
@@ -118,6 +266,22 @@
     },
     {
       "name": ".ds-progress__label",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-shell",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-shell__body",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-shell__dock",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-shell__content",
       "kind": "element"
     },
     {
@@ -135,6 +299,42 @@
     {
       "name": ".ds-stack--sm",
       "kind": "modifier"
+    },
+    {
+      "name": ".ds-survey__status",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-survey__title",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-topbar",
+      "kind": "block"
+    },
+    {
+      "name": ".ds-topbar__inner",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-topbar__toggle",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-topbar__toggle-icon",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-topbar__text",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-topbar__breadcrumb",
+      "kind": "element"
+    },
+    {
+      "name": ".ds-topbar__title",
+      "kind": "element"
     },
     {
       "name": ".ds-visually-hidden",

@@ -127,7 +127,7 @@ function toggleControl(host: HTMLElement): HTMLButtonElement {
 }
 
 function position(host: HTMLElement): string {
-  return host.querySelector('.sv-nav__position')?.textContent?.trim() ?? '';
+  return host.querySelector('.ds-nav__position')?.textContent?.trim() ?? '';
 }
 
 async function clickNth(
@@ -195,14 +195,14 @@ async function type(
 async function walkToLastPage(harness: ViewerHarness<SurveyPageComponent>): Promise<void> {
   await type(harness, 'input[type="text"]', 'Sam');
   await clickNth(harness, 'input[type="radio"]', 0);
-  await clickNth(harness, '.sv-nav__button--primary', 0);
+  await clickNth(harness, '.ds-nav__button--primary', 0);
 
   await clickNth(harness, '.sv-scale__point', 3);
   await selectDropdownOption(harness, 0, 0);
   await clickNth(harness, 'input[type="checkbox"]', 0);
-  await clickNth(harness, '.sv-nav__button--primary', 0);
+  await clickNth(harness, '.ds-nav__button--primary', 0);
 
-  await clickNth(harness, '.sv-nav__button--primary', 0);
+  await clickNth(harness, '.ds-nav__button--primary', 0);
   expect(position(harness.host)).toBe('Page 4 of 4');
   // Page 4's own required radio, so nothing unrelated to the toggle blocks Submit.
   await clickNth(harness, 'input[type="radio"]', 0);
@@ -269,9 +269,9 @@ describe('toggle_button on the authored customer-feedback fixture (US1)', () => 
     await walkToLastPage(harness);
     await clickNth(harness, '.sv-toggle', 0);
 
-    await clickNth(harness, '.sv-nav__button--secondary', 0);
+    await clickNth(harness, '.ds-nav__button--secondary', 0);
     expect(position(harness.host)).toBe('Page 3 of 4');
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     expect(position(harness.host)).toBe('Page 4 of 4');
     expect(toggleControl(harness.host).textContent?.trim()).toBe('Send me news');
@@ -335,7 +335,7 @@ describe('the submitted toggle value is a native JSON boolean (SC-020)', () => {
     const { harness, gateway } = await openAuthored(validatedAuthoredSurvey());
     await walkToLastPage(harness);
 
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     expect(harness.session.state().kind).toBe('submitted');
 
     const { json, entry } = wire(gateway);
@@ -351,7 +351,7 @@ describe('the submitted toggle value is a native JSON boolean (SC-020)', () => {
     await walkToLastPage(harness);
     await clickNth(harness, '.sv-toggle', 0);
 
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     expect(harness.session.state().kind).toBe('submitted');
 
     const { json, entry } = wire(gateway);
@@ -365,7 +365,7 @@ describe('the submitted toggle value is a native JSON boolean (SC-020)', () => {
   it('carries exactly one entry for the toggle, never two and never none', async () => {
     const { harness, gateway } = await openAuthored(validatedAuthoredSurvey());
     await walkToLastPage(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     const rows = gateway.calls[0]?.answers.filter((row) => row.questionId === 'q_notifications');
     expect(rows).toHaveLength(1);
@@ -392,7 +392,7 @@ describe('a required toggle gates the submission boundary (US2 scenario 5, SC-02
   it('refuses Submit, names the question in the summary, and sends no request', async () => {
     const { harness, gateway } = await openAuthored(consentSurvey({ required: true }));
 
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     expect(harness.session.state().kind).not.toBe('submitted');
     expect(gateway.calls).toHaveLength(0);
@@ -410,7 +410,7 @@ describe('a required toggle gates the submission boundary (US2 scenario 5, SC-02
     const { harness, gateway } = await openAuthored(consentSurvey({ required: true }));
 
     await clickNth(harness, '.sv-toggle', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     expect(harness.session.state().kind).toBe('submitted');
     expect(gateway.calls).toHaveLength(1);
     expect(JSON.stringify(gateway.calls[0])).toContain('"value":true');
@@ -419,7 +419,7 @@ describe('a required toggle gates the submission boundary (US2 scenario 5, SC-02
   it('lets an off switch through when the question is optional (scenario 6)', async () => {
     const { harness, gateway } = await openAuthored(consentSurvey({ required: false }));
 
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     expect(harness.session.state().kind).toBe('submitted');
     expect(summaryRows(harness.host)).toHaveLength(0);
@@ -443,7 +443,7 @@ describe('a required toggle gates the submission boundary (US2 scenario 5, SC-02
 
     // Page 1 passes untouched, because `defaultValue: true` is already the accepting
     // position (scenario 4).
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     expect(position(harness.host)).toBe('Page 2 of 2');
 
     // Reaching the last page with the page-1 toggle off cannot be done through the UI —
@@ -454,7 +454,7 @@ describe('a required toggle gates the submission boundary (US2 scenario 5, SC-02
     harness.session.setAnswer(consent, { kind: 'boolean', value: false });
     await harness.settle();
 
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     expect(harness.session.state().kind).not.toBe('submitted');
     expect(gateway.calls).toHaveLength(0);
@@ -604,7 +604,7 @@ describe('a mis-authored toggle reaches the configuration-error screen (US3, FR-
       expect(harness.session.state().kind).toBe('configuration-error');
       expect(controls(harness.host)).toHaveLength(0);
       expect(harness.host.querySelector('.sv-toggle')).toBeNull();
-      expect(harness.host.querySelector('.sv-nav')).toBeNull();
+      expect(harness.host.querySelector('.ds-nav')).toBeNull();
     });
   }
 

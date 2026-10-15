@@ -1,6 +1,6 @@
 /** T019 — FR-071's four bands and FR-072's label mapping. */
 
-import { formatAcceptedTypes, formatFileSize } from './display-format';
+import { formatAcceptedTypes, formatFileSize, pageIconClass } from './display-format';
 import type { AcceptedFileType } from './survey.model';
 
 describe('formatFileSize (FR-071)', () => {
@@ -60,5 +60,20 @@ describe('formatAcceptedTypes (FR-072)', () => {
 
   it('renders a single MIME entry as its subtype alone', () => {
     expect(formatAcceptedTypes(['image/png'])).toBe('PNG');
+  });
+});
+
+describe('pageIconClass (R5)', () => {
+  it.each([
+    ['id-card', 'ds-page-icon--id-card'],
+    ['file-shield', 'ds-page-icon--file-shield'],
+    ['laptop-file', 'ds-page-icon--laptop-file'],
+    ['clipboard', 'ds-page-icon--clipboard'],
+  ] as const)('renders %s as %s', (icon, expected) => {
+    expect(pageIconClass(icon)).toBe(expected);
+  });
+
+  it('falls back to the default clipboard glyph when the page has no icon (fail-open)', () => {
+    expect(pageIconClass(null)).toBe('ds-page-icon--clipboard');
   });
 });

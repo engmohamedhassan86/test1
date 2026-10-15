@@ -127,9 +127,9 @@ async function selectDropdownOption(
 }
 
 const primaryAction = (harness: Harness): Promise<void> =>
-  clickNth(harness, '.sv-nav__button--primary', 0);
+  clickNth(harness, '.ds-nav__button--primary', 0);
 const back = (harness: Harness): Promise<void> =>
-  clickNth(harness, '.sv-nav__button--secondary', 0);
+  clickNth(harness, '.ds-nav__button--secondary', 0);
 
 /**
  * Clicks the primary control without settling — for use under fake timers.
@@ -140,7 +140,7 @@ const back = (harness: Harness): Promise<void> =>
  * then use `settleFake` below.
  */
 function clickPrimary(harness: Harness): void {
-  const button = harness.host.querySelector<HTMLElement>('.sv-nav__button--primary');
+  const button = harness.host.querySelector<HTMLElement>('.ds-nav__button--primary');
   if (button === null) {
     throw new Error('expected a primary navigation control');
   }
@@ -182,7 +182,7 @@ async function walkToPageFour(harness: Harness): Promise<void> {
 // --- reading --------------------------------------------------------------------------
 
 function position(harness: Harness): string {
-  return harness.host.querySelector('.sv-nav__position')?.textContent?.trim() ?? '';
+  return harness.host.querySelector('.ds-nav__position')?.textContent?.trim() ?? '';
 }
 
 function bannerText(harness: Harness): string | null {
@@ -316,7 +316,7 @@ describe('SurveyPageComponent — submission failure (US6)', () => {
     expect(position(harness)).toBe('Page 4 of 4');
     // Submit is available again rather than permanently spent.
     expect(
-      harness.host.querySelector<HTMLButtonElement>('.sv-nav__button--primary')?.disabled,
+      harness.host.querySelector<HTMLButtonElement>('.ds-nav__button--primary')?.disabled,
     ).toBe(false);
   });
 

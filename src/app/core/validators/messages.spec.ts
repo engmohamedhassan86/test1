@@ -23,6 +23,7 @@ import {
   requiredToggleMessage,
   scaleRangeMessage,
   selectionHintMessage,
+  stepBadgeLabel,
   submissionFailureMessage,
   submitButtonLabel,
   submittedAnnouncement,
@@ -289,5 +290,15 @@ describe('the counter, the hint and the announcements', () => {
   it('names the configuration-error subject per scope', () => {
     expect(configurationErrorSubject('manifest')).toBe('The survey catalog');
     expect(configurationErrorSubject('survey')).toBe('The survey');
+  });
+
+  it('builds the step badge from a 0-based page index and the required/optional split', () => {
+    expect(stepBadgeLabel(0, 3, 2, 1)).toBe('STEP 1 OF 3 · 2 REQUIRED · 1 OPTIONAL');
+    expect(stepBadgeLabel(2, 3, 2, 1)).toBe('STEP 3 OF 3 · 2 REQUIRED · 1 OPTIONAL');
+  });
+
+  it('renders a zero count plainly rather than hiding that half of the badge', () => {
+    expect(stepBadgeLabel(0, 1, 0, 4)).toBe('STEP 1 OF 1 · 0 REQUIRED · 4 OPTIONAL');
+    expect(stepBadgeLabel(0, 1, 4, 0)).toBe('STEP 1 OF 1 · 4 REQUIRED · 0 OPTIONAL');
   });
 });

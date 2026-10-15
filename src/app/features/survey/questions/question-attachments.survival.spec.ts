@@ -101,9 +101,9 @@ async function selectDropdownOption(
   await harness.settle();
 }
 
-const next = (harness: Harness): Promise<void> => clickNth(harness, '.sv-nav__button--primary', 0);
+const next = (harness: Harness): Promise<void> => clickNth(harness, '.ds-nav__button--primary', 0);
 const back = (harness: Harness): Promise<void> =>
-  clickNth(harness, '.sv-nav__button--secondary', 0);
+  clickNth(harness, '.ds-nav__button--secondary', 0);
 
 /** Answers pages 1 and 2 through their controls and stops on page 3. */
 async function walkToEvidencePage(harness: Harness): Promise<void> {
@@ -138,7 +138,7 @@ async function attachBoth(harness: Harness): Promise<void> {
 // --- reading back ---------------------------------------------------------------------
 
 function position(harness: Harness): string {
-  return harness.host.querySelector('.sv-nav__position')?.textContent?.trim() ?? '';
+  return harness.host.querySelector('.ds-nav__position')?.textContent?.trim() ?? '';
 }
 
 function listedRows(harness: Harness): readonly { name: string; size: string }[] {

@@ -38,15 +38,15 @@ async function openViewer(
 }
 
 function position(host: HTMLElement): string {
-  return host.querySelector('.sv-nav__position')?.textContent?.trim() ?? '';
+  return host.querySelector('.ds-nav__position')?.textContent?.trim() ?? '';
 }
 
 function primary(host: HTMLElement): HTMLButtonElement | null {
-  return host.querySelector<HTMLButtonElement>('.sv-nav__button--primary');
+  return host.querySelector<HTMLButtonElement>('.ds-nav__button--primary');
 }
 
 function previous(host: HTMLElement): HTMLButtonElement | null {
-  return host.querySelector<HTMLButtonElement>('.sv-nav__button--secondary');
+  return host.querySelector<HTMLButtonElement>('.ds-nav__button--secondary');
 }
 
 async function type(
@@ -142,7 +142,7 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     const harness = await openViewer();
 
     await completePage1(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     expect(position(harness.host)).toBe('Page 2 of 4');
     expect(previous(harness.host)?.disabled).toBe(false);
@@ -155,9 +155,9 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     const harness = await openViewer();
 
     await completePage1(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
-    const heading = harness.host.querySelector('.sv-page__title');
+    const heading = harness.host.querySelector('.ds-page__title');
     expect(heading?.textContent?.trim()).toBe('Your Experience');
     expect(document.activeElement).toBe(heading);
   });
@@ -166,17 +166,17 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     const harness = await openViewer();
 
     await completePage1(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     expect(position(harness.host)).toBe('Page 2 of 4');
     expect(primary(harness.host)?.textContent?.trim()).toBe('Next');
 
     await completePage2(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     expect(position(harness.host)).toBe('Page 3 of 4');
     expect(primary(harness.host)?.textContent?.trim()).toBe('Next');
 
     // Page 3 holds one optional textarea, so Next passes with nothing entered.
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     expect(position(harness.host)).toBe('Page 4 of 4');
 
     // Only now is Submit offered.
@@ -187,10 +187,10 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     const harness = await openViewer();
 
     await completePage1(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await completePage2(harness);
 
-    await clickNth(harness, '.sv-nav__button--secondary', 0);
+    await clickNth(harness, '.ds-nav__button--secondary', 0);
 
     expect(position(harness.host)).toBe('Page 1 of 4');
     // The textbox still holds what was typed, re-rendered from the session.
@@ -198,7 +198,7 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     expect(harness.host.querySelector<HTMLInputElement>('input[type="radio"]')?.checked).toBe(true);
 
     // Going forward again finds page 2's answers intact too.
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     expect(position(harness.host)).toBe('Page 2 of 4');
     expect(harness.host.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked).toBe(
       true,
@@ -208,7 +208,7 @@ describe('SurveyPageComponent — end to end (US1)', () => {
   it('blocks Next on an incomplete page and keeps the respondent there (scenario 2, negative)', async () => {
     const harness = await openViewer();
 
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     expect(position(harness.host)).toBe('Page 1 of 4');
     const summary = harness.host.querySelector('.sv-summary');
@@ -220,15 +220,15 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     const harness = await openViewer();
 
     await completePage1(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await completePage2(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     expect(position(harness.host)).toBe('Page 4 of 4');
 
     // Page 4's required radio.
     await clickNth(harness, 'input[type="radio"]', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     expect(harness.session.state().kind).toBe('submitted');
 
@@ -246,10 +246,10 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     /** Walks pages 1 to 3 through the controls and lands on page 4. */
     async function walkToPage4(harness: ViewerHarness<SurveyPageComponent>): Promise<void> {
       await completePage1(harness);
-      await clickNth(harness, '.sv-nav__button--primary', 0);
+      await clickNth(harness, '.ds-nav__button--primary', 0);
       await completePage2(harness);
-      await clickNth(harness, '.sv-nav__button--primary', 0);
-      await clickNth(harness, '.sv-nav__button--primary', 0);
+      await clickNth(harness, '.ds-nav__button--primary', 0);
+      await clickNth(harness, '.ds-nav__button--primary', 0);
       expect(position(harness.host)).toBe('Page 4 of 4');
       // Page 4's required radio, so Submit is not blocked by something unrelated.
       await clickNth(harness, 'input[type="radio"]', 0);
@@ -284,7 +284,7 @@ describe('SurveyPageComponent — end to end (US1)', () => {
       await clickNth(harness, '.sv-toggle', 0);
       expect(harness.host.querySelector('.sv-toggle')?.getAttribute('aria-checked')).toBe('true');
 
-      await clickNth(harness, '.sv-nav__button--primary', 0);
+      await clickNth(harness, '.ds-nav__button--primary', 0);
       expect(harness.session.state().kind).toBe('submitted');
 
       const entry = gateway.calls[0]?.answers.find((row) => row.questionId === 'q_notifications');
@@ -296,7 +296,7 @@ describe('SurveyPageComponent — end to end (US1)', () => {
       const harness = await openWith(gateway);
       await walkToPage4(harness);
 
-      await clickNth(harness, '.sv-nav__button--primary', 0);
+      await clickNth(harness, '.ds-nav__button--primary', 0);
       expect(harness.session.state().kind).toBe('submitted');
 
       // Not omitted and not `null`: the switch was showing off, so the payload says off.
@@ -310,29 +310,29 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     const harness = await openViewer();
 
     await completePage1(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await completePage2(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await clickNth(harness, 'input[type="radio"]', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     expect(harness.host.querySelectorAll('input')).toHaveLength(0);
     expect(harness.host.querySelectorAll('textarea')).toHaveLength(0);
     expect(harness.host.querySelector('app-survey-navigation')).toBeNull();
-    expect(harness.host.querySelector('.sv-nav__position')).toBeNull();
+    expect(harness.host.querySelector('.ds-nav__position')).toBeNull();
   });
 
   it('offers a link back to the catalog from the confirmation (scenario 4)', async () => {
     const harness = await openViewer();
 
     await completePage1(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await completePage2(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await clickNth(harness, 'input[type="radio"]', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     const hrefs = [...harness.host.querySelectorAll('a')].map((link) => link.getAttribute('href'));
     expect(hrefs).toContain('/');
@@ -343,12 +343,12 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     expect(document.title).toBe('Customer Feedback — Survey');
 
     await completePage1(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await completePage2(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await clickNth(harness, 'input[type="radio"]', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     expect(document.title).toBe('Customer Feedback — Response received');
   });
@@ -356,7 +356,7 @@ describe('SurveyPageComponent — end to end (US1)', () => {
   it('reopening the survey starts a fresh response at page 1 (scenario 8)', async () => {
     const first = await openViewer();
     await completePage1(first);
-    await clickNth(first, '.sv-nav__button--primary', 0);
+    await clickNth(first, '.ds-nav__button--primary', 0);
     expect(position(first.host)).toBe('Page 2 of 4');
 
     // A route change away and back is a new component and a new session.
@@ -373,12 +373,12 @@ describe('SurveyPageComponent — end to end (US1)', () => {
     });
 
     await completePage1(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await completePage2(harness);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
     await clickNth(harness, 'input[type="radio"]', 0);
-    await clickNth(harness, '.sv-nav__button--primary', 0);
+    await clickNth(harness, '.ds-nav__button--primary', 0);
 
     // Principle III: no confirmation until it is acknowledged.
     expect(harness.host.querySelector('app-submission-confirmation')).toBeNull();

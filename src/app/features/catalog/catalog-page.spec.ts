@@ -285,10 +285,10 @@ describe('CatalogPageComponent — US4.2, following a catalog link', () => {
     // rendered nothing; the render alone would pass against a click handler that never
     // navigated.
     expect(router.url).toBe('/surveys/customer-feedback');
-    expect(host.querySelector('.sv-survey__title')?.textContent?.trim()).toBe('Customer Feedback');
-    expect(host.querySelector('.sv-page__title')?.textContent?.trim()).toBe('About You');
+    expect(host.querySelector('.ds-survey__title')?.textContent?.trim()).toBe('Customer Feedback');
+    expect(host.querySelector('.ds-page__title')?.textContent?.trim()).toBe('About You');
     expect(host.textContent).toContain('What should we call you?');
-    expect(host.querySelector('.sv-nav__position')?.textContent?.trim()).toBe('Page 1 of 1');
+    expect(host.querySelector('.ds-nav__position')?.textContent?.trim()).toBe('Page 1 of 1');
   });
 
   it('renders the not-found screen for a key the manifest does not hold (FR-050)', async () => {

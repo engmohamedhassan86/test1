@@ -5,7 +5,7 @@
  * domain: neither decides valid or invalid (plan §5.1).
  */
 
-import type { AcceptedFileType } from './survey.model';
+import type { AcceptedFileType, PageIcon } from './survey.model';
 
 const BYTES_PER_KB = 1024;
 const BYTES_PER_MB = 1024 * 1024;
@@ -53,4 +53,14 @@ export function formatAcceptedTypes(types: readonly AcceptedFileType[]): string 
     }
   }
   return labels.join(', ');
+}
+
+/**
+ * R5 (PRI-70): the survey card's page-icon badge modifier class. `null` — no `icon`
+ * configured, or an unrecognised raw value already normalised to `null` upstream by the
+ * validator — renders the same default clipboard glyph as any other page, never a render
+ * failure (`SurveyPage.icon`'s fail-open rule).
+ */
+export function pageIconClass(icon: PageIcon | null): string {
+  return `ds-page-icon--${icon ?? 'clipboard'}`;
 }

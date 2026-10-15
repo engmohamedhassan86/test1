@@ -32,18 +32,18 @@ function buttonNamed(host: HTMLElement, label: string): HTMLButtonElement | unde
 }
 
 function previousButton(host: HTMLElement): HTMLButtonElement | null {
-  return host.querySelector<HTMLButtonElement>('.sv-nav__button--secondary');
+  return host.querySelector<HTMLButtonElement>('.ds-nav__button--secondary');
 }
 
 function primaryButton(host: HTMLElement): HTMLButtonElement | null {
-  return host.querySelector<HTMLButtonElement>('.sv-nav__button--primary');
+  return host.querySelector<HTMLButtonElement>('.ds-nav__button--primary');
 }
 
 describe('SurveyNavigationComponent', () => {
   it('names the position as text, not as a progress bar alone (FR-032)', async () => {
     const harness = await mountWithSession(SurveyNavigationComponent, threePageSurvey());
 
-    expect(harness.host.querySelector('.sv-nav__position')?.textContent?.trim()).toBe(
+    expect(harness.host.querySelector('.ds-nav__position')?.textContent?.trim()).toBe(
       'Page 1 of 3',
     );
   });
@@ -54,7 +54,7 @@ describe('SurveyNavigationComponent', () => {
     harness.session.next();
     await harness.settle();
 
-    expect(harness.host.querySelector('.sv-nav__position')?.textContent?.trim()).toBe(
+    expect(harness.host.querySelector('.ds-nav__position')?.textContent?.trim()).toBe(
       'Page 2 of 3',
     );
   });
@@ -108,7 +108,7 @@ describe('SurveyNavigationComponent', () => {
   it('renders exactly one primary action at a time (FR-033)', async () => {
     const harness = await mountWithSession(SurveyNavigationComponent, threePageSurvey());
 
-    expect(harness.host.querySelectorAll('.sv-nav__button--primary')).toHaveLength(1);
+    expect(harness.host.querySelectorAll('.ds-nav__button--primary')).toHaveLength(1);
   });
 
   it('shows Submit on page 1 of a single-page survey', async () => {
@@ -120,7 +120,7 @@ describe('SurveyNavigationComponent', () => {
     // The first page is also the last one, so both rules apply at once.
     expect(primaryButton(harness.host)?.textContent?.trim()).toBe('Submit');
     expect(previousButton(harness.host)?.disabled).toBe(true);
-    expect(harness.host.querySelector('.sv-nav__position')?.textContent?.trim()).toBe(
+    expect(harness.host.querySelector('.ds-nav__position')?.textContent?.trim()).toBe(
       'Page 1 of 1',
     );
   });
@@ -170,7 +170,7 @@ describe('SurveyNavigationComponent', () => {
     // page itself would be on page 2 here — this is Principle III's gate, asserted from
     // the control that triggers it.
     expect(harness.session.currentPageIndex()).toBe(0);
-    expect(harness.host.querySelector('.sv-nav__position')?.textContent?.trim()).toBe(
+    expect(harness.host.querySelector('.ds-nav__position')?.textContent?.trim()).toBe(
       'Page 1 of 2',
     );
   });
